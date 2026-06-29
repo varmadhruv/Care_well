@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Onboarding 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #0b4f8c;
+      --green: #6cbf43;
+      --text: #1e293b;
+      --soft: #64748b;
+      --border: #e5e7eb;
+      --shadow: 0 8px 24px rgba(11, 79, 140, 0.08);
+      --shadow-strong: 0 18px 36px rgba(11, 79, 140, 0.16);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fff;
+      color: var(--text);
+    }
+    button { font: inherit; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .shell { min-height: 100vh; background: #fff; padding: 16px; }
+    .screen {
+      max-width: 1440px;
+      min-height: calc(100vh - 32px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn 0.55s ease both;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 18px 0;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 48px;
+    }
+    .brand-mark {
+      width: 48px; height: 48px; border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      box-shadow: 0 6px 16px rgba(11, 79, 140, 0.08);
+      flex: 0 0 auto; display: grid; place-items: center; background: #fff;
+    }
+    .brand-mark svg { width: 28px; height: 28px; color: var(--blue); display: block; }
+    .brand-text strong, .brand-text small { display: block; letter-spacing: 0; }
+    .brand-text strong { font-size: 1rem; line-height: 1.1; color: var(--blue); font-weight: 700; }
+    .brand-text small { margin-top: 2px; color: var(--green); font-size: 0.78rem; line-height: 1.1; font-weight: 600; letter-spacing: 0.08em; }
+    .skip-btn { border: 0; background: transparent; color: var(--soft); font-size: 16px; font-weight: 600; min-height: 48px; padding: 0 8px; transition: transform 300ms ease; }
+    .hero { display: grid; gap: 24px; padding: 18px 18px 0; align-items: start; }
+    .copy { max-width: 640px; animation: riseIn 0.6s ease 0.05s both; }
+    .copy h1 { margin: 0; color: var(--blue); font-size: clamp(2.6rem, 6vw, 4rem); line-height: 1.1; letter-spacing: -0.05em; font-weight: 700; max-width: 8ch; }
+    .copy p { margin: 18px 0 0; max-width: 36rem; color: var(--soft); font-size: clamp(1rem, 2vw, 1.125rem); line-height: 1.7; }
+    .showcase {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 0;
+      padding: 12px 0 0;
+      animation: riseIn 0.7s ease 0.1s both;
+    }
+    .showcase img {
+      display: block;
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 0;
+      box-shadow: none;
+      filter: none;
+    }
+    .services { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 0 18px 18px; margin-top: -10px; }
+    .service-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow); min-height: 170px; padding: 22px 18px;
+      transition: transform 300ms ease, box-shadow 300ms ease; animation: cardIn 0.55s ease both;
+    }
+    .service-card:nth-child(2) { animation-delay: 0.06s; }
+    .service-card:nth-child(3) { animation-delay: 0.12s; }
+    .service-card:nth-child(4) { animation-delay: 0.18s; }
+    .service-card:nth-child(5) { animation-delay: 0.24s; }
+    .service-card:nth-child(6) { animation-delay: 0.3s; }
+    .service-card:hover, .service-card:focus-within { transform: translateY(-4px); box-shadow: var(--shadow-strong); }
+    .icon-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      background: #eef4ff;
+      color: var(--blue);
+    }
+    .icon-circle.green { background: #f1f9ec; color: var(--green); }
+    .icon-circle svg {
+      width: 58px;
+      height: 58px;
+      display: block;
+    }
+    .icon-circle img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      display: block;
+    }
+    .service-card h2 { margin: 0; color: var(--text); font-size: 1.08rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.03em; }
+    .service-card p { margin: 10px 0 0; color: var(--soft); font-size: 0.96rem; line-height: 1.6; }
+    .bottom-bar { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px; }
+    .dots { display: inline-flex; align-items: center; gap: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: #cbd5e1; }
+    .dot.active { width: 10px; height: 10px; background: var(--blue); }
+    .next-btn { border: 0; min-height: 56px; padding: 0 28px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 700; box-shadow: 0 10px 25px rgba(11, 79, 140, 0.2); transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease; }
+    .next-btn:hover, .next-btn:focus-visible { background: #084476; box-shadow: 0 14px 28px rgba(11, 79, 140, 0.26); transform: translateY(-2px) scale(1.01); outline: none; }
+    .skip-btn:active, .next-btn:active { transform: scale(0.98); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @media (min-width: 768px) {
+      .shell { padding: 24px; }
+      .screen { min-height: calc(100vh - 48px); }
+      .topbar { padding: 24px 28px 0; }
+      .hero { padding: 18px 28px 0; gap: 28px; }
+      .showcase { padding-top: 18px; }
+      .services { padding: 0 28px 28px; gap: 18px; }
+      .service-card { min-height: 188px; }
+      .bottom-bar { padding: 20px 28px 28px; }
+    }
+    @media (min-width: 1100px) {
+      .hero { grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); align-items: start; gap: 36px; }
+      .copy { padding-top: 8px; }
+      .showcase { padding-top: 0; }
+      .service-card { min-height: 196px; }
+    }
+    @media (max-width: 767px) {
+      .screen { border-radius: 24px; }
+      .showcase { padding-top: 8px; }
+    }
+    @media (max-width: 420px) {
+      .topbar, .hero, .services, .bottom-bar { padding-left: 14px; padding-right: 14px; }
+      .hero { gap: 18px; }
+      .copy h1 { max-width: 7ch; }
+      .services { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .service-card { min-height: 156px; padding: 18px 14px; }
+      .icon-circle { width: 72px; height: 72px; margin-bottom: 12px; }
+      .icon-circle svg { width: 52px; height: 52px; }
+      .icon-circle img { width: 48px; height: 48px; }
+      .service-card h2 { font-size: 1rem; }
+      .service-card p { font-size: 0.9rem; }
+      .next-btn { padding: 0 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="screen" aria-label="CareWell onboarding screen 3">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="CareWell home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.2 19 7v5.4c0 4.4-2.9 8.2-7 9.8-4.1-1.6-7-5.4-7-9.8V7l7-3.8Z" stroke="currentColor" stroke-width="1.7" />
+              <path d="M12 7.2v9.6M7.2 12h9.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-text"><strong>CAREWELL</strong><small>NURSING CARE</small></span>
+        </a>
+        <button class="skip-btn" type="button" id="skipBtn">Skip</button>
+      </header>
+      <section class="hero">
+        <div class="copy">
+          <h1>Healthcare Services<br />at Your Doorstep</h1>
+          <p>From daily nursing support to post-surgery recovery, we bring professional healthcare services directly to your home.</p>
+        </div>
+        <div class="showcase" aria-label="Healthcare service showcase">
+          <img src="Screen 3 center img.png" alt="CareWell healthcare services reference visual" />
+        </div>
+      </section>
+      <section class="services" aria-label="CareWell services">
+        <article class="service-card">
+          <div class="icon-circle" aria-hidden="true">
+            <img src="Screen 3 Card img 1.png" alt="" />
+          </div>
+          <h2>Home Nursing Care</h2><p>Professional nursing care in the comfort of your home.</p>
+        </article>
+        <article class="service-card">
+          <div class="icon-circle green" aria-hidden="true">
+            <img src="Screen 3 Card img 2.png" alt="" />
+          </div>
+          <h2>Elderly Care</h2><p>Compassionate care and assistance for seniors at home.</p>
+        </article>
+        <article class="service-card">
+          <div class="icon-circle green" aria-hidden="true">
+            <img src="Screen 3 Card img 3.png" alt="" />
+          </div>
+          <h2>Injection &amp; IV Services</h2><p>Safe and hygienic injection and IV services at home.</p>
+        </article>
+        <article class="service-card">
+          <div class="icon-circle" aria-hidden="true">
+            <img src="Screen 3 Card img 4.png" alt="" />
+          </div>
+          <h2>Wound Dressing</h2><p>Expert wound care and dressing for faster healing.</p>
+        </article>
+        <article class="service-card">
+          <div class="icon-circle" aria-hidden="true">
+            <img src="Screen 3 Card img 5.png" alt="" />
+          </div>
+          <h2>Post-Surgery Care</h2><p>Complete recovery support after surgery at home.</p>
+        </article>
+        <article class="service-card">
+          <div class="icon-circle green" aria-hidden="true">
+            <img src="Screen 3 Card img 6.png" alt="" />
+          </div>
+          <h2>Health Checkup at Home</h2><p>Regular health checkups for early detection and care.</p>
+        </article>
+      </section>
+      <nav class="bottom-bar" aria-label="Onboarding navigation">
+        <div class="dots" aria-label="Page indicator">
+          <span class="dot" aria-hidden="true"></span><span class="dot" aria-hidden="true"></span><span class="dot active" aria-hidden="true"></span>
+        </div>
+        <button class="next-btn" type="button" id="nextBtn">Get Started <span aria-hidden="true">→</span></button>
+      </nav>
+    </section>
+  </main>
+  <script>
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    nextBtn?.addEventListener('click', () => { window.location.href = 'onboarding-screen-4.html'; });
+    skipBtn?.addEventListener('click', () => { window.location.href = 'onboarding-screen-4.html'; });
+  </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Onboarding 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --blue:#0b4f8c;
+      --green:#6cbf43;
+      --text:#0f172a;
+      --soft:#64748b;
+      --bg:#f8fafc;
+      --border:#eef2f7;
+      --border-soft:#e5e7eb;
+      --shadow:0 8px 24px rgba(15,23,42,.06);
+      --shadow-strong:0 12px 30px rgba(11,79,140,.18);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
+    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    button{font:inherit;cursor:pointer}
+    .screen{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:24px;
+    }
+    .app{
+      width:100%;
+      max-width:420px;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      min-height:calc(100vh - 48px);
+    }
+    .top-row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+    }
+    .card:hover,.card:focus-visible,.continue-btn:focus-visible{
+      outline:none;
+      transform:translateY(-4px);
+    }
+    .header{
+      display:flex;flex-direction:column;gap:12px;text-align:center;
+    }
+    h1{
+      margin:0;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:clamp(2.25rem,6vw,2.625rem);
+      line-height:1.05;
+      font-weight:700;
+      letter-spacing:0;
+      color:var(--text);
+    }
+    .sub{
+      margin:0 auto;
+      max-width:36ch;
+      font-size:18px;
+      line-height:1.6;
+      color:var(--soft);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+    }
+    .card{
+      position:relative;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:20px 12px 18px;
+      min-height:170px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      transition:transform 300ms ease, border-color 300ms ease, background 300ms ease, box-shadow 300ms ease;
+    }
+    .card.selected{
+      border:3px solid var(--blue);
+      background:#f8fbff;
+      padding:18px 10px 16px;
+      transform:scale(1.03);
+    }
+    .badge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:28px;height:28px;
+      border-radius:999px;
+      background:var(--green);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 16px rgba(108,191,67,.24);
+      opacity:0;
+      transform:scale(.75);
+      transition:opacity 200ms ease, transform 200ms ease;
+    }
+    .card.selected .badge{opacity:1;transform:scale(1)}
+    .photo{
+      width:110px;height:110px;border-radius:999px;overflow:hidden;background:#eef4ff;flex:0 0 auto;
+      display:grid;place-items:center;
+      box-shadow:inset 0 0 0 14px #eef4ff;
+    }
+    .photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center center;
+      display:block;
+      background:transparent;
+      transform:scale(1.12);
+    }
+    .icon-wrap{
+      width:110px;height:110px;border-radius:999px;background:#eef4ff;display:grid;place-items:center;color:#64748b;
+    }
+    .icon-wrap svg{width:52px;height:52px;display:block}
+    .label{
+      margin:0;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:18px;
+      line-height:1.2;
+      font-weight:600;
+      color:var(--text);
+      text-align:center;
+    }
+    .bottom{
+      margin-top:auto;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:16px;
+      padding-bottom:4px;
+    }
+    .continue-btn{
+      width:240px;height:64px;border:0;border-radius:20px;background:var(--blue);color:#fff;
+      font-family:Poppins,Inter,sans-serif;font-size:22px;font-weight:600;
+      box-shadow:0 12px 30px rgba(11,79,140,.25);
+      transition:transform 300ms ease,opacity 300ms ease,background 300ms ease;
+    }
+    .continue-btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+    .continue-btn:not(:disabled):hover,.continue-btn:not(:disabled):focus-visible{
+      background:#084476;
+      transform:translateY(-4px);
+      outline:none;
+    }
+    .card:hover{box-shadow:0 12px 30px rgba(15,23,42,.09)}
+    .card.selected:hover{box-shadow:0 12px 30px rgba(11,79,140,.12)}
+    @media (max-width: 420px){
+      .screen{padding:16px}
+      .app{min-height:calc(100vh - 32px)}
+      .grid{gap:12px}
+      .card{min-height:148px;padding:16px 10px}
+      .photo,.icon-wrap{width:88px;height:88px}
+      .label{font-size:15px}
+      .continue-btn{width:100%;font-size:18px}
+      .bottom{flex-wrap:wrap;justify-content:flex-end}
+    }
+    @media (min-width: 768px){
+      .screen{padding:32px}
+      .app{
+        max-width:920px;
+        gap:28px;
+      }
+      .grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:18px;
+      }
+      .card{
+        min-height:196px;
+        padding:22px 14px 20px;
+      }
+      .photo,.icon-wrap{
+        width:116px;
+        height:116px;
+      }
+      .label{
+        font-size:18px;
+      }
+      .bottom{
+        padding-top:8px;
+      }
+    }
+    @media (min-width: 1100px){
+      .app{
+        max-width:980px;
+      }
+      .grid{
+        gap:20px;
+      }
+      .card{
+        min-height:208px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="screen">
+    <section class="app" aria-label="CareWell onboarding screen 4">
+      <div class="top-row">
+      </div>
+
+      <div class="header">
+        <h1>Who needs care?</h1>
+        <p class="sub">Select the person who requires healthcare support.</p>
+      </div>
+
+      <div class="grid" id="selectionGrid">
+        <button class="card" type="button" data-value="elder-male">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img old man.jpeg" alt="Smiling senior male patient" /></span>
+          <span class="label">Elder Male</span>
+        </button>
+
+        <button class="card" type="button" data-value="elder-female">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img old lady.jpeg" alt="Smiling senior female patient" /></span>
+          <span class="label">Elder Female</span>
+        </button>
+
+        <button class="card" type="button" data-value="adult-male">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img men.jpeg" alt="Young adult male" /></span>
+          <span class="label">Adult Male</span>
+        </button>
+
+        <button class="card" type="button" data-value="adult-female">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img (women).jpeg" alt="Young adult female" /></span>
+          <span class="label">Adult Female</span>
+        </button>
+
+        <button class="card" type="button" data-value="child-boy">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img (boy).jpeg" alt="Young boy" /></span>
+          <span class="label">Child Boy</span>
+        </button>
+
+        <button class="card" type="button" data-value="child-girl">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img (girl).jpeg" alt="Young girl" /></span>
+          <span class="label">Child Girl</span>
+        </button>
+
+        <button class="card" type="button" data-value="multiple">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="photo"><img src="Question and answer screen 1 img multiple.jpeg" alt="Multiple family members" /></span>
+          <span class="label">Multiple Family Members</span>
+        </button>
+
+        <button class="card" type="button" data-value="other">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 12.5c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5.5 19c1.1-2.9 3.6-4.5 6.5-4.5S17.4 16.1 18.5 19" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="label">Other</span>
+        </button>
+
+        <button class="card" type="button" data-value="rather-not-say">
+          <span class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.5 19 6v5.2c0 4.5-3 8.2-7 9.8-4-1.6-7-5.3-7-9.8V6l7-2.5Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
+              <path d="M12 8v5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+              <path d="M12 16.5h.01" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="label">Rather Not Say</span>
+        </button>
+      </div>
+
+      <div class="bottom">
+        <button class="continue-btn" id="continueBtn" type="button" disabled>Continue →</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const continueBtn = document.getElementById('continueBtn');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    let selected = null;
+
+    function setSelected(card) {
+      cards.forEach((c) => c.classList.toggle('selected', c === card));
+      selected = card;
+      continueBtn.disabled = !selected;
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener('click', () => setSelected(card));
+    });
+
+    continueBtn.addEventListener('click', () => {
+      if (!selected) return;
+      window.location.href = 'onboarding-screen-5.html';
+    });
+  </script>
+</body>
+</html>

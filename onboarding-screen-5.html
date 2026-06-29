@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Onboarding 5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --blue: #0b4f8c;
+      --blue-soft: #eef4ff;
+      --text: #0f172a;
+      --soft: #64748b;
+      --border: #eef2f7;
+      --border-strong: #d1d5db;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --shadow-strong: 0 0 0 4px rgba(11, 79, 140, 0.08), 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    button { font: inherit; cursor: pointer; }
+
+    .screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: min(100%, 420px);
+      min-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin: auto;
+      padding-top: clamp(10px, 3vh, 28px);
+      animation: fadeIn 250ms ease both;
+    }
+
+    .heading {
+      text-align: center;
+      display: grid;
+      gap: 12px;
+      margin-top: clamp(4px, 1.4vh, 14px);
+    }
+
+    .heading h1 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 42px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .heading p {
+      margin: 0 auto;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--soft);
+      max-width: 34ch;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      min-height: 112px;
+      padding: 18px 20px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: #fff;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      text-align: left;
+      transition: transform 200ms ease, border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card:active {
+      transform: scale(1.02);
+    }
+
+    .card.selected {
+      border: 3px solid var(--blue);
+      background: #f8fbff;
+      box-shadow: var(--shadow-strong);
+    }
+
+    .icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #f4f7fb;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .icon img {
+      width: 62px;
+      height: 62px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .copy {
+      min-width: 0;
+      flex: 1;
+      padding-right: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .copy h2 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .copy p {
+      margin: 6px 0 0;
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--soft);
+    }
+
+    .radio {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+    }
+
+    .radio svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0;
+      display: block;
+      transition: opacity 200ms ease;
+    }
+
+    .card.selected .radio {
+      border-color: var(--blue);
+      background: var(--blue);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
+    }
+
+    .card.selected .radio svg {
+      opacity: 1;
+    }
+
+    .bottom {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      padding-bottom: 4px;
+    }
+
+    .continue-btn {
+      width: 240px;
+      height: 64px;
+      border: 0;
+      border-radius: 20px;
+      background: var(--blue);
+      color: #fff;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(11, 79, 140, 0.25);
+      transition: transform 200ms ease, background 200ms ease, opacity 200ms ease, box-shadow 200ms ease;
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .continue-btn:not(:disabled):hover,
+    .continue-btn:not(:disabled):focus-visible {
+      background: #084476;
+      transform: translateY(-2px) scale(1.02);
+      outline: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 420px) {
+      .screen { padding: 16px; }
+      .app { min-height: calc(100vh - 32px); gap: 14px; padding-top: 4px; }
+      .heading h1 { font-size: 34px; }
+      .heading p { font-size: 16px; }
+      .options { gap: 12px; }
+      .card { min-height: 106px; padding: 14px 16px; gap: 14px; }
+      .icon { width: 68px; height: 68px; }
+      .icon img { width: 56px; height: 56px; }
+      .copy { padding-right: 38px; }
+      .copy h2 { font-size: 18px; }
+      .copy p { font-size: 14px; line-height: 1.35; }
+      .continue-btn { width: 100%; font-size: 18px; }
+      .bottom { flex-wrap: wrap; justify-content: flex-end; }
+    }
+
+    @media (min-width: 768px) {
+      .screen { padding: 32px; }
+      .app { max-width: min(88vw, 820px); gap: 22px; }
+      .heading h1 { font-size: 48px; }
+      .heading p { font-size: 19px; }
+      .options { gap: 16px; }
+      .card { min-height: 132px; padding: 22px 30px; gap: 22px; }
+      .icon { width: 90px; height: 90px; }
+      .icon img { width: 72px; height: 72px; }
+      .copy h2 { font-size: 25px; }
+      .copy p { font-size: 18px; }
+      .continue-btn { width: 260px; }
+    }
+
+    @media (min-width: 1100px) {
+      .screen { padding: 40px; }
+      .app { max-width: min(78vw, 980px); gap: 24px; }
+      .heading h1 { font-size: 52px; }
+      .heading p { font-size: 20px; }
+      .options { gap: 18px; }
+      .card { min-height: 140px; padding: 24px 34px; gap: 24px; }
+      .icon { width: 96px; height: 96px; }
+      .icon img { width: 78px; height: 78px; }
+      .copy h2 { font-size: 26px; }
+      .copy p { font-size: 18px; }
+      .continue-btn { width: 280px; }
+    }
+
+    @media (min-width: 1440px) {
+      .app { max-width: 1080px; }
+      .card { min-height: 146px; padding: 26px 38px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="screen">
+    <section class="app" aria-label="CareWell onboarding screen 5">
+      <div class="heading">
+        <h1>Do you want any assistance ?</h1>
+        <p>Choose your preferred way to continue.</p>
+      </div>
+
+      <div class="options" id="options">
+        <button class="card" type="button" data-value="call-back">
+          <span class="icon"><img src="Screen 6 Q&A phone logo.png" alt="" /></span>
+          <span class="copy">
+            <h2>Request a Call Back</h2>
+            <p>A care coordinator will call you.</p>
+          </span>
+          <span class="radio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button class="card" type="button" data-value="whatsapp">
+          <span class="icon"><img src="Screen 6 Q&A whatsapp logo.png" alt="" /></span>
+          <span class="copy">
+            <h2>Chat on WhatsApp</h2>
+            <p>Quick responses on WhatsApp.</p>
+          </span>
+          <span class="radio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button class="card" type="button" data-value="schedule">
+          <span class="icon"><img src="Screen 6 Q&A Schedule logo.png" alt="" /></span>
+          <span class="copy">
+            <h2>Schedule Consultation</h2>
+            <p>Pick a convenient date and time.</p>
+          </span>
+          <span class="radio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button class="card" type="button" data-value="email">
+          <span class="icon"><img src="Screen 6 Q&A email_logo.png" alt="" /></span>
+          <span class="copy">
+            <h2>Email Me Information</h2>
+            <p>Receive details by email.</p>
+          </span>
+          <span class="radio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button class="card" type="button" data-value="no-assistance">
+          <span class="icon"><img src="new_logo_Screen5.png" alt="" /></span>
+          <span class="copy">
+            <h2>No Need Any Assitance</h2>
+            <p>Continue without extra assistance.</p>
+          </span>
+          <span class="radio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 10 17l9-10" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+      </div>
+
+      <div class="bottom">
+        <button class="continue-btn" id="continueBtn" type="button" disabled>Continue →</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const continueBtn = document.getElementById('continueBtn');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    let selected = null;
+
+    function selectCard(card) {
+      cards.forEach((c) => c.classList.toggle('selected', c === card));
+      selected = card;
+      continueBtn.disabled = !selected;
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener('click', () => selectCard(card));
+    });
+
+    continueBtn.addEventListener('click', () => {
+      if (!selected) return;
+      window.location.href = 'onboarding-screen-6.html';
+    });
+  </script>
+</body>
+</html>

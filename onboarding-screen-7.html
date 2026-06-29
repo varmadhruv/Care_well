@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; base-uri 'self'; frame-ancestors 'none';" />
+  <title>CareWell - Authentication Gateway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --primary: #0b4f8c;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e5e7eb;
+      --soft-line: #e7edf5;
+      --shadow-blue: 0 12px 28px rgba(11, 79, 140, 0.25);
+      --shadow-soft: 0 6px 20px rgba(15, 23, 42, 0.05);
+      --ease: 250ms ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 32px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(circle at 50% 8%, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0) 34%),
+        #f8fafc;
+      overflow-x: hidden;
+    }
+
+    .gateway {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      animation: pageIn 500ms ease both;
+    }
+
+    .brand {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .brand-logo {
+      width: clamp(108px, 14vw, 134px);
+      max-width: 30vw;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 6px;
+      align-content: center;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: clamp(32px, 4.4vw, 44px);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .brand-subtitle {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: clamp(14px, 1.7vw, 18px);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: #6cbf43;
+    }
+
+    .hero {
+      position: relative;
+      width: min(100%, clamp(320px, 40vw, 420px));
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 26px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 34%;
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0), #f8fafc 88%);
+      pointer-events: none;
+    }
+
+    .hero img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .welcome {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      text-align: center;
+      width: 100%;
+      margin-top: -2px;
+    }
+
+    .welcome h1 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 48px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .welcome p {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.6;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .actions {
+      width: 100%;
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .auth-btn {
+      position: relative;
+      width: 100%;
+      height: 64px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-decoration: none;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      transition: transform var(--ease), box-shadow var(--ease), background var(--ease), border-color var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .auth-btn.primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-blue);
+      font-size: 22px;
+    }
+
+    .auth-btn:hover,
+    .auth-btn:focus-visible {
+      transform: translateY(-2px) scale(1.02);
+      outline: none;
+    }
+
+    .auth-btn.primary:hover,
+    .auth-btn.primary:focus-visible {
+      background: #084476;
+      box-shadow: 0 16px 34px rgba(11, 79, 140, 0.28);
+    }
+
+    .auth-btn:active {
+      transform: scale(0.98);
+    }
+
+    .auth-btn[aria-disabled="true"] {
+      cursor: default;
+    }
+
+    .icon-circle {
+      position: absolute;
+      left: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.72);
+      flex: 0 0 auto;
+    }
+
+    .auth-btn:not(.primary) .icon-circle {
+      background: #ffffff;
+    }
+
+    .icon-circle img {
+      width: 82%;
+      height: 82%;
+      object-fit: contain;
+      display: block;
+      border-radius: 0;
+    }
+
+    .phone-icon img {
+      width: 80%;
+      height: 80%;
+    }
+
+    .apple-icon img {
+      width: 166%;
+      height: 166%;
+      transform: translateY(-9px);
+    }
+
+    .divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #94a3b8;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      margin: 2px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      background: var(--line);
+      flex: 1;
+    }
+
+    .login-block {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .login-block p {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .login-link {
+      color: var(--primary);
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 700;
+      text-decoration: none;
+      transition: text-decoration-color var(--ease), transform var(--ease);
+    }
+
+    .login-link:hover,
+    .login-link:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    .security {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+      margin-top: 4px;
+      text-align: left;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .shield-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #eef4ff;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .shield-circle img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      display: block;
+      border-radius: 0;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 420px) {
+      .page { padding: 22px 16px 24px; align-items: flex-start; }
+      .gateway { gap: 18px; }
+      .brand { gap: 14px; }
+      .brand-logo { width: 100px; max-width: 28vw; }
+      .brand-title { font-size: 32px; }
+      .brand-subtitle { font-size: 14px; letter-spacing: 0.14em; }
+      .hero { width: min(86vw, 280px); }
+      .welcome h1 { font-size: 40px; }
+      .welcome p { font-size: 17px; margin-bottom: 2px; }
+      .actions { gap: 12px; margin-top: 2px; }
+      .auth-btn { height: 58px; border-radius: 18px; font-size: 17px; }
+      .auth-btn.primary { font-size: 18px; }
+      .icon-circle { left: 10px; width: 40px; height: 40px; }
+      .divider { gap: 12px; margin: 0; }
+      .login-block p { font-size: 16px; }
+      .login-link { font-size: 22px; }
+      .security { font-size: 14px; line-height: 1.35; gap: 10px; }
+      .shield-circle { width: 46px; height: 46px; }
+    }
+
+    @media (min-width: 768px) {
+      .page { padding: 40px 24px; }
+      .gateway { max-width: 540px; gap: 26px; }
+      .brand { gap: 18px; }
+      .hero { width: min(100%, 390px); }
+      .welcome h1 { font-size: 50px; }
+      .welcome p { font-size: 20px; }
+      .actions { gap: 16px; }
+      .auth-btn { height: 64px; }
+    }
+
+    @media (min-width: 1100px) {
+      .gateway { max-width: 580px; }
+      .brand-logo { width: 128px; }
+      .brand-title { font-size: 44px; }
+      .brand-subtitle { font-size: 18px; }
+      .hero { width: 440px; }
+      .welcome h1 { font-size: 52px; }
+      .auth-btn { height: 66px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="gateway" aria-label="CareWell login and signup gateway">
+      <div class="brand">
+        <img class="brand-logo" src="screen7-logo-clean.png" alt="CareWell Nursing Care" />
+        <div class="brand-copy" aria-label="CareWell brand">
+          <p class="brand-title">CAREWELL</p>
+          <p class="brand-subtitle">NURSING CARE</p>
+        </div>
+      </div>
+
+      <div class="hero" aria-hidden="true">
+        <img src="screen7-hero-clean.png" alt="" loading="lazy" />
+      </div>
+
+      <div class="welcome">
+        <h1>Welcome Back!</h1>
+        <p>Sign in to continue your care journey.</p>
+      </div>
+
+      <div class="actions" aria-label="Authentication options">
+        <a class="auth-btn primary" href="phone-auth.html" aria-label="Continue with Phone Number">
+          <span class="icon-circle phone-icon"><img src="screen7-phone-clean.png" alt="" /></span>
+          <span>Continue with Phone Number</span>
+        </a>
+
+        <a class="auth-btn" href="google-auth.html" aria-label="Continue with Google">
+          <span class="icon-circle"><img src="screen7-google-icon.svg" alt="" /></span>
+          <span>Continue with Google</span>
+        </a>
+
+        <a class="auth-btn apple-btn" href="#" aria-disabled="true" onclick="return false;" aria-label="Continue with Apple" hidden>
+          <span class="icon-circle apple-icon"><img src="screen7-apple-clean.png" alt="" /></span>
+          <span>Continue with Apple</span>
+        </a>
+      </div>
+
+      <div class="divider" aria-hidden="true">OR</div>
+
+      <div class="login-block">
+        <p>Already have an account?</p>
+        <a class="login-link" href="#" aria-disabled="true" onclick="return false;">Log In</a>
+      </div>
+
+      <div class="security" aria-label="Security and privacy notice">
+        <span class="shield-circle"><img src="shield-icon.svg" alt="" /></span>
+        <span>Your information is secure with us.<br />We respect your privacy.</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="google-oauth.js" defer></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const appleButton = document.querySelector('.apple-btn');
+      const googleButton = document.querySelector('.auth-btn[href="google-auth.html"]');
+      const platform = navigator.userAgentData?.platform || navigator.platform || '';
+      const userAgent = navigator.userAgent || '';
+      const isAppleDevice = /Mac|iPhone|iPad|iPod/i.test(platform) || /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
+
+      if (isAppleDevice && appleButton) {
+        appleButton.hidden = false;
+      }
+
+      if (window.CareWellGoogleAuth && googleButton) {
+        window.CareWellGoogleAuth.bindGoogleButton(googleButton, {
+          onSuccess(profile) {
+            const params = new URLSearchParams({
+              id: profile.googleUserId || '',
+              name: profile.fullName || '',
+              email: profile.email || '',
+              photo: profile.profilePicture || '',
+            });
+            window.location.href = `google-auth.html?${params.toString()}`;
+          },
+        });
+      }
+    });
+  </script>
+</body>
+</html>

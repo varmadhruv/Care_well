@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Onboarding 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #0b4f8c;
+      --green: #6cbf43;
+      --text: #1e293b;
+      --soft: #64748b;
+      --border: #e5e7eb;
+      --shadow: 0 8px 24px rgba(11, 79, 140, 0.08);
+      --shadow-strong: 0 16px 34px rgba(11, 79, 140, 0.16);
+      --blue-soft: #eef2ff;
+      --green-soft: #f1f9ec;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fff;
+      color: var(--text);
+    }
+    button { font: inherit; cursor: pointer; }
+
+    .shell {
+      min-height: 100vh;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .screen {
+      max-width: 1440px;
+      min-height: calc(100vh - 32px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 18px 10px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 48px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      box-shadow: 0 6px 16px rgba(11, 79, 140, 0.08);
+      flex: 0 0 auto;
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-text strong,
+    .brand-text small {
+      display: block;
+      letter-spacing: -0.02em;
+    }
+    .brand-text strong {
+      font-size: 1rem;
+      line-height: 1.1;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .brand-text small {
+      margin-top: 2px;
+      color: var(--green);
+      font-size: 0.8rem;
+      line-height: 1.1;
+      font-weight: 600;
+    }
+
+    .skip-btn {
+      border: 0;
+      background: transparent;
+      color: var(--soft);
+      font-size: 16px;
+      font-weight: 500;
+      min-height: 48px;
+      padding: 0 8px;
+      transition: transform 300ms ease;
+    }
+
+    .skip-btn:hover,
+    .skip-btn:focus-visible,
+    .next-btn:hover,
+    .next-btn:focus-visible {
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      padding: 14px 18px 0;
+    }
+
+    .headline {
+      margin: 0;
+      color: var(--blue);
+      font-size: clamp(2.6rem, 7vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.05em;
+      font-weight: 700;
+      max-width: 7.5ch;
+      animation: riseIn 0.6s ease 0.03s both;
+    }
+
+    .description {
+      margin: 16px 0 0;
+      max-width: 280px;
+      color: var(--soft);
+      font-size: clamp(1rem, 2.4vw, 1.125rem);
+      line-height: 1.6;
+      animation: riseIn 0.6s ease 0.08s both;
+    }
+
+    .visual {
+      position: relative;
+      margin-top: 18px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+      background: linear-gradient(135deg, #f8fbff, #eef7ef);
+      animation: imageIn 0.7s ease 0.12s both;
+    }
+
+    .visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity 650ms ease, transform 650ms ease;
+    }
+
+    .visual img.is-active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .visual img.is-fading-out {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+
+    .visual::before {
+      content: "";
+      display: block;
+      padding-top: 62.5%;
+    }
+
+    .progress-ring {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 32px;
+      height: 32px;
+      z-index: 3;
+      pointer-events: none;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.16));
+    }
+
+    .progress-ring svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring .track {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.55);
+      stroke-width: 3;
+    }
+
+    .progress-ring .bar {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 94.2;
+      stroke-dashoffset: 94.2;
+      transition: stroke-dashoffset 80ms linear;
+    }
+
+    .wave {
+      margin-top: -2px;
+      height: 112px;
+    }
+
+    .wave svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .wave-top { fill: var(--blue); }
+    .wave-bottom { fill: var(--green); }
+
+    .trust {
+      padding: 12px 18px 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trust-item {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      padding: 14px 0 18px;
+      animation: rowIn 0.55s ease both;
+    }
+
+    .trust-item:nth-child(1) { animation-delay: 0.03s; }
+    .trust-item:nth-child(3) { animation-delay: 0.11s; }
+    .trust-item:nth-child(5) { animation-delay: 0.19s; }
+
+    .trust-item + .divider {
+      height: 1px;
+      background: var(--border);
+      margin-left: 72px;
+    }
+
+    .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .icon svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .icon.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .icon.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .trust-copy h2 {
+      margin: 0;
+      color: var(--blue);
+      font-size: 1.02rem;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+    }
+
+    .trust-copy p {
+      margin: 8px 0 0;
+      color: var(--soft);
+      font-size: 0.96rem;
+      line-height: 1.6;
+    }
+
+    .bottom {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    .dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #cbd5e1;
+    }
+
+    .dot.active {
+      width: 10px;
+      height: 10px;
+      background: var(--blue);
+    }
+
+    .next-btn {
+      border: 0;
+      min-height: 52px;
+      padding: 0 28px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(11, 79, 140, 0.2);
+      transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease;
+    }
+
+    .next-btn:hover,
+    .next-btn:focus-visible {
+      background: #084476;
+      box-shadow: 0 14px 28px rgba(11, 79, 140, 0.26);
+    }
+
+    .next-btn:active,
+    .skip-btn:active {
+      transform: scale(0.98);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes imageIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 768px) {
+      .shell { padding: 24px; }
+      .screen { min-height: calc(100vh - 48px); }
+      .progress-ring {
+        right: 12px;
+        bottom: 12px;
+        width: 36px;
+        height: 36px;
+      }
+
+      .topbar { padding: 24px 28px 12px; }
+      .hero { padding: 16px 28px 0; }
+      .wave { height: 128px; }
+      .trust { padding: 14px 28px 0; }
+      .trust-item { grid-template-columns: 60px minmax(0, 1fr); padding: 18px 0 20px; }
+      .trust-item + .divider { margin-left: 76px; }
+      .bottom { padding: 20px 28px 28px; }
+    }
+
+    @media (min-width: 1100px) {
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+        gap: 28px;
+        align-items: end;
+      }
+      .description { margin-top: 18px; }
+      .visual { margin-top: 0; }
+    }
+
+    @media (max-width: 420px) {
+      .shell { padding: 12px; }
+      .topbar,
+      .hero,
+      .trust,
+      .bottom { padding-left: 14px; padding-right: 14px; }
+      .headline { max-width: 8ch; }
+      .trust-item { gap: 14px; }
+      .trust-item + .divider { margin-left: 70px; }
+      .next-btn { padding: 0 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="screen" aria-label="Onboarding screen 2">
+      <header class="topbar">
+        <div class="brand" aria-label="CareWell home">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="main_logo.jpg" alt="" />
+          </span>
+          <span class="brand-text">
+            <strong>CAREWELL</strong>
+            <small>NURSING CARE</small>
+          </span>
+        </div>
+        <button class="skip-btn" type="button" id="skipBtn">Skip</button>
+      </header>
+
+      <section class="hero" aria-label="Intro and image">
+        <div>
+          <h1 class="headline">Why Families<br />Trust Us</h1>
+          <p class="description">Professional caregivers, verified nurses, and round-the-clock support designed for your peace of mind.</p>
+        </div>
+
+        <div class="visual" id="heroRotator">
+          <img class="is-active" src="Female Patient img.png" alt="Elderly female patient with caregiver at home" />
+          <img src="male Patient img.png" alt="Elderly male patient with caregiver at home" loading="lazy" />
+          <img src="screen 2 (multi_img 1).jpg" alt="Young male patient with caregiver at home" loading="lazy" />
+          <img src="Patient and doctor img _ Screen1 (onboaring).png" alt="Young female patient with caregiver at home" loading="lazy" />
+          <img src="Child male Patient img.png" alt="Male child patient with caregiver at home" loading="lazy" />
+          <img src="Child Female Patient img.png" alt="Female child patient with caregiver at home" loading="lazy" />
+          <div class="progress-ring" aria-hidden="true">
+            <svg viewBox="0 0 36 36">
+              <circle class="track" cx="18" cy="18" r="15" />
+              <circle class="bar" id="progressBar" cx="18" cy="18" r="15" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <div class="wave" aria-hidden="true">
+        <svg viewBox="0 0 1440 220" preserveAspectRatio="none">
+          <path class="wave-top" d="M0,118 C160,170 320,170 480,126 C640,82 800,54 960,86 C1120,118 1280,202 1440,162 L1440,220 L0,220 Z"></path>
+          <path class="wave-bottom" d="M0,148 C160,192 320,204 480,170 C640,136 760,82 940,96 C1120,110 1280,190 1440,138 L1440,220 L0,220 Z"></path>
+        </svg>
+      </div>
+
+      <section class="trust" aria-label="Trust features">
+        <article class="trust-item">
+          <span class="icon blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l7 3v6c0 5-3.3 9.4-7 11-3.7-1.6-7-6-7-11V5l7-3Z" stroke="currentColor" stroke-width="1.8" />
+              <path d="m8.5 12.3 2.4 2.4 4.7-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <div class="trust-copy">
+            <h2>Background Verified Staff</h2>
+            <p>Every caregiver is thoroughly screened and verified for your safety.</p>
+          </div>
+        </article>
+        <div class="divider" aria-hidden="true"></div>
+
+        <article class="trust-item">
+          <span class="icon green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 5.5h11l3 3v10.5H5V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M9 11.5h6M12 8.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              <path d="M12 18.2c2.5-1.7 4.5-3.8 4.5-5.7 0-1.5-1.1-2.6-2.6-2.6-1 0-1.6.5-1.9 1.1-.3-.6-.9-1.1-1.9-1.1-1.5 0-2.6 1.1-2.6 2.6 0 1.9 2 4 4.5 5.7Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <div class="trust-copy">
+            <h2>Personalized Care Plans</h2>
+            <p>Care plans tailored to individual needs for better recovery and well-being.</p>
+          </div>
+        </article>
+        <div class="divider" aria-hidden="true"></div>
+
+        <article class="trust-item">
+          <span class="icon blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4.5 7.5h15v9h-3l-2.5 2.5h-4L7.5 16.5h-3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M8 11.5h8M12 9v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <div class="trust-copy">
+            <h2>24/7 Support Available</h2>
+            <p>Our care team is available round the clock for your support and assistance.</p>
+          </div>
+        </article>
+      </section>
+
+      <nav class="bottom" aria-label="Onboarding navigation">
+        <div class="dots" aria-label="Page indicator">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot active" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+        </div>
+        <button class="next-btn" type="button" id="nextBtn">Next <span aria-hidden="true">&rarr;</span></button>
+      </nav>
+    </section>
+  </main>
+
+  <script>
+    const skipBtn = document.getElementById('skipBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const heroRotator = document.getElementById('heroRotator');
+    const slides = Array.from(heroRotator.querySelectorAll('img'));
+    const progressBar = document.getElementById('progressBar');
+    const duration = 3000;
+    const radius = 15;
+    const circumference = 2 * Math.PI * radius;
+    let activeIndex = 0;
+    let startedAt = performance.now();
+
+    progressBar.style.strokeDasharray = `${circumference}`;
+    progressBar.style.strokeDashoffset = `${circumference}`;
+
+    function preloadImages() {
+      slides.forEach((img) => {
+        const preloader = new Image();
+        preloader.src = img.getAttribute('src');
+      });
+    }
+
+    function setSlide(index) {
+      const current = slides[activeIndex];
+      const next = slides[index];
+      if (current === next) return;
+
+      current.classList.remove('is-active');
+      current.classList.add('is-fading-out');
+      next.classList.add('is-active');
+      next.classList.remove('is-fading-out');
+
+      window.setTimeout(() => current.classList.remove('is-fading-out'), 700);
+      activeIndex = index;
+    }
+
+    function animateProgress(now) {
+      const elapsed = now - startedAt;
+      const progress = Math.min(elapsed / duration, 1);
+      progressBar.style.strokeDashoffset = `${circumference * (1 - progress)}`;
+
+      if (progress >= 1) {
+        const nextIndex = (activeIndex + 1) % slides.length;
+        setSlide(nextIndex);
+        startedAt = now;
+        progressBar.style.strokeDashoffset = `${circumference}`;
+      }
+
+      requestAnimationFrame(animateProgress);
+    }
+
+    preloadImages();
+    requestAnimationFrame(animateProgress);
+
+    skipBtn.addEventListener('click', () => {
+      window.location.href = 'onboarding-screen-4.html';
+    });
+
+    nextBtn.addEventListener('click', () => {
+        window.location.href = 'onboarding-screen-3.html';
+      });
+  </script>
+</body>
+</html>

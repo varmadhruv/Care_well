@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Get Started</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="onboarding-shell">
+    <section class="onboarding-screen" aria-label="Get Started screen 1">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="CareWell home">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="main_logo.jpg" alt="" />
+          </span>
+          <span class="brand-text">
+            <strong>CareWell</strong>
+            <small>NURSING CARE</small>
+          </span>
+        </a>
+        <button class="skip-btn" type="button" id="skipBtn">Skip</button>
+      </header>
+
+      <section class="hero-grid">
+        <div class="copy-block">
+          <h1>Compassionate<br />Care,<br />Right at<br />Home</h1>
+          <p>Professional nursing and healthcare services delivered to your doorstep with trusted and compassionate caregivers.</p>
+        </div>
+
+        <div class="hero-visual-wrap">
+          <div class="hero-visual" aria-hidden="true">
+            <img
+              src="Patient and doctor img _ Screen1 (onboaring).png"
+              alt="Smiling professional nurse assisting an elderly woman at home"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div class="wave-divider" aria-hidden="true">
+        <svg viewBox="0 0 1440 220" preserveAspectRatio="none">
+          <path class="wave-back" d="M0,120 C160,180 320,180 480,132 C640,84 800,52 960,84 C1120,116 1280,208 1440,168 L1440,220 L0,220 Z"></path>
+          <path class="wave-front" d="M0,148 C150,190 330,204 480,170 C650,128 760,82 930,96 C1120,112 1260,188 1440,138 L1440,220 L0,220 Z"></path>
+        </svg>
+      </div>
+
+      <section class="features" aria-label="Key features">
+        <article class="feature-card">
+          <span class="icon-circle blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2l7 3v6c0 5-3.3 9.4-7 11-3.7-1.6-7-6-7-11V5l7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <path d="m8.5 12.3 2.4 2.4 4.7-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h2>Verified<br />Nurses</h2>
+        </article>
+
+        <article class="feature-card">
+          <span class="icon-circle green" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4.5 7.5h15v9h-3l-2.5 2.5h-4L7.5 16.5h-3v-9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M8 11.5h8M12 9v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <h2>24/7<br />Support</h2>
+        </article>
+
+        <article class="feature-card">
+          <span class="icon-circle blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 10.5 12 4l8 6.5V20H4v-9.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+              <path d="M9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h2>Home<br />Visits</h2>
+        </article>
+
+        <article class="feature-card">
+          <span class="icon-circle green" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 20s-6-3.7-8-8.3C2.2 8.1 4.1 5 7.5 5c2 0 3.2 1.2 4.5 2.9C13.3 6.2 14.5 5 16.5 5 19.9 5 21.8 8.1 20 11.7 18 16.3 12 20 12 20Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h2>Trusted<br />Care</h2>
+        </article>
+      </section>
+
+      <nav class="bottom-bar" aria-label="Onboarding navigation">
+        <div class="dots" aria-label="Page indicator">
+          <span class="dot active" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+        </div>
+        <button class="next-btn" type="button" id="nextBtn">Next <span aria-hidden="true">&rarr;</span></button>
+      </nav>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

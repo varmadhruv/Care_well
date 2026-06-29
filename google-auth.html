@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Google Account Confirmation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --primary: #0b4f8c;
+      --primary-soft: #eef4ff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --border-soft: #d6dfea;
+      --success-bg: #ecfdf5;
+      --success-border: #6cbf43;
+      --success: #6cbf43;
+      --info-bg: #eef6ff;
+      --info-border: #bfdbfe;
+      --info-text: #1e3a8a;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 6px 20px rgba(15, 23, 42, 0.05);
+      --shadow-blue: 0 12px 28px rgba(11, 79, 140, 0.25);
+      --ease: 250ms ease;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    button, a { font: inherit; }
+
+    .page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 24px;
+      overflow-x: hidden;
+      background: var(--bg);
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: fadeIn 500ms ease both;
+    }
+
+    .top {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .back-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease);
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+    .back-btn:hover,
+    .back-btn:focus-visible {
+      transform: translateY(-2px);
+      background: #f4f8fc;
+      outline: none;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+    .back-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .brand {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .brand img {
+      width: 180px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .success-badge {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid var(--success-border);
+      background: var(--success-bg);
+      box-shadow: 0 8px 20px rgba(108, 191, 67, 0.2);
+      display: grid;
+      place-items: center;
+      margin: 0 auto;
+    }
+    .success-badge svg {
+      width: 44px;
+      height: 44px;
+      display: block;
+    }
+
+    .intro {
+      text-align: center;
+      display: grid;
+      gap: 10px;
+    }
+    .intro h1 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 40px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .intro p {
+      margin: 0 auto;
+      max-width: 40ch;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .profile-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      animation: cardIn 500ms ease both;
+    }
+
+    .profile-photo-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .profile-photo {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 4px solid #eef4ff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      background: #eef4ff;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .fallback-avatar {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--primary);
+      background: linear-gradient(180deg, #f8fbff, #eef4ff);
+    }
+
+    .fields {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      height: 60px;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      background: #f8fafc;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .field-value {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+    .field-value span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .verified-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: var(--success);
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+    .verified-pill svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .notice {
+      width: 100%;
+      background: var(--info-bg);
+      border: 1px solid var(--info-border);
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .notice-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #dbeafe;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .notice-icon img {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .notice p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--info-text);
+    }
+    .notice p strong {
+      font-weight: 700;
+    }
+
+    .actions {
+      display: grid;
+      gap: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      height: 64px;
+      border-radius: 20px;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease), border-color var(--ease);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn.primary {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: var(--shadow-blue);
+    }
+    .btn.primary:hover,
+    .btn.primary:focus-visible {
+      transform: translateY(-2px);
+      outline: none;
+      background: #084476;
+    }
+    .btn.primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn.secondary {
+      color: var(--primary);
+      background: #fff;
+      border: 2px solid var(--primary);
+    }
+    .btn.secondary:hover,
+    .btn.secondary:focus-visible {
+      transform: translateY(-2px);
+      outline: none;
+      background: #eef6ff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 420px) {
+      .page { padding: 16px; align-items: flex-start; }
+      .screen { gap: 20px; }
+      .brand img { width: 160px; }
+      .success-badge { width: 78px; height: 78px; }
+      .success-badge svg { width: 38px; height: 38px; }
+      .intro h1 { font-size: 32px; }
+      .intro p { font-size: 16px; max-width: 34ch; }
+      .profile-card { padding: 20px; border-radius: 22px; }
+      .profile-photo { width: 88px; height: 88px; }
+      .field { height: 56px; padding: 0 16px; }
+      .field-value { font-size: 16px; }
+      .btn { height: 58px; font-size: 18px; border-radius: 18px; }
+      .notice { padding: 16px; }
+      .notice p { font-size: 14px; }
+    }
+
+    @media (min-width: 768px) {
+      .page { padding: 40px 24px; }
+      .screen { max-width: 460px; }
+      .brand img { width: 180px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="screen" aria-label="Google account confirmation">
+      <div class="top">
+        <button class="back-btn" id="backBtn" type="button" aria-label="Go back">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="brand">
+        <img src="screen7-logo-clean.png" alt="CareWell logo" />
+      </div>
+
+      <div class="success-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" fill="none"></circle>
+          <path d="M6.5 12.5 10.2 16 17.5 8.7" stroke="#6CBF43" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <header class="intro">
+        <h1>Confirm Your Information</h1>
+        <p>Please review the information received from your Google account before continuing.</p>
+      </header>
+
+      <section class="profile-card" aria-label="Google account details">
+        <div class="profile-photo-wrap">
+          <div class="profile-photo" id="profilePhoto" aria-label="Google profile photo">
+            <span class="fallback-avatar" id="fallbackAvatar">GC</span>
+            <img id="profilePhotoImg" alt="" hidden />
+          </div>
+        </div>
+
+        <div class="fields">
+          <div class="field" aria-label="Full Name read only">
+            <span class="field-label">Full Name</span>
+            <div class="field-value"><span id="fullNameValue">Google User</span></div>
+          </div>
+
+          <div class="field" aria-label="Email Address read only">
+            <span class="field-label">Email Address</span>
+            <div class="field-value"><span id="emailValue">user@example.com</span></div>
+          </div>
+
+          <div class="field" aria-label="Account Status read only">
+            <span class="field-label">Account Status</span>
+            <div class="field-value">
+              <span>Verified by Google</span>
+              <span class="verified-pill" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12.5 10 17l9-10" stroke="#6CBF43" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Verified
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="notice" aria-label="Privacy notice">
+        <span class="notice-icon">
+          <img src="shield-icon.svg" alt="" aria-hidden="true" />
+        </span>
+        <p>
+          Your Google account is used only for secure authentication and service-related communication.
+          <strong>CareWell never stores or has access to your Google password.</strong>
+        </p>
+      </section>
+
+      <div class="actions">
+        <button class="btn primary" id="continueBtn" type="button">Continue</button>
+        <button class="btn secondary" id="anotherBtn" type="button">Choose Another Google Account</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="google-oauth.js" defer></script>
+  <script>
+    const backBtn = document.getElementById('backBtn');
+    const continueBtn = document.getElementById('continueBtn');
+    const anotherBtn = document.getElementById('anotherBtn');
+    const fullNameValue = document.getElementById('fullNameValue');
+    const emailValue = document.getElementById('emailValue');
+    const profilePhotoImg = document.getElementById('profilePhotoImg');
+    const fallbackAvatar = document.getElementById('fallbackAvatar');
+
+    const url = new URL(window.location.href);
+    const name = url.searchParams.get('name') || sessionStorage.getItem('googleFullName') || 'Google User';
+    const email = url.searchParams.get('email') || sessionStorage.getItem('googleEmail') || 'user@example.com';
+    const photo = url.searchParams.get('photo') || sessionStorage.getItem('googlePhoto') || '';
+
+    fullNameValue.textContent = name;
+    emailValue.textContent = email;
+
+    if (photo) {
+      profilePhotoImg.src = photo;
+      profilePhotoImg.hidden = false;
+      fallbackAvatar.hidden = true;
+    } else {
+      const initials = name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join('') || 'GC';
+      fallbackAvatar.textContent = initials;
+    }
+
+    async function hydrateFromSession() {
+      try {
+        const response = await fetch('/api/auth/session', {
+          credentials: 'same-origin',
+        });
+
+        if (!response.ok) return;
+
+        const payload = await response.json();
+        const serverProfile = payload?.profile || {};
+        const serverName = serverProfile.fullName || name;
+        const serverEmail = serverProfile.email || email;
+        const serverPhoto = serverProfile.profilePicture || photo;
+
+        fullNameValue.textContent = serverName;
+        emailValue.textContent = serverEmail;
+
+        if (serverPhoto) {
+          profilePhotoImg.src = serverPhoto;
+          profilePhotoImg.hidden = false;
+          fallbackAvatar.hidden = true;
+        }
+      } catch (error) {
+        // Keep the already-rendered profile state if the session endpoint is unavailable.
+      }
+    }
+
+    hydrateFromSession();
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = 'onboarding-screen-7.html';
+    });
+
+    anotherBtn.addEventListener('click', () => {
+      if (!window.CareWellGoogleAuth) return;
+      window.CareWellGoogleAuth.startGoogleAuth({
+        onSuccess(nextProfile) {
+          const nextName = nextProfile.fullName || 'Google User';
+          const nextEmail = nextProfile.email || 'user@example.com';
+          const nextPhoto = nextProfile.profilePicture || '';
+
+          fullNameValue.textContent = nextName;
+          emailValue.textContent = nextEmail;
+          sessionStorage.setItem('googleUserId', nextProfile.googleUserId || '');
+          sessionStorage.setItem('googleFullName', nextName);
+          sessionStorage.setItem('googleEmail', nextEmail);
+          sessionStorage.setItem('googlePhoto', nextPhoto);
+          sessionStorage.setItem('googleCreatedAt', nextProfile.createdAt);
+          sessionStorage.setItem('googleLastLoginAt', nextProfile.lastLoginAt);
+          sessionStorage.setItem('googleProvider', nextProfile.provider);
+          sessionStorage.setItem('googleEmailVerified', String(nextProfile.emailVerified));
+
+          if (nextPhoto) {
+            profilePhotoImg.src = nextPhoto;
+            profilePhotoImg.hidden = false;
+            fallbackAvatar.hidden = true;
+          } else {
+            const initials = nextName
+              .split(' ')
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((part) => part[0].toUpperCase())
+              .join('') || 'GC';
+            fallbackAvatar.textContent = initials;
+            fallbackAvatar.hidden = false;
+            profilePhotoImg.hidden = true;
+          }
+        },
+      });
+    });
+
+    continueBtn.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/auth/session', {
+          credentials: 'same-origin',
+        });
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload?.message || 'Unable to verify your account.');
+        }
+
+        window.location.href = 'question-flow.html';
+      } catch (error) {
+        if (window.CareWellGoogleAuth) {
+          window.CareWellGoogleAuth.showToast(error?.message || 'Unable to verify your account.');
+        } else {
+          alert(error?.message || 'Unable to verify your account.');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

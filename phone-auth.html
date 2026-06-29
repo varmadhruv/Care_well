@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Enter Mobile Number</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --surface:#ffffff;
+      --primary:#0b4f8c;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --border-soft:#d6dfea;
+      --warning-bg:#fffdf5;
+      --warning-border:#fcd34d;
+      --warning-head:#92400e;
+      --warning-body:#78350f;
+      --error:#dc2626;
+      --shadow:0 10px 30px rgba(15,23,42,0.08);
+      --shadow-soft:0 4px 12px rgba(15,23,42,0.04);
+      --shadow-btn:0 12px 28px rgba(11,79,140,0.25);
+      --ease:250ms ease;
+      --radius:26px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
+    body{
+      min-height:100vh;
+      background:var(--bg);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      color:var(--text);
+    }
+    button,input{font:inherit}
+    button{cursor:pointer}
+
+    .page{
+      min-height:100vh;
+      min-height:100dvh;
+      padding:32px 24px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow-x:hidden;
+      background:var(--bg);
+    }
+
+    .screen{
+      width:100%;
+      max-width:min(100%, 420px);
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      animation:fadeIn 500ms ease both;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      text-align:left;
+      width:100%;
+    }
+    .brand img{
+      width:clamp(120px, 14vw, 136px);
+      height:auto;
+      object-fit:contain;
+      display:block;
+      flex:0 0 auto;
+    }
+    .brand-copy{
+      display:grid;
+      gap:6px;
+      align-content:center;
+      min-width:0;
+    }
+    .brand-copy h2{
+      margin:0;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:clamp(28px, 3.2vw, 34px);
+      line-height:1;
+      font-weight:700;
+      letter-spacing:-0.01em;
+      color:var(--primary);
+      white-space:nowrap;
+    }
+    .brand-copy p{
+      margin:0;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:clamp(11px, 1.2vw, 13px);
+      line-height:1;
+      font-weight:600;
+      letter-spacing:0.13em;
+      color:#6cbf43;
+    }
+
+    .intro{
+      text-align:center;
+      display:grid;
+      gap:10px;
+      width:100%;
+    }
+    .intro h1{
+      margin:0;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:clamp(28px, 4.2vw, 40px);
+      line-height:1.1;
+      font-weight:700;
+      letter-spacing:-0.04em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .intro p{
+      margin:0 auto;
+      font-size:clamp(15px, 1.8vw, 18px);
+      line-height:1.6;
+      color:var(--muted);
+      max-width:min(100%, 44ch);
+    }
+
+    .notice{
+      width:100%;
+      background:var(--warning-bg);
+      border:1px solid var(--warning-border);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 4px 16px rgba(252,211,77,0.08);
+      display:grid;
+      gap:12px;
+    }
+    .notice-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--warning-head);
+      font-family:Poppins,Inter,sans-serif;
+      font-size:18px;
+      font-weight:600;
+    }
+    .notice-head img{
+      width:24px;height:24px;flex:0 0 auto;display:block;
+    }
+    .notice p{
+      margin:0;
+      font-size:15px;
+      line-height:1.7;
+      color:var(--warning-body);
+    }
+
+    .digits{
+      display:grid;
+      grid-template-columns:repeat(10, 1fr);
+      gap:10px;
+      width:100%;
+      margin:0 auto;
+      max-width:100%;
+    }
+    .digit{
+      width:100%;
+      aspect-ratio:1 / 1;
+      min-height:56px;
+      border-radius:14px;
+      border:2px solid var(--border-soft);
+      background:var(--surface);
+      box-shadow:var(--shadow-soft);
+      text-align:center;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:24px;
+      font-weight:600;
+      color:var(--text);
+      transition:border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+      caret-color:var(--primary);
+    }
+    .digit:focus{
+      outline:none;
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px rgba(11,79,140,0.10);
+      transform:translateY(-1px);
+    }
+
+    .helper{
+      min-height:20px;
+      text-align:center;
+      font-size:14px;
+      color:var(--error);
+      opacity:0;
+      transition:opacity var(--ease);
+      margin-top:-2px;
+    }
+    .helper.show{opacity:1}
+
+    .confirm{
+      width:100%;
+      height:64px;
+      border:0;
+      border-radius:20px;
+      background:var(--primary);
+      color:#fff;
+      font-family:Poppins,Inter,sans-serif;
+      font-size:22px;
+      font-weight:600;
+      box-shadow:var(--shadow-btn);
+      transition:transform var(--ease), background var(--ease), box-shadow var(--ease), opacity var(--ease);
+    }
+    .confirm:hover:not(:disabled), .confirm:focus-visible:not(:disabled){
+      transform:translateY(-2px) scale(1.01);
+      background:#084476;
+      outline:none;
+    }
+    .confirm:active:not(:disabled){transform:scale(0.98)}
+    .confirm:disabled{
+      background:#cbd5e1;
+      box-shadow:none;
+      cursor:not-allowed;
+    }
+
+    .privacy{
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      gap:10px;
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.45;
+      padding:0 8px;
+    }
+    .privacy img{
+      width:20px;
+      height:20px;
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(10px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @media (max-width:420px){
+      .page{padding:16px}
+      .screen{gap:20px}
+      .brand{gap:14px}
+      .brand img{width:100px}
+      .brand-copy h2{font-size:26px}
+      .brand-copy p{font-size:11px;letter-spacing:0.12em}
+      .intro h1{font-size:30px}
+      .intro p{font-size:15px;max-width:34ch}
+      .notice{padding:18px}
+      .notice-head{font-size:16px}
+      .notice p{font-size:14px;line-height:1.6}
+      .digits{gap:8px}
+      .digit{min-height:52px;font-size:20px;border-radius:12px}
+      .confirm{height:58px;font-size:18px;border-radius:18px}
+      .privacy{font-size:14px}
+      .privacy img{width:18px;height:18px}
+    }
+
+    @media (min-width:768px){
+      .page{padding:40px 24px}
+      .screen{max-width:540px;gap:26px}
+      .brand{gap:20px}
+      .brand img{width:128px}
+      .brand-copy h2{font-size:32px}
+      .brand-copy p{font-size:13px}
+      .intro h1{font-size:36px}
+      .intro p{font-size:17px;max-width:44ch}
+      .notice{padding:22px}
+      .digits{gap:10px}
+      .digit{min-height:56px;font-size:22px}
+    }
+
+    @media (min-width:1100px){
+      .screen{max-width:600px}
+      .brand img{width:136px}
+      .brand-copy h2{font-size:34px}
+      .brand-copy p{font-size:14px}
+      .intro h1{font-size:40px}
+      .intro p{font-size:18px}
+      .notice{padding:24px}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{
+        animation-duration:0.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:0.01ms !important;
+        scroll-behavior:auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="screen" aria-label="Enter mobile number">
+      <div class="brand">
+        <img src="screen7-logo-clean.png" alt="CareWell logo" />
+        <div class="brand-copy" aria-label="CareWell brand">
+          <h2>CAREWELL</h2>
+          <p>NURSING CARE</p>
+        </div>
+      </div>
+
+      <header class="intro">
+        <h1>Enter your mobile number</h1>
+        <p>We'll use your mobile number to contact you regarding your requested healthcare services.</p>
+      </header>
+
+      <section class="notice" aria-label="Important notice">
+        <div class="notice-head">
+          <img src="phone-notice-icon.svg" alt="" aria-hidden="true" />
+          <span>Important Notice</span>
+        </div>
+        <p>Please provide a valid and active mobile number that belongs to you or the patient. CareWell uses this number only for service-related communication, appointment coordination, and healthcare updates. If an incorrect, inactive, or inaccessible phone number is provided, it may delay or prevent the delivery of requested services. CareWell cannot be held responsible for any inconvenience, missed communication, or service disruption resulting from incorrect contact information submitted by the user.</p>
+      </section>
+
+      <section aria-label="Mobile number input">
+        <div class="digits" id="digitGrid">
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 1" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 5" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 6" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 7" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 8" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 9" />
+          <input class="digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 10" />
+        </div>
+        <div class="helper" id="helperText">Please enter a valid 10-digit mobile number.</div>
+      </section>
+
+      <button class="confirm" id="confirmBtn" type="button" disabled>Confirm</button>
+
+      <div class="privacy">
+        <img src="shield-icon.svg" alt="" aria-hidden="true" />
+        <span>Your mobile number is securely protected and will only be used for healthcare-related communication.</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const confirmBtn = document.getElementById('confirmBtn');
+    const helperText = document.getElementById('helperText');
+    const inputs = Array.from(document.querySelectorAll('.digit'));
+
+    function getValue() {
+      return inputs.map((input) => input.value).join('');
+    }
+
+    function updateState() {
+      const value = getValue();
+      const complete = value.length === 10 && /^\d{10}$/.test(value);
+      confirmBtn.disabled = !complete;
+      helperText.classList.toggle('show', value.length > 0 && !complete);
+    }
+
+    function focusNext(index) {
+      if (index < inputs.length - 1) inputs[index + 1].focus();
+    }
+
+    function focusPrev(index) {
+      if (index > 0) inputs[index - 1].focus();
+    }
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('input', (event) => {
+        const raw = event.target.value.replace(/\D/g, '');
+        if (!raw) {
+          event.target.value = '';
+          updateState();
+          return;
+        }
+
+        if (raw.length > 1) {
+          const chars = raw.slice(0, 10).split('');
+          inputs.forEach((box, i) => {
+            box.value = chars[i] || '';
+          });
+          const nextEmpty = inputs.findIndex((box) => box.value === '');
+          if (nextEmpty >= 0) inputs[nextEmpty].focus();
+          updateState();
+          return;
+        }
+
+        event.target.value = raw[0];
+        focusNext(index);
+        updateState();
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Backspace' && input.value === '') {
+          event.preventDefault();
+          focusPrev(index);
+          if (index > 0) inputs[index - 1].value = '';
+          updateState();
+        }
+      });
+
+      input.addEventListener('paste', (event) => {
+        event.preventDefault();
+        const pasted = (event.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 10);
+        if (!pasted) return;
+        inputs.forEach((box, i) => {
+          box.value = pasted[i] || '';
+        });
+        const nextEmpty = inputs.findIndex((box) => box.value === '');
+        if (nextEmpty >= 0) inputs[nextEmpty].focus();
+        updateState();
+      });
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      if (confirmBtn.disabled) return;
+      window.location.href = 'question-flow.html';
+    });
+
+    updateState();
+    setTimeout(() => inputs[0]?.focus(), 250);
+  </script>
+</body>
+</html>
