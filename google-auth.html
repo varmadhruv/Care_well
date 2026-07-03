@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://accounts.google.com https://www.googleapis.com; script-src 'self' 'unsafe-inline' https://accounts.google.com; connect-src 'self' http://localhost:3000 http://127.0.0.1:3000 https://accounts.google.com https://www.googleapis.com; base-uri 'self'; frame-ancestors 'none';" />
   <title>CareWell - Google Account Confirmation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -456,6 +457,11 @@
 
   <script src="google-oauth.js" defer></script>
   <script>
+    const backendBaseUrl =
+      window.CAREWELL_API_BASE_URL ||
+      (window.location.origin && window.location.origin !== 'null' && window.location.origin.includes('3000')
+        ? window.location.origin
+        : 'http://localhost:3000');
     const backBtn = document.getElementById('backBtn');
     const continueBtn = document.getElementById('continueBtn');
     const anotherBtn = document.getElementById('anotherBtn');
@@ -488,8 +494,28 @@
 
     async function hydrateFromSession() {
       try {
-        const response = await fetch('/api/auth/session', {
-          credentials: 'same-origin',
+        const storedProfile = sessionStorage.getItem('userProfile');
+        if (storedProfile) {
+          const parsed = JSON.parse(storedProfile);
+          const serverName = parsed?.fullName || name;
+          const serverEmail = parsed?.email || email;
+          const serverPhoto = parsed?.profilePicture || photo;
+
+          fullNameValue.textContent = serverName;
+          emailValue.textContent = serverEmail;
+
+          if (serverPhoto) {
+            profilePhotoImg.src = serverPhoto;
+            profilePhotoImg.hidden = false;
+            fallbackAvatar.hidden = true;
+          }
+          return;
+        }
+
+        const response = await fetch(`${backendBaseUrl}/api/auth/session`, {
+          headers: sessionStorage.getItem('carewellSessionToken')
+            ? { 'X-CareWell-Session': sessionStorage.getItem('carewellSessionToken') }
+            : {},
         });
 
         if (!response.ok) return;
@@ -559,16 +585,8 @@
 
     continueBtn.addEventListener('click', async () => {
       try {
-        const response = await fetch('/api/auth/session', {
-          credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
-          const payload = await response.json().catch(() => ({}));
-          throw new Error(payload?.message || 'Unable to verify your account.');
-        }
-
-        window.location.href = 'question-flow.html';
+        const storedProfile = sessionStorage.getItem('userProfile');
+        window.location.href = 'registration.html';
       } catch (error) {
         if (window.CareWellGoogleAuth) {
           window.CareWellGoogleAuth.showToast(error?.message || 'Unable to verify your account.');
@@ -577,6 +595,10 @@
         }
       }
     });
+
+    if (sessionStorage.getItem('userProfile')) {
+      window.location.replace('registration.html');
+    }
   </script>
 </body>
 </html>

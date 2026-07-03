@@ -345,6 +345,10 @@
   </main>
 
   <script>
+    const API_HOSTS = ['http://127.0.0.1:3000', 'http://localhost:3000'];
+    const apiBaseUrl =
+      window.CAREWELL_API_BASE_URL ||
+      API_HOSTS[0];
     const confirmBtn = document.getElementById('confirmBtn');
     const helperText = document.getElementById('helperText');
     const inputs = Array.from(document.querySelectorAll('.digit'));
@@ -417,7 +421,56 @@
 
     confirmBtn.addEventListener('click', () => {
       if (confirmBtn.disabled) return;
-      window.location.href = 'question-flow.html';
+      const phoneNumber = getValue();
+      const sessionToken = sessionStorage.getItem('carewellSessionToken') || '';
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Saving...';
+
+      async function submitPhone(baseUrl) {
+        const requestUrl = new URL('/api/auth/phone/start', baseUrl).toString();
+        const response = await fetch(requestUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            ...(sessionToken ? { 'X-CareWell-Session': sessionToken } : {}),
+          },
+          cache: 'no-store',
+          body: JSON.stringify({
+            phoneNumber,
+            sessionToken,
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const statusMessage = payload?.message || `Request failed with status ${response.status}.`;
+          throw new Error(statusMessage);
+        }
+        return payload;
+      }
+
+      (async () => {
+        let lastError = null;
+        for (const baseUrl of API_HOSTS) {
+          try {
+            const payload = await submitPhone(baseUrl);
+            if (payload.profile?.sessionToken) {
+              sessionStorage.setItem('carewellSessionToken', payload.profile.sessionToken);
+            }
+            sessionStorage.setItem('userProfile', JSON.stringify(payload.profile || { phoneNumber }));
+            window.location.href = 'registration.html';
+            return;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        helperText.textContent = lastError?.message || 'Unable to save your information. Please try again.';
+        helperText.classList.add('show');
+        confirmBtn.textContent = 'Confirm';
+        confirmBtn.disabled = false;
+      })();
     });
 
     updateState();

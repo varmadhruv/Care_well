@@ -1,7 +1,10 @@
 (() => {
   const CLIENT_ID = '65018618868-5keclcugaqha3hus3lc6903p4a7gpq2h.apps.googleusercontent.com';
   const SDK_SRC = 'https://accounts.google.com/gsi/client';
-  const BACKEND_EXCHANGE_URL = '/api/auth/google/exchange';
+  const BACKEND_BASE_URL =
+    window.CAREWELL_API_BASE_URL ||
+    'http://127.0.0.1:3000';
+  const BACKEND_EXCHANGE_URL = `${BACKEND_BASE_URL}/api/auth/google/exchange`;
 
   let sdkPromise = null;
   let tokenClient = null;
@@ -36,12 +39,12 @@
 
   function normalizeProfile(data) {
     return {
-      googleUserId: data.googleUserId || '',
-      fullName: data.fullName || '',
+      googleUserId: data.googleUserId || data.sub || '',
+      fullName: data.fullName || data.name || '',
       email: data.email || '',
-      profilePicture: data.profilePicture || '',
+      profilePicture: data.profilePicture || data.picture || '',
       provider: data.provider || 'Google',
-      emailVerified: Boolean(data.emailVerified),
+      emailVerified: Boolean(data.emailVerified ?? data.email_verified),
       createdAt: data.createdAt || sessionStorage.getItem('googleCreatedAt') || new Date().toISOString(),
       updatedAt: data.updatedAt || new Date().toISOString(),
       lastLoginAt: data.lastLoginAt || new Date().toISOString(),
@@ -57,6 +60,9 @@
     sessionStorage.setItem('googleLastLoginAt', profile.lastLoginAt);
     sessionStorage.setItem('googleProvider', profile.provider);
     sessionStorage.setItem('googleEmailVerified', String(profile.emailVerified));
+    if (profile.sessionToken) {
+      sessionStorage.setItem('carewellSessionToken', profile.sessionToken);
+    }
     sessionStorage.setItem('userProfile', JSON.stringify(profile));
   }
 
@@ -128,7 +134,7 @@
 
               const response = await fetch(BACKEND_EXCHANGE_URL, {
                 method: 'POST',
-                credentials: 'same-origin',
+                credentials: 'include',
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -139,7 +145,7 @@
 
               const payload = await response.json().catch(() => ({}));
               if (!response.ok) {
-                throw new Error(payload?.message || 'Unable to connect to Google. Please try again.');
+                throw new Error(payload?.message || 'Unable to connect to Google. Please try again later.');
               }
 
               const profile = normalizeProfile(payload.profile || {});
@@ -157,7 +163,7 @@
       tokenClient.requestAccessToken({ prompt: 'select_account' });
     } catch (error) {
       sdkPromise = null;
-      const message = 'Unable to connect to Google. Please try again.';
+      const message = 'Unable to connect to Google. Please try again later.';
       showToast(message);
       onError?.(message);
     }

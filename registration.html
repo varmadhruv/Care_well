@@ -1,0 +1,3295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Personal Information</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:3000 http://127.0.0.1:3000; base-uri 'self'; frame-ancestors 'none';" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-start: #f8fafc;
+      --bg-end: #eef6fb;
+      --surface: #ffffff;
+      --primary: #0b4f8c;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --input-border: #d1d5db;
+      --error: #dc2626;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-btn: 0 12px 28px rgba(11, 79, 140, 0.22);
+      --radius: 24px;
+      --ease: 180ms ease;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    button, input, select { font: inherit; }
+
+    .page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      width: 100%;
+      min-height: calc(100vh - 32px);
+      min-height: calc(100dvh - 32px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 1440px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 12px;
+    }
+
+    .card {
+      width: min(100%, 420px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      animation: fadeUp 500ms ease both;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 34px;
+      gap: 12px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      flex: 0 0 auto;
+    }
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+    }
+    .brand-copy {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+      text-align: left;
+    }
+    .brand-copy strong {
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--primary);
+    }
+    .brand-copy small {
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #6cbf43;
+    }
+    .skip-btn {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #dbeafe;
+      background: #eef4ff;
+      color: var(--primary);
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(11, 79, 140, 0.08);
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease);
+      flex: 0 0 auto;
+    }
+    .skip-btn:hover {
+      transform: translateY(-2px);
+      background: #e2edff;
+      box-shadow: 0 10px 22px rgba(11, 79, 140, 0.12);
+    }
+
+    .heading {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .heading h1 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 32px;
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .photo-section {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .screen2,
+    .screen3,
+    .screen4 {
+      display: none;
+      animation: fadeUp 500ms ease both;
+    }
+    .screen2.is-active,
+    .screen3.is-active,
+    .screen4.is-active { display: grid; }
+    .screen2 .heading {
+      margin-bottom: 18px;
+    }
+    .screen2 .heading h1 { font-size: 32px; }
+    .screen2 .heading p { font-size: 15px; }
+    .screen3 .heading {
+      margin-bottom: 18px;
+    }
+    .screen3 .heading h1 { font-size: 32px; }
+    .screen3 .heading p { font-size: 15px; }
+    .screen4 .heading {
+      margin-bottom: 18px;
+    }
+    .screen4 .heading h1 { font-size: 32px; }
+    .screen4 .heading p { font-size: 15px; }
+    .screen5 {
+      display: none;
+      animation: fadeUp 500ms ease both;
+    }
+    .screen5.is-active { display: grid; }
+    .screen5 .heading {
+      margin-bottom: 18px;
+    }
+    .screen5 .heading h1 { font-size: 32px; }
+    .screen5 .heading p { font-size: 15px; }
+    .screen6 {
+      display: none;
+      animation: fadeUp 500ms ease both;
+    }
+    .screen6.is-active { display: grid; }
+    .screen6 .heading {
+      margin-bottom: 18px;
+    }
+    .screen6 .heading h1 { font-size: 32px; }
+    .screen6 .heading p { font-size: 15px; }
+    .screen7 {
+      display: none;
+      animation: fadeUp 500ms ease both;
+    }
+    .screen7.is-active { display: grid; }
+    .screen7 .heading {
+      margin-bottom: 18px;
+    }
+    .screen7 .heading h1 { font-size: 32px; }
+    .screen7 .heading p { font-size: 15px; }
+    .progress-full {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .progress-full span {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+    .summary-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .summary-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      display: grid;
+      gap: 6px;
+    }
+    .summary-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .summary-item-head strong {
+      font-size: 14px;
+      color: var(--text);
+      font-family: Poppins, Inter, sans-serif;
+    }
+    .summary-item a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .summary-value {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .consent-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .consent-check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--primary);
+    }
+    .consent-check span {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .signature-box {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .signature-box input {
+      width: 100%;
+      height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      padding: 0 16px;
+      color: var(--text);
+      transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    .signature-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.10);
+    }
+    .notice-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid #dbeafe;
+      background: #eef4ff;
+      color: #1e3a8a;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .card-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .chip-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .chip {
+      min-height: 52px;
+      border-radius: 16px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
+      position: relative;
+    }
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .chip span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .chip.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
+      background: #f8fbff;
+    }
+    .readonly-input {
+      background: #f3f4f6 !important;
+      color: #475569;
+    }
+    .field textarea {
+      width: 100%;
+      min-height: 120px;
+      border-radius: 16px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      padding: 14px 16px;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.10);
+    }
+    .field-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .location-btn {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #dbeafe;
+      background: #eef4ff;
+      color: var(--primary);
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease), opacity var(--ease);
+      box-shadow: 0 8px 18px rgba(11, 79, 140, 0.08);
+    }
+    .location-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: #e2edff;
+      box-shadow: 0 10px 22px rgba(11, 79, 140, 0.12);
+    }
+    .location-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .location-spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(11, 79, 140, 0.2);
+      border-top-color: var(--primary);
+      display: none;
+      animation: spin 0.8s linear infinite;
+    }
+    .location-btn.is-loading .location-spinner { display: inline-block; }
+    .location-btn.is-loading .location-label { display: none; }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hidden-field {
+      display: none;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity var(--ease), transform var(--ease);
+    }
+    .hidden-field.is-visible {
+      display: grid;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .photo-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .photo-hint {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: -2px;
+    }
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .photo-slot {
+      position: relative;
+      min-height: 126px;
+      border-radius: 18px;
+      border: 1px solid var(--input-border);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .photo-slot button {
+      all: unset;
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      text-align: center;
+      cursor: pointer;
+      padding: 14px;
+    }
+    .photo-slot .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #eef4ff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+    }
+    .photo-slot .icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .photo-slot .text {
+      display: grid;
+      gap: 2px;
+    }
+    .photo-slot .title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .photo-slot .sub {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+    .photo-slot input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .photo-slot.has-image {
+      border-color: #bfdbfe;
+      background: #fff;
+    }
+    .photo-slot.has-image button .icon,
+    .photo-slot.has-image button .text {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .photo-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-slot .remove-chip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(15, 23, 42, 0.72);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .camera-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 10000;
+      overflow: hidden;
+    }
+    .camera-modal.is-open { display: flex; }
+    .camera-card {
+      width: min(360px, calc(100vw - 24px));
+      max-height: calc(100dvh - 24px);
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      margin: auto;
+    }
+    .camera-head {
+      padding: 14px 14px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .camera-head strong {
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 18px;
+      color: var(--text);
+    }
+    .camera-stage {
+      padding: 10px;
+      min-height: 0;
+      height: clamp(250px, 56vw, 320px);
+      position: relative;
+      display: grid;
+      place-items: stretch;
+      overflow: hidden;
+      background: #000;
+      background-size: cover;
+      background-position: center;
+      border-radius: 18px;
+    }
+    .camera-stage::after {
+      content: 'Live camera preview';
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 3;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.55);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .camera-video {
+      position: absolute;
+      inset: 10px;
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      border-radius: 18px;
+      background: #000;
+      object-fit: cover;
+      display: block;
+      overflow: hidden;
+    }
+    .camera-video {
+      z-index: 1;
+    }
+    .camera-stage.captured .camera-video { opacity: 0; pointer-events: none; }
+    .camera-capture-preview {
+      position: absolute;
+      inset: 10px;
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      border-radius: 18px;
+      object-fit: cover;
+      display: none;
+      z-index: 2;
+      background: #000;
+    }
+    .camera-stage.captured .camera-capture-preview {
+      display: block;
+    }
+    .camera-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 12px 12px;
+    }
+    .camera-btn {
+      height: 48px;
+      border-radius: 16px;
+      border: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .camera-btn.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .camera-btn.secondary {
+      background: #eef4ff;
+      color: var(--primary);
+    }
+    .camera-btn.retake {
+      background: linear-gradient(180deg, #0b4f8c 0%, #0a4378 100%);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(11, 79, 140, 0.22);
+    }
+    .camera-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .disclaimer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 10001;
+    }
+    .disclaimer-modal.is-open { display: flex; }
+    .disclaimer-card {
+      width: min(100%, 380px);
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .disclaimer-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background: #fff7ed;
+      color: #c2410c;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .disclaimer-card h2 {
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 20px;
+      color: var(--text);
+      margin: 0;
+    }
+    .disclaimer-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .disclaimer-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-two {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      animation: fieldIn 180ms ease both;
+    }
+    .field label,
+    .gender-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      padding: 0 16px;
+      color: var(--text);
+      transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+      outline: none;
+    }
+    .field input::placeholder {
+      color: #94a3b8;
+    }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.10);
+    }
+    .field.invalid input,
+    .field.invalid select {
+      border-color: var(--error);
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+    }
+
+    .helper {
+      min-height: 18px;
+      margin-top: -2px;
+      font-size: 13px;
+      color: var(--error);
+      opacity: 0;
+      transition: opacity var(--ease);
+    }
+    .helper.show { opacity: 1; }
+
+    .read-only-shell {
+      position: relative;
+    }
+    .read-only-shell input {
+      padding-right: 70px;
+      background: #f8fafc;
+    }
+    .read-only-badge {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .gender-group {
+      display: grid;
+      gap: 10px;
+    }
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .choice {
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
+    }
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .choice span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .choice:hover {
+      transform: translateY(-1px);
+    }
+    .choice input:checked + span {
+      color: var(--primary);
+    }
+    .choice:has(input:checked) {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
+      background: #f8fbff;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .actions .btn {
+      justify-self: end;
+    }
+    .btn {
+      height: 56px;
+      border-radius: 16px;
+      border: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease), opacity var(--ease);
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-btn);
+    }
+    .btn.primary:hover:not(:disabled),
+    .btn.primary:focus-visible:not(:disabled) {
+      transform: translateY(-2px);
+      background: #084476;
+      outline: none;
+    }
+    .btn.secondary {
+      background: #eef4ff;
+      color: var(--primary);
+      border: 1px solid #dbeafe;
+    }
+    .btn.secondary:hover:not(:disabled),
+    .btn.secondary:focus-visible:not(:disabled) {
+      transform: translateY(-2px);
+      background: #e2edff;
+      outline: none;
+    }
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+      box-shadow: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(15, 23, 42, 0.95);
+      color: #fff;
+      border-radius: 999px;
+      padding: 14px 18px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+      opacity: 0;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 9999;
+      pointer-events: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fieldIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .shake { animation: shake 220ms ease; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        width: min(100%, 640px);
+        padding: 36px;
+      }
+      .shell {
+        min-height: calc(100vh - 48px);
+        min-height: calc(100dvh - 48px);
+      }
+      .screen {
+        padding: 0 24px;
+      }
+      .brand-mark { width: 56px; height: 56px; }
+      .brand-copy strong { font-size: 20px; }
+      .brand-copy small { font-size: 11px; }
+      .heading h1 { font-size: 33px; }
+      .heading p { font-size: 16px; }
+      .photo-label { font-size: 15px; }
+      .photo-hint { font-size: 14px; }
+      .photo-slot { min-height: 144px; }
+      .photo-slot .title { font-size: 14px; }
+      .photo-slot .sub { font-size: 12px; }
+      .field label,
+      .gender-label { font-size: 15px; }
+      .field input,
+      .field select,
+      .choice { height: 58px; }
+      .btn { height: 58px; font-size: 19px; }
+      .grid-two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 980px) {
+      .card {
+        width: min(100%, 920px);
+        padding: 44px;
+      }
+      .shell {
+        min-height: calc(100vh - 64px);
+        min-height: calc(100dvh - 64px);
+      }
+      .screen {
+        padding: 0 28px;
+      }
+      .top-row { margin-bottom: 38px; }
+      .brand { gap: 14px; }
+      .brand-mark { width: 60px; height: 60px; }
+      .brand-copy strong { font-size: 22px; }
+      .brand-copy small { font-size: 12px; }
+      .heading { gap: 12px; margin-bottom: 26px; }
+      .heading h1 { font-size: 38px; }
+      .heading p { font-size: 17px; max-width: 48ch; }
+      .photo-slot { min-height: 160px; }
+      .photo-slot .icon { width: 48px; height: 48px; }
+      .photo-slot .icon svg { width: 24px; height: 24px; }
+      .photo-slot .title { font-size: 15px; }
+      .photo-slot .sub { font-size: 12px; }
+      .form { gap: 18px; }
+      .grid-two { gap: 18px; }
+      .field { gap: 9px; }
+      .field label,
+      .gender-label { font-size: 15px; }
+      .field input,
+      .field select,
+      .choice { height: 60px; }
+      .choice span { font-size: 15px; }
+      .btn { height: 60px; font-size: 20px; }
+      .actions {
+        grid-template-columns: 1fr auto;
+      }
+      .actions .btn {
+        width: 260px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .page { padding: 12px; align-items: flex-start; }
+      .shell {
+        min-height: calc(100vh - 24px);
+        min-height: calc(100dvh - 24px);
+      }
+      .screen {
+        padding: 0;
+      }
+      .card { padding: 22px; border-radius: 22px; }
+      .top-row { margin-bottom: 28px; }
+      .brand-mark { width: 48px; height: 48px; }
+      .brand-copy strong { font-size: 17px; }
+      .brand-copy small { font-size: 10px; }
+      .heading h1 { font-size: 30px; }
+      .heading p { font-size: 14px; }
+      .photo-grid { grid-template-columns: 1fr; }
+      .photo-slot { min-height: 118px; }
+      .photo-slot .title { font-size: 13px; }
+      .photo-slot .sub { font-size: 11px; }
+      .field label,
+      .gender-label { font-size: 13px; }
+      .field input,
+      .field select { height: 54px; }
+      .choice { min-height: 54px; }
+      .choice span { font-size: 13px; }
+      .read-only-badge { font-size: 11px; }
+      .actions { grid-template-columns: 1fr; }
+      .choices { grid-template-columns: 1fr; }
+      .btn { height: 54px; font-size: 17px; }
+      .camera-card {
+        width: min(340px, calc(100vw - 20px));
+        max-height: calc(100dvh - 20px);
+      }
+      .camera-video,
+      .camera-stage {
+        width: calc(100% - 20px);
+        height: calc(100% - 20px);
+      }
+      .camera-stage {
+        height: clamp(230px, 60vw, 300px);
+      }
+      .camera-stage::after {
+        font-size: 10px;
+        bottom: 12px;
+      }
+      .camera-btn {
+        height: 44px;
+        font-size: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shell">
+      <section class="screen" aria-label="Personal Information">
+        <article class="card">
+      <section id="screen1">
+      <div class="top-row">
+        <div class="brand" aria-label="CareWell brand">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="Main_logo_transparent_img_screen7.png" alt="" />
+          </span>
+          <span class="brand-copy">
+            <strong>CareWell</strong>
+            <small>NURSING CARE</small>
+          </span>
+        </div>
+        <button type="button" class="skip-btn" id="skipToScreen2Btn">Skip</button>
+      </div>
+
+      <header class="heading">
+        <h1>Personal Information</h1>
+        <p>Tell us a little about yourself so we can personalize your CareWell experience.</p>
+      </header>
+
+      <form class="form" id="personalForm" novalidate>
+        <section class="photo-section" aria-label="Profile photos">
+          <div class="photo-label">Profile Photos</div>
+          <div class="photo-hint">Take 3 photos using your camera. Gallery selection is not shown.</div>
+          <div class="photo-grid">
+            <div class="photo-slot" data-photo-slot="1">
+              <button type="button" data-photo-trigger="1" aria-label="Capture photo 1">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 7h3l2-3h6l2 3h3v12H4z"></path>
+                    <circle cx="12" cy="13" r="3.2"></circle>
+                  </svg>
+                </span>
+                <span class="text">
+                  <span class="title">Photo 1</span>
+                  <span class="sub">Camera only</span>
+                </span>
+              </button>
+              <input type="file" accept="image/*" data-photo-input="1" aria-label="Capture photo 1" hidden />
+            </div>
+            <div class="photo-slot" data-photo-slot="2">
+              <button type="button" data-photo-trigger="2" aria-label="Capture photo 2">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 7h3l2-3h6l2 3h3v12H4z"></path>
+                    <circle cx="12" cy="13" r="3.2"></circle>
+                  </svg>
+                </span>
+                <span class="text">
+                  <span class="title">Photo 2</span>
+                  <span class="sub">Camera only</span>
+                </span>
+              </button>
+              <input type="file" accept="image/*" data-photo-input="2" aria-label="Capture photo 2" hidden />
+            </div>
+            <div class="photo-slot" data-photo-slot="3">
+              <button type="button" data-photo-trigger="3" aria-label="Capture photo 3">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 7h3l2-3h6l2 3h3v12H4z"></path>
+                    <circle cx="12" cy="13" r="3.2"></circle>
+                  </svg>
+                </span>
+                <span class="text">
+                  <span class="title">Photo 3</span>
+                  <span class="sub">Camera only</span>
+                </span>
+              </button>
+              <input type="file" accept="image/*" data-photo-input="3" aria-label="Capture photo 3" hidden />
+            </div>
+          </div>
+        </section>
+
+        <div class="grid-two">
+          <div class="field" data-field="firstName">
+            <label for="firstName">First Name</label>
+            <input id="firstName" name="firstName" type="text" autocomplete="given-name" />
+            <div class="helper" id="firstNameError"></div>
+          </div>
+          <div class="field" data-field="middleName">
+            <label for="middleName">Middle Name <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <input id="middleName" name="middleName" type="text" autocomplete="additional-name" />
+            <div class="helper" id="middleNameError"></div>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <div class="field" data-field="lastName">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" name="lastName" type="text" autocomplete="family-name" />
+            <div class="helper" id="lastNameError"></div>
+          </div>
+          <div class="field" data-field="preferredName">
+            <label for="preferredName">Preferred Name <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <input id="preferredName" name="preferredName" type="text" autocomplete="nickname" />
+            <div class="helper" id="preferredNameError"></div>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <div class="field" data-field="dateOfBirth">
+            <label for="dateOfBirth">Date of Birth *</label>
+            <input id="dateOfBirth" name="dateOfBirth" type="date" />
+            <div class="helper" id="dateOfBirthError"></div>
+          </div>
+          <div class="field" data-field="age">
+            <label for="age">Age</label>
+            <div class="read-only-shell">
+              <input id="age" name="age" type="text" readonly aria-readonly="true" />
+              <span class="read-only-badge">Auto</span>
+            </div>
+            <div class="helper" id="ageError"></div>
+          </div>
+        </div>
+
+        <div class="field gender-group" data-field="gender">
+          <span class="gender-label">Gender</span>
+          <div class="choices" role="radiogroup" aria-label="Gender">
+            <label class="choice"><input type="radio" name="gender" value="Male" /><span>Male</span></label>
+            <label class="choice"><input type="radio" name="gender" value="Female" /><span>Female</span></label>
+            <label class="choice"><input type="radio" name="gender" value="Other" /><span>Other</span></label>
+            <label class="choice"><input type="radio" name="gender" value="Rather Not Say" /><span>Rather Not Say</span></label>
+          </div>
+          <div class="helper" id="genderError"></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="continueBtn" type="submit">Next</button>
+        </div>
+      </form>
+      </section>
+
+      <section class="screen2" id="screen2" aria-label="Biological Information">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="skipToScreen3Btn">Skip</button>
+        </div>
+        <header class="heading">
+          <h1>Biological Information</h1>
+          <p>Help us understand your health profile so we can provide safer and more personalized care.</p>
+        </header>
+        <form class="form" id="biologicalForm" novalidate>
+          <div class="grid-two">
+            <div class="field" data-field="height">
+              <label for="height">Height *</label>
+              <input id="height" name="height" type="text" inputmode="decimal" placeholder="e.g. 170 cm" />
+              <div class="helper" id="heightError"></div>
+            </div>
+            <div class="field" data-field="weight">
+              <label for="weight">Weight *</label>
+              <input id="weight" name="weight" type="text" inputmode="decimal" placeholder="e.g. 68 kg" />
+              <div class="helper" id="weightError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="bloodGroup">
+            <label>Blood Group</label>
+            <div class="chip-grid three" id="bloodGroupGroup"></div>
+            <div class="helper" id="bloodGroupError"></div>
+          </div>
+
+          <div class="field" data-field="allergies">
+            <label>Known Allergies</label>
+            <div class="chip-grid" id="allergyGroup"></div>
+            <div class="helper" id="allergiesError"></div>
+          </div>
+
+          <div class="field hidden-field" id="allergyOtherField" data-field="allergyOther">
+            <label for="allergyOther">Other Allergy</label>
+            <input id="allergyOther" name="allergyOther" type="text" placeholder="Describe other allergy" />
+            <div class="helper" id="allergyOtherError"></div>
+          </div>
+
+          <div class="field" data-field="medicalConditions">
+            <label>Existing Medical Conditions</label>
+            <div class="chip-grid" id="conditionGroup"></div>
+            <div class="helper" id="medicalConditionsError"></div>
+          </div>
+
+          <div class="field hidden-field" id="conditionOtherField" data-field="conditionOther">
+            <label for="conditionOther">Other Condition</label>
+            <input id="conditionOther" name="conditionOther" type="text" placeholder="Describe other condition" />
+            <div class="helper" id="conditionOtherError"></div>
+          </div>
+
+          <div class="field" data-field="currentMedications">
+            <label for="currentMedications">Current Medications</label>
+            <textarea id="currentMedications" name="currentMedications" placeholder="List current medications, if any"></textarea>
+            <div class="helper" id="currentMedicationsError"></div>
+          </div>
+
+          <div class="field" data-field="mobilityStatus">
+            <label>Mobility Status *</label>
+            <div class="chip-grid" id="mobilityGroup"></div>
+            <div class="helper" id="mobilityStatusError"></div>
+          </div>
+
+          <div class="field" data-field="disability">
+            <label>Disability</label>
+            <div class="chip-grid" id="disabilityGroup"></div>
+            <div class="helper" id="disabilityError"></div>
+          </div>
+
+          <div class="field hidden-field" id="disabilityDetailsField" data-field="disabilityDetails">
+            <label for="disabilityDetails">Disability Details</label>
+            <textarea id="disabilityDetails" name="disabilityDetails" placeholder="Please describe any disability"></textarea>
+            <div class="helper" id="disabilityDetailsError"></div>
+          </div>
+
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="biologicalContinueBtn" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="screen3" id="screen3" aria-label="Contact Information">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="skipToScreen4Btn">Skip</button>
+        </div>
+        <header class="heading">
+          <h1>Contact Information</h1>
+          <p>Tell us how we can reach you regarding your healthcare services and appointments.</p>
+        </header>
+        <form class="form" id="contactForm" novalidate>
+          <div class="grid-two">
+            <div class="field" data-field="primaryMobile">
+              <label for="primaryMobile">Mobile Number *</label>
+              <input id="primaryMobile" name="primaryMobile" type="tel" inputmode="numeric" maxlength="10" />
+              <div class="helper" id="primaryMobileError"></div>
+            </div>
+            <div class="field" data-field="emailAddress">
+              <label for="emailAddress">Email Address</label>
+              <input id="emailAddress" name="emailAddress" type="email" />
+              <div class="helper" id="emailAddressError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="alternateMobile">
+            <label for="alternateMobile">Alternate Mobile Number <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <input id="alternateMobile" name="alternateMobile" type="tel" inputmode="numeric" maxlength="10" />
+            <div class="helper" id="alternateMobileError"></div>
+          </div>
+
+          <div class="field" data-field="preferredContactMethod">
+            <label>Preferred Contact Method *</label>
+            <div class="chip-grid" id="contactMethodGroup"></div>
+            <div class="helper" id="preferredContactMethodError"></div>
+          </div>
+
+          <div class="field" data-field="preferredLanguage">
+            <label>Preferred Language *</label>
+            <div class="chip-grid" id="languageGroup"></div>
+            <div class="helper" id="preferredLanguageError"></div>
+          </div>
+
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="contactContinueBtn" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="screen4" id="screen4" aria-label="Address Information">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="skipToScreen5Btn">Skip</button>
+        </div>
+        <header class="heading">
+          <h1>Address Information</h1>
+          <p>Tell us where healthcare services should be provided so we can plan home visits accurately.</p>
+        </header>
+        <form class="form" id="addressForm" novalidate>
+          <div class="field" data-field="fullAddress">
+            <div class="field-head">
+              <label for="fullAddress">Full Address</label>
+              <button type="button" class="location-btn" id="useCurrentLocationBtn">
+                <span class="location-spinner" aria-hidden="true"></span>
+                <span class="location-label">Use My Current Location</span>
+              </button>
+            </div>
+            <textarea id="fullAddress" name="fullAddress" placeholder="Your address will appear here after location lookup, or you can type it manually"></textarea>
+            <div class="helper" id="fullAddressError"></div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field" data-field="houseNumber">
+              <label for="houseNumber">House / Flat Number *</label>
+              <input id="houseNumber" name="houseNumber" type="text" autocomplete="address-line1" />
+              <div class="helper" id="houseNumberError"></div>
+            </div>
+            <div class="field" data-field="buildingName">
+              <label for="buildingName">Building / Society Name *</label>
+              <input id="buildingName" name="buildingName" type="text" autocomplete="address-line2" />
+              <div class="helper" id="buildingNameError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="streetName">
+            <label for="streetName">Street / Road</label>
+            <input id="streetName" name="streetName" type="text" autocomplete="address-line3" />
+            <div class="helper" id="streetNameError"></div>
+          </div>
+
+          <div class="field" data-field="landmark">
+            <label for="landmark">Landmark</label>
+            <input id="landmark" name="landmark" type="text" />
+            <div class="helper" id="landmarkError"></div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field" data-field="areaLocality">
+              <label for="areaLocality">Area / Locality *</label>
+              <input id="areaLocality" name="areaLocality" type="text" />
+              <div class="helper" id="areaLocalityError"></div>
+            </div>
+            <div class="field" data-field="city">
+              <label for="city">City *</label>
+              <input id="city" name="city" type="text" />
+              <div class="helper" id="cityError"></div>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field" data-field="state">
+              <label for="state">State *</label>
+              <input id="state" name="state" type="text" />
+              <div class="helper" id="stateError"></div>
+            </div>
+            <div class="field" data-field="pinCode">
+              <label for="pinCode">PIN Code *</label>
+              <input id="pinCode" name="pinCode" type="text" inputmode="numeric" maxlength="6" />
+              <div class="helper" id="pinCodeError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="addressNotes">
+            <label for="addressNotes">Additional Address Notes <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <textarea id="addressNotes" name="addressNotes" placeholder="Any extra directions for home visits"></textarea>
+            <div class="helper" id="addressNotesError"></div>
+          </div>
+
+          <input type="hidden" id="latitude" name="latitude" />
+          <input type="hidden" id="longitude" name="longitude" />
+          <input type="hidden" id="country" name="country" />
+
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="addressContinueBtn" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="screen5" id="screen5" aria-label="Emergency Contact">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="skipToScreen6Btn">Skip</button>
+        </div>
+        <header class="heading">
+          <h1>Emergency Contact</h1>
+          <p>Add a trusted person we can contact if an urgent healthcare situation arises.</p>
+        </header>
+        <form class="form" id="emergencyForm" novalidate>
+          <div class="field" data-field="emergencyName">
+            <label for="emergencyName">Emergency Contact Full Name *</label>
+            <input id="emergencyName" name="emergencyName" type="text" />
+            <div class="helper" id="emergencyNameError"></div>
+          </div>
+
+          <div class="field" data-field="relationship">
+            <label>Relationship *</label>
+            <div class="chip-grid three" id="relationshipGroup"></div>
+            <div class="helper" id="relationshipError"></div>
+          </div>
+
+          <div class="field hidden-field" id="relationshipOtherField" data-field="relationshipOther">
+            <label for="relationshipOther">Other Relationship</label>
+            <input id="relationshipOther" name="relationshipOther" type="text" />
+            <div class="helper" id="relationshipOtherError"></div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field" data-field="emergencyPrimaryMobile">
+              <label for="emergencyPrimaryMobile">Primary Mobile Number *</label>
+              <input id="emergencyPrimaryMobile" name="emergencyPrimaryMobile" type="tel" inputmode="numeric" maxlength="10" />
+              <div class="helper" id="emergencyPrimaryMobileError"></div>
+            </div>
+            <div class="field" data-field="emergencyAlternateMobile">
+              <label for="emergencyAlternateMobile">Alternate Mobile Number <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+              <input id="emergencyAlternateMobile" name="emergencyAlternateMobile" type="tel" inputmode="numeric" maxlength="10" />
+              <div class="helper" id="emergencyAlternateMobileError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="emergencyEmail">
+            <label for="emergencyEmail">Email Address <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <input id="emergencyEmail" name="emergencyEmail" type="email" />
+            <div class="helper" id="emergencyEmailError"></div>
+          </div>
+
+          <div class="field" data-field="sameAddress">
+            <label>Same Address As Registered Address?</label>
+            <div class="chip-grid" id="sameAddressGroup"></div>
+            <div class="helper" id="sameAddressError"></div>
+          </div>
+
+          <div class="address-reveal hidden-field" id="emergencyAddressSection">
+            <div class="grid-two">
+              <div class="field" data-field="emergencyHouseNumber">
+                <label for="emergencyHouseNumber">House / Flat Number</label>
+                <input id="emergencyHouseNumber" name="emergencyHouseNumber" type="text" />
+                <div class="helper" id="emergencyHouseNumberError"></div>
+              </div>
+              <div class="field" data-field="emergencyBuildingName">
+                <label for="emergencyBuildingName">Building / Society</label>
+                <input id="emergencyBuildingName" name="emergencyBuildingName" type="text" />
+                <div class="helper" id="emergencyBuildingNameError"></div>
+              </div>
+            </div>
+            <div class="field" data-field="emergencyAreaLocality">
+              <label for="emergencyAreaLocality">Area / Locality</label>
+              <input id="emergencyAreaLocality" name="emergencyAreaLocality" type="text" />
+              <div class="helper" id="emergencyAreaLocalityError"></div>
+            </div>
+            <div class="grid-two">
+              <div class="field" data-field="emergencyCity">
+                <label for="emergencyCity">City</label>
+                <input id="emergencyCity" name="emergencyCity" type="text" />
+                <div class="helper" id="emergencyCityError"></div>
+              </div>
+              <div class="field" data-field="emergencyState">
+                <label for="emergencyState">State</label>
+                <input id="emergencyState" name="emergencyState" type="text" />
+                <div class="helper" id="emergencyStateError"></div>
+              </div>
+            </div>
+            <div class="field" data-field="emergencyPinCode">
+              <label for="emergencyPinCode">PIN Code</label>
+              <input id="emergencyPinCode" name="emergencyPinCode" type="text" inputmode="numeric" maxlength="6" />
+              <div class="helper" id="emergencyPinCodeError"></div>
+            </div>
+          </div>
+
+          <div class="field" data-field="emergencyNotes">
+            <label for="emergencyNotes">Additional Notes <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <textarea id="emergencyNotes" name="emergencyNotes" placeholder="Any helpful notes for emergency contact"></textarea>
+            <div class="helper" id="emergencyNotesError"></div>
+          </div>
+
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="emergencyContinueBtn" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="screen6" id="screen6" aria-label="Healthcare Preferences">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="screen6BackBtn">Back</button>
+        </div>
+        <header class="heading">
+          <h1>Healthcare Preferences</h1>
+          <p>Help us understand the type of care you need so we can recommend the most suitable healthcare services.</p>
+        </header>
+        <form class="form" id="preferencesForm" novalidate>
+          <div class="field" data-field="whoNeedsCare">
+            <label>Who Needs Care? *</label>
+            <div class="chip-grid" id="whoNeedsCareGroup"></div>
+            <div class="helper" id="whoNeedsCareError"></div>
+          </div>
+
+          <div class="field" data-field="servicesNeeded">
+            <label>Required Healthcare Services *</label>
+            <div class="chip-grid" id="servicesNeededGroup"></div>
+            <div class="helper" id="servicesNeededError"></div>
+          </div>
+
+          <div class="field hidden-field" id="servicesOtherField" data-field="servicesOther">
+            <label for="servicesOther">Other Service</label>
+            <input id="servicesOther" name="servicesOther" type="text" />
+            <div class="helper" id="servicesOtherError"></div>
+          </div>
+
+          <div class="field" data-field="urgency">
+            <label>Urgency *</label>
+            <div class="chip-grid" id="urgencyGroup"></div>
+            <div class="helper" id="urgencyError"></div>
+          </div>
+
+          <div class="field" data-field="visitTime">
+            <label>Preferred Visit Time</label>
+            <div class="chip-grid" id="visitTimeGroup"></div>
+            <div class="helper" id="visitTimeError"></div>
+          </div>
+
+          <div class="field" data-field="communicationMethod">
+            <label>Preferred Communication Method *</label>
+            <div class="chip-grid" id="communicationGroup"></div>
+            <div class="helper" id="communicationMethodError"></div>
+          </div>
+
+          <div class="field" data-field="preferenceNotes">
+            <label for="preferenceNotes">Additional Notes <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <textarea id="preferenceNotes" name="preferenceNotes" placeholder="Share any important information that will help our healthcare team"></textarea>
+            <div class="helper" id="preferenceNotesError"></div>
+          </div>
+
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="preferencesContinueBtn" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="screen7" id="screen7" aria-label="Consent and Privacy">
+        <div class="top-row">
+          <div class="brand" aria-label="CareWell brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="Main_logo_transparent_img_screen7.png" alt="" />
+            </span>
+            <span class="brand-copy">
+              <strong>CareWell</strong>
+              <small>NURSING CARE</small>
+            </span>
+          </div>
+          <button type="button" class="skip-btn" id="screen7BackBtn">Back</button>
+        </div>
+        <header class="heading">
+          <h1>Consent &amp; Privacy</h1>
+          <p>Review the information below and provide your consent so CareWell can safely deliver healthcare services.</p>
+        </header>
+        <div class="progress-full" aria-hidden="true"><span></span></div>
+        <div class="summary-list" id="consentSummaryList"></div>
+        <form class="form" id="consentForm" novalidate>
+          <div class="consent-list">
+            <label class="consent-check"><input type="checkbox" id="consentTruth" /><span>I confirm the information I provided is true and accurate.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentStore" /><span>I consent to CareWell securely storing my information.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentPrivacy" /><span>I agree to the Privacy Policy.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentTerms" /><span>I agree to the Terms &amp; Conditions.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentContact" /><span>I authorize CareWell to contact me regarding healthcare services.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentUpdates" /><span>I would like to receive healthcare tips and service updates.</span></label>
+          </div>
+          <div class="signature-box">
+            <label for="digitalSignature">Digital Signature *</label>
+            <input id="digitalSignature" name="digitalSignature" type="text" placeholder="Type your full name" />
+            <div class="helper" id="digitalSignatureError"></div>
+          </div>
+          <div class="notice-card">
+            Your information is encrypted, securely stored and only used to deliver healthcare services, contact you for care coordination, and manage your registration safely.
+          </div>
+          <div class="actions" style="grid-template-columns:1fr;">
+            <button class="btn primary" id="consentCompleteBtn" type="submit">Complete Registration</button>
+          </div>
+        </form>
+      </section>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <div class="camera-modal" id="cameraModal" aria-hidden="true">
+    <div class="camera-card" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+      <div class="camera-head">
+        <strong id="cameraTitle">Capture Photo</strong>
+        <button type="button" class="camera-btn secondary" id="cameraCloseBtn" style="width:auto;padding:0 16px;">Close</button>
+      </div>
+      <div class="camera-stage">
+        <video class="camera-video" id="cameraVideo" playsinline autoplay muted></video>
+        <img class="camera-capture-preview" id="cameraCapturePreview" alt="" hidden />
+      </div>
+      <div class="camera-actions">
+        <button type="button" class="camera-btn retake" id="cameraRetakeBtn" hidden>Retake</button>
+        <button type="button" class="camera-btn secondary" id="cameraSelectBtn" hidden>Select</button>
+        <button type="button" class="camera-btn primary" id="cameraCaptureBtn">Capture</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer-modal" id="photoDisclaimerModal" aria-hidden="true">
+    <div class="disclaimer-card" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle">
+      <div class="disclaimer-badge" aria-hidden="true">!</div>
+      <h2 id="disclaimerTitle">Photo Notice</h2>
+      <p>
+        Your face must be clearly visible in the photo. The account photo should belong to the user.
+        If an incorrect or misleading image is submitted, CareWell may restrict access or take further
+        action under applicable policies and legal requirements.
+      </p>
+      <div class="disclaimer-actions">
+        <button type="button" class="camera-btn secondary" id="disclaimerCancelBtn">Cancel</button>
+        <button type="button" class="camera-btn primary" id="disclaimerContinueBtn">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="registration-state.js" defer></script>
+  <script>
+    const form = document.getElementById('personalForm');
+    const continueBtn = document.getElementById('continueBtn');
+    const skipToScreen2Btn = document.getElementById('skipToScreen2Btn');
+    const skipToScreen3Btn = document.getElementById('skipToScreen3Btn');
+    const skipToScreen4Btn = document.getElementById('skipToScreen4Btn');
+    const skipToScreen5Btn = document.getElementById('skipToScreen5Btn');
+    const skipToScreen6Btn = document.getElementById('skipToScreen6Btn');
+    const screen6BackBtn = document.getElementById('screen6BackBtn');
+    const screen1 = document.getElementById('screen1');
+    const screen2 = document.getElementById('screen2');
+    const screen3 = document.getElementById('screen3');
+    const screen4 = document.getElementById('screen4');
+    const screen5 = document.getElementById('screen5');
+    const screen6 = document.getElementById('screen6');
+    const screen7 = document.getElementById('screen7');
+    const biologicalForm = document.getElementById('biologicalForm');
+    const biologicalContinueBtn = document.getElementById('biologicalContinueBtn');
+    const contactForm = document.getElementById('contactForm');
+    const contactContinueBtn = document.getElementById('contactContinueBtn');
+    const addressForm = document.getElementById('addressForm');
+    const addressContinueBtn = document.getElementById('addressContinueBtn');
+    const emergencyForm = document.getElementById('emergencyForm');
+    const emergencyContinueBtn = document.getElementById('emergencyContinueBtn');
+    const preferencesForm = document.getElementById('preferencesForm');
+    const preferencesContinueBtn = document.getElementById('preferencesContinueBtn');
+    const consentForm = document.getElementById('consentForm');
+    const consentCompleteBtn = document.getElementById('consentCompleteBtn');
+    const screen7BackBtn = document.getElementById('screen7BackBtn');
+    const consentSummaryList = document.getElementById('consentSummaryList');
+    const consentTruth = document.getElementById('consentTruth');
+    const consentStore = document.getElementById('consentStore');
+    const consentPrivacy = document.getElementById('consentPrivacy');
+    const consentTerms = document.getElementById('consentTerms');
+    const consentContact = document.getElementById('consentContact');
+    const consentUpdates = document.getElementById('consentUpdates');
+    const digitalSignatureInput = document.getElementById('digitalSignature');
+    const useCurrentLocationBtn = document.getElementById('useCurrentLocationBtn');
+    const ageInput = document.getElementById('age');
+    const dobInput = document.getElementById('dateOfBirth');
+    const cameraModal = document.getElementById('cameraModal');
+    const cameraVideo = document.getElementById('cameraVideo');
+    const cameraStage = document.querySelector('.camera-stage');
+    const cameraCapturePreview = document.getElementById('cameraCapturePreview');
+    const cameraCaptureBtn = document.getElementById('cameraCaptureBtn');
+    const cameraCloseBtn = document.getElementById('cameraCloseBtn');
+    const cameraRetakeBtn = document.getElementById('cameraRetakeBtn');
+    const cameraSelectBtn = document.getElementById('cameraSelectBtn');
+    const photoDisclaimerModal = document.getElementById('photoDisclaimerModal');
+    const disclaimerCancelBtn = document.getElementById('disclaimerCancelBtn');
+    const disclaimerContinueBtn = document.getElementById('disclaimerContinueBtn');
+    const heightInput = document.getElementById('height');
+    const weightInput = document.getElementById('weight');
+    const currentMedicationsInput = document.getElementById('currentMedications');
+    const allergyOtherField = document.getElementById('allergyOtherField');
+    const allergyOtherInput = document.getElementById('allergyOther');
+    const conditionOtherField = document.getElementById('conditionOtherField');
+    const conditionOtherInput = document.getElementById('conditionOther');
+    const disabilityDetailsField = document.getElementById('disabilityDetailsField');
+    const disabilityDetailsInput = document.getElementById('disabilityDetails');
+    const bloodGroupGroup = document.getElementById('bloodGroupGroup');
+    const allergyGroup = document.getElementById('allergyGroup');
+    const conditionGroup = document.getElementById('conditionGroup');
+    const mobilityGroup = document.getElementById('mobilityGroup');
+    const disabilityGroup = document.getElementById('disabilityGroup');
+    const primaryMobileInput = document.getElementById('primaryMobile');
+    const emailAddressInput = document.getElementById('emailAddress');
+    const alternateMobileInput = document.getElementById('alternateMobile');
+    const contactMethodGroup = document.getElementById('contactMethodGroup');
+    const languageGroup = document.getElementById('languageGroup');
+    const houseNumberInput = document.getElementById('houseNumber');
+    const fullAddressInput = document.getElementById('fullAddress');
+    const buildingNameInput = document.getElementById('buildingName');
+    const streetNameInput = document.getElementById('streetName');
+    const landmarkInput = document.getElementById('landmark');
+    const areaLocalityInput = document.getElementById('areaLocality');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const pinCodeInput = document.getElementById('pinCode');
+    const addressNotesInput = document.getElementById('addressNotes');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+    const countryInput = document.getElementById('country');
+    const emergencyNameInput = document.getElementById('emergencyName');
+    const relationshipGroup = document.getElementById('relationshipGroup');
+    const relationshipOtherField = document.getElementById('relationshipOtherField');
+    const relationshipOtherInput = document.getElementById('relationshipOther');
+    const emergencyPrimaryMobileInput = document.getElementById('emergencyPrimaryMobile');
+    const emergencyAlternateMobileInput = document.getElementById('emergencyAlternateMobile');
+    const emergencyEmailInput = document.getElementById('emergencyEmail');
+    const sameAddressGroup = document.getElementById('sameAddressGroup');
+    const emergencyAddressSection = document.getElementById('emergencyAddressSection');
+    const emergencyHouseNumberInput = document.getElementById('emergencyHouseNumber');
+    const emergencyBuildingNameInput = document.getElementById('emergencyBuildingName');
+    const emergencyAreaLocalityInput = document.getElementById('emergencyAreaLocality');
+    const emergencyCityInput = document.getElementById('emergencyCity');
+    const emergencyStateInput = document.getElementById('emergencyState');
+    const emergencyPinCodeInput = document.getElementById('emergencyPinCode');
+    const emergencyNotesInput = document.getElementById('emergencyNotes');
+    const whoNeedsCareGroup = document.getElementById('whoNeedsCareGroup');
+    const servicesNeededGroup = document.getElementById('servicesNeededGroup');
+    const servicesOtherField = document.getElementById('servicesOtherField');
+    const servicesOtherInput = document.getElementById('servicesOther');
+    const urgencyGroup = document.getElementById('urgencyGroup');
+    const visitTimeGroup = document.getElementById('visitTimeGroup');
+    const communicationGroup = document.getElementById('communicationGroup');
+    const preferenceNotesInput = document.getElementById('preferenceNotes');
+    let cameraStream = null;
+    let activePhotoIndex = 1;
+    let pendingPhotoData = '';
+    let pendingDisclaimerIndex = null;
+    const toastHost = document.createElement('div');
+    toastHost.style.position = 'fixed';
+    toastHost.style.inset = 'auto 0 24px';
+    toastHost.style.zIndex = '9999';
+    toastHost.style.pointerEvents = 'none';
+    document.body.appendChild(toastHost);
+
+    const fieldIds = ['firstName', 'middleName', 'lastName', 'preferredName', 'dateOfBirth', 'gender'];
+    const fields = Object.fromEntries(fieldIds.map((id) => [id, document.getElementById(id)]));
+    const errors = Object.fromEntries(fieldIds.map((id) => [id, document.getElementById(`${id}Error`)]));
+    const photoSlots = [1, 2, 3].map((index) => ({
+      index,
+      slot: document.querySelector(`[data-photo-slot="${index}"]`),
+      trigger: document.querySelector(`[data-photo-trigger="${index}"]`),
+      input: document.querySelector(`[data-photo-input="${index}"]`),
+    }));
+    const photoData = { 1: '', 2: '', 3: '' };
+    const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Don’t Know'];
+    const allergyOptions = ['None', 'Food', 'Medicine', 'Dust', 'Pollen', 'Other'];
+    const conditionOptions = ['Diabetes', 'High Blood Pressure', 'Heart Disease', 'Asthma', 'Arthritis', 'Kidney Disease', 'Cancer', 'Thyroid Disorder', 'None', 'Other'];
+    const mobilityOptions = ['Independent', 'Needs Assistance', 'Wheelchair User', 'Bedridden'];
+    const disabilityOptions = ['Yes', 'No'];
+    const contactMethodOptions = ['Phone Call', 'WhatsApp', 'Email'];
+    const languageOptions = ['English', 'Hindi', 'Marathi', 'Gujarati'];
+    const relationshipOptions = ['Parent', 'Spouse', 'Child', 'Sibling', 'Relative', 'Friend', 'Caregiver', 'Other'];
+    const sameAddressOptions = ['Yes', 'No'];
+    const whoNeedsCareOptions = ['Adult Male', 'Adult Female', 'Elder Male', 'Elder Female', 'Child Boy', 'Child Girl', 'Multiple Family Members', 'Other'];
+    const servicesNeededOptions = ['Nursing Care', 'Physiotherapy', 'Doctor Visit', 'Elder Care', 'Post Surgery Care', 'Injection / Dressing', 'Medical Equipment Support', 'Other'];
+    const urgencyOptions = ['Immediately', 'Within 24 Hours', 'Within This Week', 'Flexible'];
+    const visitTimeOptions = ['Morning', 'Afternoon', 'Evening', 'Anytime'];
+    const communicationOptions = ['Phone Call', 'WhatsApp', 'Email'];
+    const addressFields = [
+      'houseNumber',
+      'fullAddress',
+      'buildingName',
+      'streetName',
+      'landmark',
+      'areaLocality',
+      'city',
+      'state',
+      'country',
+      'pinCode',
+      'addressNotes',
+    ];
+    const emergencyAddressFields = [
+      'emergencyHouseNumber',
+      'emergencyBuildingName',
+      'emergencyAreaLocality',
+      'emergencyCity',
+      'emergencyState',
+      'emergencyPinCode',
+      'emergencyNotes',
+    ];
+    const selectedPreferences = {
+      whoNeedsCare: '',
+      servicesNeeded: [],
+      urgency: '',
+      visitTime: '',
+      communicationMethod: '',
+    };
+    const selectedConsent = {
+      truth: false,
+      store: false,
+      privacy: false,
+      terms: false,
+      contact: false,
+      updates: false,
+      signature: '',
+    };
+    const preferenceAliases = {
+      whoNeedsCare: ['whoNeedsCare', 'patientType', 'careRecipient', 'personNeedingCare'],
+      servicesNeeded: ['servicesNeeded', 'requiredServices', 'careServices', 'selectedServices'],
+      urgency: ['urgency', 'serviceUrgency', 'careUrgency'],
+      visitTime: ['visitTime', 'preferredVisitTime', 'preferredTime'],
+      communicationMethod: ['communicationMethod', 'preferredCommunicationMethod', 'contactMethod'],
+    };
+    const selectedBiological = {
+      bloodGroup: '',
+      allergies: [],
+      medicalConditions: [],
+      mobilityStatus: '',
+      disability: '',
+    };
+    const selectedContact = {
+      preferredContactMethod: '',
+      preferredLanguage: '',
+    };
+    const selectedEmergency = {
+      relationship: '',
+      sameAddress: 'Yes',
+    };
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      toastHost.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      window.setTimeout(() => {
+        toast.classList.remove('show');
+        window.setTimeout(() => toast.remove(), 220);
+      }, 3200);
+    }
+
+    function clearErrors() {
+      fieldIds.forEach((id) => {
+        const field = fields[id]?.closest('.field');
+        if (field) field.classList.remove('invalid', 'shake');
+        if (errors[id]) errors[id].textContent = '';
+      });
+      ['height', 'weight', 'bloodGroup', 'allergies', 'medicalConditions', 'currentMedications', 'mobilityStatus', 'disability', 'allergyOther', 'conditionOther', 'disabilityDetails'].forEach((id) => {
+        const field = document.querySelector(`[data-field="${id}"]`);
+        if (field) field.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    }
+
+    function setError(id, message) {
+      const field = fields[id]?.closest('.field');
+      if (field) {
+        field.classList.add('invalid');
+        field.classList.remove('shake');
+        void field.offsetWidth;
+        field.classList.add('shake');
+      }
+      if (errors[id]) {
+        errors[id].textContent = message;
+        errors[id].classList.add('show');
+      }
+    }
+
+    function setFieldVisibility(field, visible) {
+      if (!field) return;
+      field.classList.toggle('is-visible', visible);
+    }
+
+    function renderChipGroup(target, options, { multi = false, name }) {
+      if (!target) return;
+      target.innerHTML = '';
+      options.forEach((label) => {
+        const btn = document.createElement('label');
+        btn.className = 'chip';
+        btn.innerHTML = `<input type="${multi ? 'checkbox' : 'radio'}" name="${name}" value="${label}"><span>${label}</span>`;
+        const input = btn.querySelector('input');
+        input.addEventListener('change', () => {
+          if (!multi) {
+            target.querySelectorAll('.chip').forEach((item) => item.classList.remove('selected'));
+            selectedBiological[name] = label;
+          } else {
+            if (label === 'None' && input.checked) {
+              target.querySelectorAll('input').forEach((node) => {
+                if (node !== input) node.checked = false;
+              });
+            }
+            if (label !== 'None' && input.checked) {
+              const noneInput = target.querySelector('input[value="None"]');
+              if (noneInput) noneInput.checked = false;
+            }
+            const values = [...target.querySelectorAll('input:checked')].map((node) => node.value);
+            selectedBiological[name] = values;
+            if (name === 'allergies') {
+              setFieldVisibility(allergyOtherField, values.includes('Other'));
+            }
+            if (name === 'medicalConditions') {
+              setFieldVisibility(conditionOtherField, values.includes('Other'));
+            }
+          }
+          btn.classList.toggle('selected', input.checked);
+          if (!multi && input.checked) {
+            target.querySelectorAll('.chip').forEach((item) => {
+              item.classList.toggle('selected', item === btn);
+            });
+          }
+          if (name === 'disability') {
+            setFieldVisibility(disabilityDetailsField, input.value === 'Yes' && input.checked);
+          }
+          clearErrors();
+        });
+        target.appendChild(btn);
+      });
+    }
+
+    renderChipGroup(bloodGroupGroup, bloodGroupOptions, { name: 'bloodGroup' });
+    renderChipGroup(allergyGroup, allergyOptions, { multi: true, name: 'allergies' });
+    renderChipGroup(conditionGroup, conditionOptions, { multi: true, name: 'medicalConditions' });
+    renderChipGroup(mobilityGroup, mobilityOptions, { name: 'mobilityStatus' });
+    renderChipGroup(disabilityGroup, disabilityOptions, { name: 'disability' });
+    createChipGroup(contactMethodGroup, contactMethodOptions, 'preferredContactMethod', { multi: false });
+    createChipGroup(languageGroup, languageOptions, 'preferredLanguage', { multi: false });
+    createChipGroup(relationshipGroup, relationshipOptions, 'relationship', { multi: false });
+    createChipGroup(sameAddressGroup, sameAddressOptions, 'sameAddress', { multi: false });
+    createChipGroup(whoNeedsCareGroup, whoNeedsCareOptions, 'whoNeedsCare', { multi: false });
+    createChipGroup(servicesNeededGroup, servicesNeededOptions, 'servicesNeeded', { multi: true });
+    createChipGroup(urgencyGroup, urgencyOptions, 'urgency', { multi: false });
+    createChipGroup(visitTimeGroup, visitTimeOptions, 'visitTime', { multi: false });
+    createChipGroup(communicationGroup, communicationOptions, 'communicationMethod', { multi: false });
+
+    function showScreen(step) {
+      const activeStep = Number(step) || 1;
+      screen1.hidden = activeStep !== 1;
+      screen2.classList.toggle('is-active', activeStep === 2);
+      screen3.classList.toggle('is-active', activeStep === 3);
+      screen4.classList.toggle('is-active', activeStep === 4);
+      screen5.classList.toggle('is-active', activeStep === 5);
+      screen6.classList.toggle('is-active', activeStep === 6);
+      screen7.classList.toggle('is-active', activeStep === 7);
+      screen2.hidden = activeStep !== 2;
+      screen3.hidden = activeStep !== 3;
+      screen4.hidden = activeStep !== 4;
+      screen5.hidden = activeStep !== 5;
+      screen6.hidden = activeStep !== 6;
+      screen7.hidden = activeStep !== 7;
+    }
+
+    skipToScreen2Btn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 2 });
+      }
+      showScreen(2);
+      hydrateScreen2();
+    });
+
+    skipToScreen3Btn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 3 });
+      }
+      showScreen(3);
+      hydrateScreen3();
+    });
+
+    skipToScreen4Btn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 4 });
+      }
+      showScreen(4);
+      hydrateScreen4();
+    });
+
+    skipToScreen5Btn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 5 });
+      }
+      showScreen(5);
+      hydrateScreen5();
+    });
+
+    function setLoadingScreen2(isLoading) {
+      biologicalContinueBtn.disabled = isLoading;
+      biologicalContinueBtn.textContent = isLoading ? 'Saving...' : 'Continue';
+      skipToScreen3Btn.disabled = isLoading;
+    }
+
+    function setLoadingScreen3(isLoading) {
+      contactContinueBtn.disabled = isLoading;
+      contactContinueBtn.textContent = isLoading ? 'Saving...' : 'Continue';
+      skipToScreen4Btn.disabled = isLoading;
+    }
+
+    function setLoadingScreen6(isLoading) {
+      preferencesContinueBtn.disabled = isLoading;
+      preferencesContinueBtn.textContent = isLoading ? 'Saving...' : 'Continue';
+      screen6BackBtn.disabled = isLoading;
+    }
+
+    function selectedValues(group) {
+      return [...group.querySelectorAll('input:checked')].map((node) => node.value);
+    }
+
+    function fillSelected(group, values, multi = false) {
+      group.querySelectorAll('.chip').forEach((chip) => {
+        const input = chip.querySelector('input');
+        if (!input) return;
+        input.checked = multi ? values.includes(input.value) : input.value === values;
+        chip.classList.toggle('selected', input.checked);
+      });
+    }
+
+    function createChipGroup(target, options, stateKey, { multi = false } = {}) {
+      if (!target) return;
+      target.innerHTML = '';
+      options.forEach((label) => {
+        const chip = document.createElement('label');
+        chip.className = 'chip';
+        chip.innerHTML = `<input type="${multi ? 'checkbox' : 'radio'}" name="${stateKey}" value="${label}"><span>${label}</span>`;
+        const input = chip.querySelector('input');
+        input.addEventListener('change', () => {
+          if (!multi) {
+            target.querySelectorAll('.chip').forEach((item) => item.classList.remove('selected'));
+            selectedContact[stateKey] = label;
+          } else {
+            chip.classList.toggle('selected', input.checked);
+          }
+          chip.classList.toggle('selected', input.checked);
+          clearErrors();
+        });
+        target.appendChild(chip);
+      });
+    }
+
+    function getPreferenceSeed(state = {}, key) {
+      const section = state.healthcarePreferences || {};
+      const profile = state.profile || {};
+      const aliases = preferenceAliases[key] || [key];
+      for (const alias of aliases) {
+        const sectionValue = section[alias];
+        if (Array.isArray(sectionValue) ? sectionValue.length : Boolean(sectionValue)) return sectionValue;
+        const profileValue = profile[alias];
+        if (Array.isArray(profileValue) ? profileValue.length : Boolean(profileValue)) return profileValue;
+      }
+      return key === 'servicesNeeded' ? [] : '';
+    }
+
+    function hydrateScreen2() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const bio = state.biologicalInformation || {};
+      heightInput.value = bio.height || '';
+      weightInput.value = bio.weight || '';
+      bloodGroupGroup && fillSelected(bloodGroupGroup, bio.bloodGroup || '', false);
+      allergyGroup && fillSelected(allergyGroup, Array.isArray(bio.allergies) ? bio.allergies : [], true);
+      conditionGroup && fillSelected(conditionGroup, Array.isArray(bio.medicalConditions) ? bio.medicalConditions : [], true);
+      mobilityGroup && fillSelected(mobilityGroup, bio.mobilityStatus || '', false);
+      disabilityGroup && fillSelected(disabilityGroup, bio.disability || '', false);
+      currentMedicationsInput.value = bio.currentMedications || '';
+      allergyOtherInput.value = bio.allergyOther || '';
+      conditionOtherInput.value = bio.conditionOther || '';
+      disabilityDetailsInput.value = bio.disabilityDetails || '';
+      setFieldVisibility(allergyOtherField, selectedValues(allergyGroup).includes('Other') || Boolean(bio.allergyOther));
+      setFieldVisibility(conditionOtherField, selectedValues(conditionGroup).includes('Other') || Boolean(bio.conditionOther));
+      setFieldVisibility(disabilityDetailsField, (bio.disability || '') === 'Yes' || Boolean(bio.disabilityDetails));
+    }
+
+    function getProvider() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      return String(profile?.authentication?.provider || profile?.provider || profile?.authProvider || '').toUpperCase();
+    }
+
+    function hydrateScreen3() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const contact = state.contactInformation || {};
+      const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      const provider = getProvider();
+      const phone = profile.phoneNumber || profile.authentication?.phoneNumber || contact.primaryMobile || '';
+      const email = profile.email || profile.authentication?.email || contact.emailAddress || '';
+
+      primaryMobileInput.value = contact.primaryMobile || phone;
+      emailAddressInput.value = contact.emailAddress || email;
+      alternateMobileInput.value = contact.alternateMobile || '';
+      selectedContact.preferredContactMethod = contact.preferredContactMethod || '';
+      selectedContact.preferredLanguage = contact.preferredLanguage || '';
+      fillSelected(contactMethodGroup, selectedContact.preferredContactMethod, false);
+      fillSelected(languageGroup, selectedContact.preferredLanguage, false);
+
+      const primaryReadonly = provider === 'PHONE' && Boolean(phone);
+      const emailReadonly = provider === 'GOOGLE' && Boolean(email);
+      primaryMobileInput.readOnly = primaryReadonly;
+      primaryMobileInput.classList.toggle('readonly-input', primaryReadonly);
+      emailAddressInput.readOnly = emailReadonly;
+      emailAddressInput.classList.toggle('readonly-input', emailReadonly);
+    }
+
+    function buildContactPayload() {
+      return {
+        primaryMobile: primaryMobileInput.value.trim(),
+        emailAddress: emailAddressInput.value.trim(),
+        alternateMobile: alternateMobileInput.value.trim(),
+        preferredContactMethod: selectedContact.preferredContactMethod,
+        preferredLanguage: selectedContact.preferredLanguage,
+      };
+    }
+
+    function validateContact() {
+      clearErrors();
+      let valid = true;
+      const data = buildContactPayload();
+      if (!/^\d{10}$/.test(data.primaryMobile)) {
+        setError('primaryMobile', 'Enter a valid 10-digit mobile number.');
+        valid = false;
+      }
+      if (data.emailAddress && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.emailAddress)) {
+        setError('emailAddress', 'Enter a valid email address.');
+        valid = false;
+      }
+      if (data.alternateMobile && !/^\d{10}$/.test(data.alternateMobile)) {
+        setError('alternateMobile', 'Enter a valid 10-digit mobile number.');
+        valid = false;
+      }
+      if (data.alternateMobile && data.alternateMobile === data.primaryMobile) {
+        setError('alternateMobile', 'Alternate mobile must be different from primary.');
+        valid = false;
+      }
+      if (!data.preferredContactMethod) {
+        const field = contactMethodGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('preferredContactMethodError');
+        helper.textContent = 'Select a preferred contact method.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (!data.preferredLanguage) {
+        const field = languageGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('preferredLanguageError');
+        helper.textContent = 'Select a preferred language.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      return { valid, data };
+    }
+
+    function hydrateScreen4() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const address = state.addressInformation || {};
+      fullAddressInput.value = address.fullAddress || '';
+      houseNumberInput.value = address.houseNumber || '';
+      buildingNameInput.value = address.buildingName || '';
+      streetNameInput.value = address.streetName || '';
+      landmarkInput.value = address.landmark || '';
+      areaLocalityInput.value = address.areaLocality || '';
+      cityInput.value = address.city || '';
+      stateInput.value = address.state || '';
+      countryInput.value = address.country || '';
+      pinCodeInput.value = address.pinCode || '';
+      addressNotesInput.value = address.addressNotes || '';
+      latitudeInput.value = address.latitude || '';
+      longitudeInput.value = address.longitude || '';
+    }
+
+    function hydrateScreen5() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const emergency = state.emergencyContact || {};
+      emergencyNameInput.value = emergency.fullName || '';
+      relationshipOtherInput.value = emergency.relationshipOther || '';
+      emergencyPrimaryMobileInput.value = emergency.primaryMobile || '';
+      emergencyAlternateMobileInput.value = emergency.alternateMobile || '';
+      emergencyEmailInput.value = emergency.emailAddress || '';
+      selectedEmergency.relationship = emergency.relationship || '';
+      selectedEmergency.sameAddress = emergency.sameAddressAsRegisteredAddress === false ? 'No' : 'Yes';
+      fillSelected(relationshipGroup, selectedEmergency.relationship, false);
+      fillSelected(sameAddressGroup, selectedEmergency.sameAddress, false);
+      emergencyAddressSection.classList.toggle('is-visible', selectedEmergency.sameAddress === 'No');
+      emergencyHouseNumberInput.value = emergency.houseNumber || '';
+      emergencyBuildingNameInput.value = emergency.buildingName || '';
+      emergencyAreaLocalityInput.value = emergency.areaLocality || '';
+      emergencyCityInput.value = emergency.city || '';
+      emergencyStateInput.value = emergency.state || '';
+      emergencyPinCodeInput.value = emergency.pinCode || '';
+      emergencyNotesInput.value = emergency.additionalNotes || '';
+      relationshipOtherField.classList.toggle('is-visible', selectedEmergency.relationship === 'Other');
+    }
+
+    function hydrateScreen6() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      const pref = state.healthcarePreferences || {};
+      const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      const merged = {
+        whoNeedsCare: getPreferenceSeed(state, 'whoNeedsCare'),
+        servicesNeeded: getPreferenceSeed(state, 'servicesNeeded'),
+        urgency: getPreferenceSeed(state, 'urgency'),
+        visitTime: getPreferenceSeed(state, 'visitTime'),
+        communicationMethod: getPreferenceSeed(state, 'communicationMethod'),
+        servicesOther: pref.servicesOther || profile.servicesOther || '',
+        additionalNotes: pref.additionalNotes || profile.additionalNotes || '',
+      };
+      selectedPreferences.whoNeedsCare = merged.whoNeedsCare || '';
+      selectedPreferences.servicesNeeded = Array.isArray(merged.servicesNeeded) ? merged.servicesNeeded : [];
+      selectedPreferences.urgency = merged.urgency || '';
+      selectedPreferences.visitTime = merged.visitTime || '';
+      selectedPreferences.communicationMethod = merged.communicationMethod || '';
+      fillSelected(whoNeedsCareGroup, selectedPreferences.whoNeedsCare, false);
+      fillSelected(servicesNeededGroup, selectedPreferences.servicesNeeded, true);
+      fillSelected(urgencyGroup, selectedPreferences.urgency, false);
+      fillSelected(visitTimeGroup, selectedPreferences.visitTime, false);
+      fillSelected(communicationGroup, selectedPreferences.communicationMethod, false);
+      servicesOtherInput.value = merged.servicesOther || '';
+      preferenceNotesInput.value = merged.additionalNotes || '';
+      servicesOtherField.classList.toggle('is-visible', selectedPreferences.servicesNeeded.includes('Other'));
+    }
+
+    function buildPreferencesPayload() {
+      return {
+        whoNeedsCare: selectedPreferences.whoNeedsCare,
+        servicesNeeded: selectedPreferences.servicesNeeded,
+        servicesOther: servicesOtherInput.value.trim(),
+        urgency: selectedPreferences.urgency,
+        visitTime: selectedPreferences.visitTime,
+        communicationMethod: selectedPreferences.communicationMethod,
+        additionalNotes: preferenceNotesInput.value.trim(),
+      };
+    }
+
+    function validatePreferences() {
+      clearErrors();
+      let valid = true;
+      const data = buildPreferencesPayload();
+      if (!data.whoNeedsCare) {
+        const field = whoNeedsCareGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('whoNeedsCareError');
+        helper.textContent = 'Select who needs care.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (!data.servicesNeeded.length) {
+        const field = servicesNeededGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('servicesNeededError');
+        helper.textContent = 'Select at least one service.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (data.servicesNeeded.includes('Other') && !data.servicesOther) {
+        setError('servicesOther', 'Please specify the other service.');
+        valid = false;
+      }
+      if (!data.urgency) {
+        const field = urgencyGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('urgencyError');
+        helper.textContent = 'Select urgency.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (!data.communicationMethod) {
+        const field = communicationGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('communicationMethodError');
+        helper.textContent = 'Select a communication method.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      return { valid, data };
+    }
+
+    function buildEmergencyPayload() {
+      return {
+        fullName: emergencyNameInput.value.trim(),
+        relationship: selectedEmergency.relationship,
+        relationshipOther: relationshipOtherInput.value.trim(),
+        primaryMobile: emergencyPrimaryMobileInput.value.trim(),
+        alternateMobile: emergencyAlternateMobileInput.value.trim(),
+        emailAddress: emergencyEmailInput.value.trim(),
+        sameAddressAsRegisteredAddress: selectedEmergency.sameAddress !== 'No',
+        houseNumber: emergencyHouseNumberInput.value.trim(),
+        buildingName: emergencyBuildingNameInput.value.trim(),
+        areaLocality: emergencyAreaLocalityInput.value.trim(),
+        city: emergencyCityInput.value.trim(),
+        state: emergencyStateInput.value.trim(),
+        pinCode: emergencyPinCodeInput.value.trim(),
+        additionalNotes: emergencyNotesInput.value.trim(),
+      };
+    }
+
+    function validateEmergency() {
+      clearErrors();
+      let valid = true;
+      const data = buildEmergencyPayload();
+      if (!data.fullName) { setError('emergencyName', 'Emergency contact name is required.'); valid = false; }
+      if (!data.relationship) {
+        const field = relationshipGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('relationshipError');
+        helper.textContent = 'Select a relationship.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (!/^\d{10}$/.test(data.primaryMobile)) { setError('emergencyPrimaryMobile', 'Enter a valid 10-digit mobile number.'); valid = false; }
+      if (data.alternateMobile && !/^\d{10}$/.test(data.alternateMobile)) { setError('emergencyAlternateMobile', 'Enter a valid 10-digit mobile number.'); valid = false; }
+      if (data.alternateMobile && data.alternateMobile === data.primaryMobile) { setError('emergencyAlternateMobile', 'Alternate mobile must be different from primary.'); valid = false; }
+      if (data.emailAddress && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.emailAddress)) { setError('emergencyEmail', 'Enter a valid email address.'); valid = false; }
+      if (data.relationship === 'Other' && !data.relationshipOther) { setError('relationshipOther', 'Please specify the relationship.'); valid = false; }
+      if (data.sameAddressAsRegisteredAddress === false) {
+        if (!data.houseNumber) { setError('emergencyHouseNumber', 'House / Flat number is required.'); valid = false; }
+        if (!data.buildingName) { setError('emergencyBuildingName', 'Building / Society name is required.'); valid = false; }
+        if (!data.areaLocality) { setError('emergencyAreaLocality', 'Area / Locality is required.'); valid = false; }
+        if (!data.city) { setError('emergencyCity', 'City is required.'); valid = false; }
+        if (!data.state) { setError('emergencyState', 'State is required.'); valid = false; }
+        if (!/^\d{6}$/.test(data.pinCode)) { setError('emergencyPinCode', 'PIN code must be 6 digits.'); valid = false; }
+      }
+      return { valid, data };
+    }
+
+    function buildAddressPayload() {
+      return {
+        fullAddress: fullAddressInput.value.trim(),
+        houseNumber: houseNumberInput.value.trim(),
+        buildingName: buildingNameInput.value.trim(),
+        streetName: streetNameInput.value.trim(),
+        landmark: landmarkInput.value.trim(),
+        areaLocality: areaLocalityInput.value.trim(),
+        city: cityInput.value.trim(),
+        state: stateInput.value.trim(),
+        country: countryInput.value.trim(),
+        pinCode: pinCodeInput.value.trim(),
+        addressNotes: addressNotesInput.value.trim(),
+        latitude: latitudeInput.value.trim(),
+        longitude: longitudeInput.value.trim(),
+      };
+    }
+
+    function validateAddress() {
+      clearErrors();
+      let valid = true;
+      const data = buildAddressPayload();
+      if (!data.houseNumber) { setError('houseNumber', 'House / Flat number is required.'); valid = false; }
+      if (!data.buildingName) { setError('buildingName', 'Building / Society name is required.'); valid = false; }
+      if (!data.areaLocality) { setError('areaLocality', 'Area / Locality is required.'); valid = false; }
+      if (!data.city) { setError('city', 'City is required.'); valid = false; }
+      if (!data.state) { setError('state', 'State is required.'); valid = false; }
+      if (!/^\d{6}$/.test(data.pinCode)) { setError('pinCode', 'PIN code must be 6 digits.'); valid = false; }
+      return { valid, data };
+    }
+
+    function setLocationLoading(isLoading) {
+      useCurrentLocationBtn.disabled = isLoading;
+      useCurrentLocationBtn.classList.toggle('is-loading', isLoading);
+    }
+
+    function updateAddressFromLocation(parsed = {}) {
+      const {
+        fullAddress = '',
+        houseNumber = '',
+        buildingName = '',
+        streetName = '',
+        landmark = '',
+        areaLocality = '',
+        city = '',
+        state = '',
+        country = '',
+        pinCode = '',
+        latitude = '',
+        longitude = '',
+      } = parsed;
+      if (fullAddress) fullAddressInput.value = fullAddress;
+      if (houseNumber) houseNumberInput.value = houseNumber;
+      if (buildingName) buildingNameInput.value = buildingName;
+      if (streetName) streetNameInput.value = streetName;
+      if (landmark) landmarkInput.value = landmark;
+      if (areaLocality) areaLocalityInput.value = areaLocality;
+      if (city) cityInput.value = city;
+      if (state) stateInput.value = state;
+      if (country) countryInput.value = country;
+      if (pinCode) pinCodeInput.value = pinCode;
+      latitudeInput.value = latitude;
+      longitudeInput.value = longitude;
+    }
+
+    function getReadableAddressFromNominatim(address = {}) {
+      const house = address.house_number || address.housenumber || '';
+      const road = address.road || address.street || address.neighbourhood || '';
+      const suburb = address.suburb || address.locality || address.village || address.town || address.city_district || '';
+      const city = address.city || address.town || address.village || address.municipality || address.county || '';
+      const state = address.state || '';
+      const country = address.country || '';
+      const pinCode = address.postcode || '';
+      const fullAddress = [
+        house,
+        road,
+        suburb,
+        city,
+        state,
+        country,
+        pinCode,
+      ].filter(Boolean).join(', ');
+
+      return {
+        fullAddress,
+        houseNumber: house,
+        streetName: road,
+        areaLocality: suburb,
+        city,
+        state,
+        country,
+        pinCode,
+      };
+    }
+
+    async function reverseGeocode(latitude, longitude) {
+      const url = new URL(`${window.location.origin}/api/location/reverse`);
+      url.searchParams.set('format', 'jsonv2');
+      url.searchParams.set('lat', latitude);
+      url.searchParams.set('lon', longitude);
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('REVERSE_GEOCODE_FAILED');
+      }
+      const data = await response.json();
+      return data;
+    }
+
+    async function fetchCurrentLocation() {
+      if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        throw new Error('SECURE_CONTEXT_REQUIRED');
+      }
+      if (!('geolocation' in navigator)) {
+        throw new Error('GEOLOCATION_UNSUPPORTED');
+      }
+
+      setLocationLoading(true);
+      showToast('Fetching your current location...');
+
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        });
+      });
+
+      const latitude = String(position.coords.latitude);
+      const longitude = String(position.coords.longitude);
+      latitudeInput.value = latitude;
+      longitudeInput.value = longitude;
+
+      let geocoded;
+      try {
+        geocoded = await reverseGeocode(latitude, longitude);
+      } catch (error) {
+        updateAddressFromLocation({ latitude, longitude });
+        showToast('Location found, but address lookup failed. Please complete the remaining address details manually.');
+        return;
+      }
+
+      const parsed = getReadableAddressFromNominatim(geocoded.address || {});
+      updateAddressFromLocation({
+        ...parsed,
+        latitude,
+        longitude,
+      });
+      if (geocoded.display_name && !fullAddressInput.value.trim()) {
+        fullAddressInput.value = geocoded.display_name;
+      }
+      showToast('Current location added successfully.');
+    }
+
+    function buildBioPayload() {
+      return {
+        height: heightInput.value.trim(),
+        weight: weightInput.value.trim(),
+        bloodGroup: selectedValues(bloodGroupGroup)[0] || '',
+        allergies: selectedValues(allergyGroup),
+        allergyOther: allergyOtherInput.value.trim(),
+        medicalConditions: selectedValues(conditionGroup),
+        conditionOther: conditionOtherInput.value.trim(),
+        currentMedications: currentMedicationsInput.value.trim(),
+        mobilityStatus: selectedValues(mobilityGroup)[0] || '',
+        disability: selectedValues(disabilityGroup)[0] || '',
+        disabilityDetails: disabilityDetailsInput.value.trim(),
+      };
+    }
+
+    function validateBio() {
+      clearErrors();
+      let valid = true;
+      const data = buildBioPayload();
+      const heightNum = Number.parseFloat(data.height);
+      const weightNum = Number.parseFloat(data.weight);
+
+      if (!data.height || Number.isNaN(heightNum) || heightNum <= 0 || heightNum > 300) {
+        setError('height', 'Enter a valid height.');
+        valid = false;
+      }
+      if (!data.weight || Number.isNaN(weightNum) || weightNum <= 0 || weightNum > 500) {
+        setError('weight', 'Enter a valid weight.');
+        valid = false;
+      }
+      if (!data.bloodGroup) {
+        const field = bloodGroupGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('bloodGroupError');
+        helper.textContent = 'Select a blood group.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (!data.mobilityStatus) {
+        const field = mobilityGroup.closest('.field');
+        field?.classList.add('invalid', 'shake');
+        const helper = document.getElementById('mobilityStatusError');
+        helper.textContent = 'Select mobility status.';
+        helper.classList.add('show');
+        valid = false;
+      }
+      if (selectedValues(allergyGroup).includes('Other') && !data.allergyOther) {
+        setError('allergyOther', 'Describe the other allergy.');
+        valid = false;
+      }
+      if (selectedValues(conditionGroup).includes('Other') && !data.conditionOther) {
+        setError('conditionOther', 'Describe the other condition.');
+        valid = false;
+      }
+      if (data.disability === 'Yes' && !data.disabilityDetails) {
+        setError('disabilityDetails', 'Add disability details.');
+        valid = false;
+      }
+      return { valid, data };
+    }
+
+    [heightInput, weightInput, currentMedicationsInput, allergyOtherInput, conditionOtherInput, disabilityDetailsInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${input.id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    });
+
+    [allergyOtherInput, conditionOtherInput, disabilityDetailsInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+      });
+    });
+
+    [primaryMobileInput, emailAddressInput, alternateMobileInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${input.id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    });
+
+    [houseNumberInput, buildingNameInput, streetNameInput, landmarkInput, areaLocalityInput, cityInput, stateInput, pinCodeInput, addressNotesInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${input.id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    });
+
+    [emergencyNameInput, relationshipOtherInput, emergencyPrimaryMobileInput, emergencyAlternateMobileInput, emergencyEmailInput, emergencyHouseNumberInput, emergencyBuildingNameInput, emergencyAreaLocalityInput, emergencyCityInput, emergencyStateInput, emergencyPinCodeInput, emergencyNotesInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${input.id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    });
+
+    [servicesOtherInput, preferenceNotesInput].forEach((input) => {
+      input?.addEventListener('input', () => {
+        const field = input.closest('.field');
+        field?.classList.remove('invalid', 'shake');
+        const helper = document.getElementById(`${input.id}Error`);
+        if (helper) helper.textContent = '';
+      });
+    });
+
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (contactContinueBtn.disabled) return;
+      const { valid, data } = validateContact();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        setLoadingScreen3(true);
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('contactInformation', data, { registrationStep: 3, autosave: false });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 3,
+          sectionName: 'contactInformation',
+          sectionData: data,
+        });
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 4 });
+        }
+        window.location.href = 'registration.html';
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        setLoadingScreen3(false);
+      }
+    });
+
+    skipToScreen6Btn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 6 });
+      }
+      showScreen(6);
+      hydrateScreen6();
+    });
+
+    relationshipGroup?.addEventListener('change', () => {
+      const selected = relationshipGroup.querySelector('input:checked')?.value || '';
+      selectedEmergency.relationship = selected;
+      relationshipOtherField.classList.toggle('is-visible', selected === 'Other');
+      if (selected !== 'Other') relationshipOtherInput.value = '';
+      clearErrors();
+    });
+
+    sameAddressGroup?.addEventListener('change', () => {
+      const selected = sameAddressGroup.querySelector('input:checked')?.value || 'Yes';
+      selectedEmergency.sameAddress = selected;
+      emergencyAddressSection.classList.toggle('is-visible', selected === 'No');
+      clearErrors();
+    });
+
+    whoNeedsCareGroup?.addEventListener('change', () => {
+      selectedPreferences.whoNeedsCare = whoNeedsCareGroup.querySelector('input:checked')?.value || '';
+      clearErrors();
+    });
+
+    servicesNeededGroup?.addEventListener('change', () => {
+      selectedPreferences.servicesNeeded = [...servicesNeededGroup.querySelectorAll('input:checked')].map((node) => node.value);
+      servicesOtherField.classList.toggle('is-visible', selectedPreferences.servicesNeeded.includes('Other'));
+      if (!selectedPreferences.servicesNeeded.includes('Other')) servicesOtherInput.value = '';
+      clearErrors();
+    });
+
+    urgencyGroup?.addEventListener('change', () => {
+      selectedPreferences.urgency = urgencyGroup.querySelector('input:checked')?.value || '';
+      clearErrors();
+    });
+
+    visitTimeGroup?.addEventListener('change', () => {
+      selectedPreferences.visitTime = visitTimeGroup.querySelector('input:checked')?.value || '';
+      clearErrors();
+    });
+
+    communicationGroup?.addEventListener('change', () => {
+      selectedPreferences.communicationMethod = communicationGroup.querySelector('input:checked')?.value || '';
+      clearErrors();
+    });
+
+    emergencyForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (emergencyContinueBtn.disabled) return;
+      const { valid, data } = validateEmergency();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        emergencyContinueBtn.disabled = true;
+        emergencyContinueBtn.textContent = 'Saving...';
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('emergencyContact', data, { registrationStep: 5, autosave: false });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 5,
+          sectionName: 'emergencyContact',
+          sectionData: data,
+        });
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 6 });
+        }
+        showScreen(6);
+        hydrateScreen6();
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        emergencyContinueBtn.disabled = false;
+        emergencyContinueBtn.textContent = 'Continue';
+      }
+    });
+
+    screen6BackBtn?.addEventListener('click', () => {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: 5 });
+      }
+      showScreen(5);
+      hydrateScreen5();
+    });
+
+    preferencesForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (preferencesContinueBtn.disabled) return;
+      const { valid, data } = validatePreferences();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        preferencesContinueBtn.disabled = true;
+        preferencesContinueBtn.textContent = 'Saving...';
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('healthcarePreferences', data, { registrationStep: 6, autosave: false });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 6,
+          sectionName: 'healthcarePreferences',
+          sectionData: data,
+        });
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 7 });
+        }
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        preferencesContinueBtn.disabled = false;
+        preferencesContinueBtn.textContent = 'Continue';
+      }
+    });
+
+    addressForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (addressContinueBtn.disabled) return;
+      const { valid, data } = validateAddress();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        addressContinueBtn.disabled = true;
+        addressContinueBtn.textContent = 'Saving...';
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('addressInformation', data, { registrationStep: 4, autosave: false });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 4,
+          sectionName: 'addressInformation',
+          sectionData: data,
+        });
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 5 });
+        }
+        showScreen(5);
+        hydrateScreen5();
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        addressContinueBtn.disabled = false;
+        addressContinueBtn.textContent = 'Continue';
+      }
+    });
+
+    biologicalForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (biologicalContinueBtn.disabled) return;
+      const { valid, data } = validateBio();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        setLoadingScreen2(true);
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('biologicalInformation', data, { registrationStep: 2, autosave: false });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 2,
+          sectionName: 'biologicalInformation',
+          sectionData: data,
+        });
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 3 });
+        }
+        window.location.href = 'registration.html';
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        setLoadingScreen2(false);
+      }
+    });
+
+    function getGender() {
+      const checked = document.querySelector('input[name="gender"]:checked');
+      return checked ? checked.value : '';
+    }
+
+    function calcAge(value) {
+      if (!value) return '';
+      const birth = new Date(value);
+      if (Number.isNaN(birth.getTime())) return '';
+      const now = new Date();
+      let age = now.getFullYear() - birth.getFullYear();
+      const monthDiff = now.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age -= 1;
+      return age >= 0 ? String(age) : '';
+    }
+
+    function setPhotoPreview(index, dataUrl) {
+      const item = photoSlots.find((entry) => entry.index === index);
+      if (!item?.slot) return;
+
+      item.slot.classList.toggle('has-image', Boolean(dataUrl));
+      item.slot.querySelector('img')?.remove();
+      item.slot.querySelector('.remove-chip')?.remove();
+
+      if (dataUrl) {
+        const img = document.createElement('img');
+        img.alt = `Captured photo ${index}`;
+        img.src = dataUrl;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'remove-chip';
+        remove.setAttribute('aria-label', `Remove photo ${index}`);
+        remove.textContent = '×';
+        remove.addEventListener('click', (event) => {
+          event.stopPropagation();
+          photoData[index] = '';
+          item.input.value = '';
+          setPhotoPreview(index, '');
+        });
+        item.slot.appendChild(img);
+        item.slot.appendChild(remove);
+        item.trigger?.setAttribute('aria-label', `Captured photo ${index}`);
+      }
+    }
+
+    useCurrentLocationBtn?.addEventListener('click', async () => {
+      if (useCurrentLocationBtn.disabled) return;
+      try {
+        setLocationLoading(true);
+        await fetchCurrentLocation();
+      } catch (error) {
+        const code = String(error?.code || error?.message || '');
+        if (code === '1' || code.includes('PERMISSION_DENIED')) {
+          showToast('Location permission was denied. Please allow location access or enter your address manually.');
+        } else if (code === '2' || code.includes('POSITION_UNAVAILABLE')) {
+          showToast('Location unavailable. Please try again or enter your address manually.');
+        } else if (code === '3' || code.includes('TIMEOUT')) {
+          showToast('Location request timed out. Please try again.');
+        } else if (code.includes('GEOLOCATION_UNSUPPORTED')) {
+          showToast('Your browser does not support location services.');
+        } else if (code.includes('SECURE_CONTEXT_REQUIRED')) {
+          showToast('Location works only on HTTPS or localhost.');
+        } else {
+          showToast('Unable to fetch your current location. Please try again.');
+        }
+      } finally {
+        setLocationLoading(false);
+      }
+    });
+
+    async function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+        cameraStream = null;
+      }
+      cameraVideo.srcObject = null;
+    }
+
+    async function openCamera(index) {
+      activePhotoIndex = index;
+      pendingPhotoData = '';
+      cameraModal.classList.add('is-open');
+      cameraModal.setAttribute('aria-hidden', 'false');
+      cameraStage.classList.remove('captured');
+      cameraCapturePreview.hidden = true;
+      cameraCapturePreview.removeAttribute('src');
+      cameraVideo.hidden = false;
+      cameraVideo.style.display = 'block';
+      cameraVideo.style.opacity = '1';
+      cameraVideo.style.visibility = 'visible';
+      cameraVideo.style.width = 'calc(100% - 20px)';
+      cameraVideo.style.height = 'calc(100% - 20px)';
+      cameraVideo.style.background = '#000';
+      cameraCaptureBtn.hidden = false;
+      cameraRetakeBtn.hidden = true;
+      cameraSelectBtn.hidden = true;
+      cameraCaptureBtn.textContent = 'Capture';
+      cameraCaptureBtn.disabled = false;
+      try {
+        await stopCamera();
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false,
+        });
+        cameraVideo.srcObject = cameraStream;
+        cameraVideo.removeAttribute('poster');
+        cameraVideo.muted = true;
+        cameraVideo.playsInline = true;
+        cameraVideo.autoplay = true;
+        cameraVideo.controls = false;
+        cameraVideo.load?.();
+        await new Promise((resolve) => {
+          const ready = () => resolve();
+          cameraVideo.onloadedmetadata = ready;
+          cameraVideo.oncanplay = ready;
+          setTimeout(resolve, 900);
+        });
+        try {
+          await cameraVideo.play();
+        } catch (playError) {
+          cameraVideo.play?.();
+        }
+        cameraVideo.style.transform = 'translateZ(0)';
+        cameraVideo.style.visibility = 'visible';
+        cameraVideo.style.opacity = '1';
+        requestAnimationFrame(() => {
+          cameraVideo.style.transform = 'translateZ(0)';
+        });
+      } catch (error) {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' },
+            audio: false,
+          });
+          cameraVideo.srcObject = cameraStream;
+          cameraVideo.muted = true;
+          cameraVideo.playsInline = true;
+          cameraVideo.autoplay = true;
+          await cameraVideo.play();
+        } catch (fallbackError) {
+          showToast('Camera access is required to capture photos.');
+          await stopCamera();
+          cameraModal.classList.remove('is-open');
+          cameraModal.setAttribute('aria-hidden', 'true');
+        }
+      }
+    }
+
+    function closeCamera() {
+      stopCamera();
+      cameraModal.classList.remove('is-open');
+      cameraModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openDisclaimer(index) {
+      pendingDisclaimerIndex = index;
+      photoDisclaimerModal.classList.add('is-open');
+      photoDisclaimerModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDisclaimer() {
+      pendingDisclaimerIndex = null;
+      photoDisclaimerModal.classList.remove('is-open');
+      photoDisclaimerModal.setAttribute('aria-hidden', 'true');
+    }
+
+    photoSlots.forEach(({ index, trigger }) => {
+      trigger?.addEventListener('click', () => {
+        if (index > 1 && !photoData[index - 1]) {
+          showToast(`Please complete Photo ${index - 1} first.`);
+          return;
+        }
+        if (index === 1) {
+          openDisclaimer(index);
+          return;
+        }
+        openCamera(index);
+      });
+    });
+
+    cameraCaptureBtn.addEventListener('click', async () => {
+      if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = cameraVideo.videoWidth;
+      canvas.height = cameraVideo.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      pendingPhotoData = dataUrl;
+      cameraCapturePreview.src = dataUrl;
+      cameraCapturePreview.hidden = false;
+      cameraStage.classList.add('captured');
+      cameraVideo.hidden = true;
+      cameraCaptureBtn.hidden = true;
+      cameraRetakeBtn.hidden = false;
+      cameraSelectBtn.hidden = false;
+      await stopCamera();
+    });
+
+    cameraRetakeBtn.addEventListener('click', async () => {
+      pendingPhotoData = '';
+      cameraStage.classList.remove('captured');
+      cameraCapturePreview.hidden = true;
+      cameraCapturePreview.removeAttribute('src');
+      cameraVideo.hidden = false;
+      cameraCaptureBtn.hidden = false;
+      cameraRetakeBtn.hidden = true;
+      cameraSelectBtn.hidden = true;
+      await openCamera(activePhotoIndex);
+    });
+
+    cameraSelectBtn.addEventListener('click', () => {
+      if (!pendingPhotoData) return;
+      photoData[activePhotoIndex] = pendingPhotoData;
+      setPhotoPreview(activePhotoIndex, pendingPhotoData);
+      pendingPhotoData = '';
+      closeCamera();
+    });
+
+    cameraCloseBtn.addEventListener('click', closeCamera);
+    cameraModal.addEventListener('click', (event) => {
+      if (event.target === cameraModal) closeCamera();
+    });
+
+    disclaimerCancelBtn.addEventListener('click', closeDisclaimer);
+    disclaimerContinueBtn.addEventListener('click', async () => {
+      const index = pendingDisclaimerIndex || 1;
+      closeDisclaimer();
+      await openCamera(index);
+    });
+    photoDisclaimerModal.addEventListener('click', (event) => {
+      if (event.target === photoDisclaimerModal) closeDisclaimer();
+    });
+
+    function hydrate() {
+      if (!window.CareWellRegistration) return;
+      const state = window.CareWellRegistration.getState ? window.CareWellRegistration.getState() : {};
+      const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      const personal = state.personalInformation || {};
+      fields.firstName.value = personal.firstName || profile.firstName || '';
+      fields.middleName.value = personal.middleName || '';
+      fields.lastName.value = personal.lastName || profile.lastName || '';
+      fields.preferredName.value = personal.preferredName || '';
+      fields.dateOfBirth.value = personal.dateOfBirth || '';
+      ageInput.value = personal.age ? String(personal.age) : calcAge(fields.dateOfBirth.value);
+      if (personal.gender) {
+        const radio = document.querySelector(`input[name="gender"][value="${personal.gender}"]`);
+        if (radio) radio.checked = true;
+      }
+      const profilePhotos = Array.isArray(personal.profilePhotos) ? personal.profilePhotos : [];
+      profilePhotos.slice(0, 3).forEach((dataUrl, index) => {
+        if (dataUrl) {
+          photoData[index + 1] = dataUrl;
+          setPhotoPreview(index + 1, dataUrl);
+        }
+      });
+    }
+
+    function buildPayload() {
+      return {
+        firstName: fields.firstName.value.trim(),
+        middleName: fields.middleName.value.trim(),
+        lastName: fields.lastName.value.trim(),
+        preferredName: fields.preferredName.value.trim(),
+        dateOfBirth: fields.dateOfBirth.value,
+        age: ageInput.value ? Number(ageInput.value) : null,
+        gender: getGender(),
+        profilePhotos: [photoData[1], photoData[2], photoData[3]],
+      };
+    }
+
+    function validate() {
+      clearErrors();
+      let valid = true;
+      const data = buildPayload();
+
+      if (!data.firstName) { setError('firstName', 'First name is required.'); valid = false; }
+      if (!data.lastName) { setError('lastName', 'Last name is required.'); valid = false; }
+      if (!data.dateOfBirth) { setError('dateOfBirth', 'Date of birth is required.'); valid = false; }
+      else {
+        const dob = new Date(data.dateOfBirth);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        if (Number.isNaN(dob.getTime()) || dob > today) {
+          setError('dateOfBirth', 'Please enter a valid past date.'); valid = false;
+        }
+      }
+      if (!data.gender) { setError('gender', 'Select a gender.'); valid = false; }
+      if (!photoData[1] || !photoData[2] || !photoData[3]) {
+        showToast('Please capture all 3 photos using the camera.');
+        valid = false;
+      }
+
+      return { valid, data };
+    }
+
+    async function saveStep1(sectionData) {
+      const res = await window.CareWellRegistration.saveRegistrationStep({
+        registrationStep: 1,
+        sectionName: 'personalInformation',
+        sectionData,
+      });
+      return res;
+    }
+
+    function setLoading(isLoading) {
+      continueBtn.disabled = isLoading;
+      continueBtn.textContent = isLoading ? 'Saving...' : 'Next';
+    }
+
+    fields.dateOfBirth.addEventListener('input', () => {
+      ageInput.value = calcAge(fields.dateOfBirth.value);
+    });
+
+    fieldIds.forEach((id) => {
+      const input = fields[id];
+      if (!input) return;
+      const eventName = input.type === 'radio' ? 'change' : 'input';
+      input.addEventListener(eventName, () => {
+        const field = input.closest('.field');
+        if (field) field.classList.remove('invalid', 'shake');
+        if (errors[id]) {
+          errors[id].textContent = '';
+          errors[id].classList.remove('show');
+        }
+        if (id === 'dateOfBirth') {
+          ageInput.value = calcAge(fields.dateOfBirth.value);
+        }
+      });
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (continueBtn.disabled) return;
+      const { valid, data } = validate();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+      try {
+        setLoading(true);
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('personalInformation', data, { registrationStep: 1, autosave: false });
+        }
+        await saveStep1(data);
+        if (window.CareWellRegistration?.setState) {
+          window.CareWellRegistration.setState({ registrationStep: 2 });
+        }
+        window.location.href = 'registration.html';
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to save your information. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    (async () => {
+      try {
+        if (window.CareWellRegistration?.resumeRegistration) {
+          const status = await window.CareWellRegistration.resumeRegistration();
+          if (status?.registrationCompleted) {
+            window.location.replace('dashboard.html');
+            return;
+          }
+          showScreen(status?.registrationStep || 1);
+          if ((status?.registrationStep || 1) === 2) {
+            hydrateScreen2();
+          }
+          if ((status?.registrationStep || 1) === 3) {
+            hydrateScreen3();
+          }
+          if ((status?.registrationStep || 1) === 4) {
+            hydrateScreen4();
+          }
+          if ((status?.registrationStep || 1) === 5) {
+            hydrateScreen5();
+          }
+          if ((status?.registrationStep || 1) === 6) {
+            hydrateScreen6();
+          }
+        }
+        hydrate();
+      } catch (error) {
+        hydrate();
+        showScreen(1);
+      }
+    })();
+  </script>
+</body>
+</html>

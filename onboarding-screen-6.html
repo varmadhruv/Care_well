@@ -359,6 +359,7 @@
     </section>
   </main>
 
+  <script src="registration-state.js" defer></script>
   <script>
     const continueBtn = document.getElementById('continueBtn');
     const cards = Array.from(document.querySelectorAll('.card'));
@@ -374,7 +375,7 @@
       card.addEventListener('click', () => selectCard(card));
     });
 
-    continueBtn.addEventListener('click', () => {
+    continueBtn.addEventListener('click', async () => {
       if (!selected) return;
       window.location.href = 'onboarding-screen-7.html';
     });

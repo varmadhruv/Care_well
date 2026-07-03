@@ -238,10 +238,13 @@
       </nav>
     </section>
   </main>
+  <script src="registration-state.js" defer></script>
   <script>
     const nextBtn = document.getElementById('nextBtn');
     const skipBtn = document.getElementById('skipBtn');
-    nextBtn?.addEventListener('click', () => { window.location.href = 'onboarding-screen-4.html'; });
+    nextBtn?.addEventListener('click', () => {
+      window.location.href = 'onboarding-screen-4.html';
+    });
     skipBtn?.addEventListener('click', () => { window.location.href = 'onboarding-screen-4.html'; });
   </script>
 </body>

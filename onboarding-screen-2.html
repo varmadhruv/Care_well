@@ -518,6 +518,7 @@
     </section>
   </main>
 
+  <script src="registration-state.js" defer></script>
   <script>
     const skipBtn = document.getElementById('skipBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -576,9 +577,9 @@
       window.location.href = 'onboarding-screen-4.html';
     });
 
-    nextBtn.addEventListener('click', () => {
-        window.location.href = 'onboarding-screen-3.html';
-      });
+    nextBtn.addEventListener('click', async () => {
+      window.location.href = 'onboarding-screen-3.html';
+    });
   </script>
 </body>
 </html>
