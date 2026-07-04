@@ -27,7 +27,7 @@ async function connectDb() {
     emailIndex &&
     (emailIndex.unique !== true ||
       JSON.stringify(emailIndex.partialFilterExpression || null) !==
-        JSON.stringify({ email: { $type: "string", $ne: "" } }));
+        JSON.stringify({ email: { $exists: true, $type: "string" } }));
 
   if (emailIndexNeedsMigration) {
     await usersCollection.dropIndex("email_1").catch(() => {});
@@ -37,7 +37,7 @@ async function connectDb() {
         name: "email_1",
         unique: true,
         partialFilterExpression: {
-          email: { $type: "string", $ne: "" },
+          email: { $exists: true, $type: "string" },
         },
       }
     );

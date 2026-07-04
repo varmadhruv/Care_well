@@ -71,6 +71,7 @@
       box-shadow: var(--shadow);
       padding: 28px;
       animation: fadeUp 500ms ease both;
+      position: relative;
     }
 
     .top-row {
@@ -79,6 +80,8 @@
       align-items: center;
       margin-bottom: 34px;
       gap: 12px;
+      position: relative;
+      z-index: 5;
     }
 
     .brand {
@@ -128,24 +131,28 @@
       color: #6cbf43;
     }
     .skip-btn {
-      height: 38px;
-      padding: 0 14px;
+      height: 42px;
+      padding: 0 18px;
       border-radius: 999px;
-      border: 1px solid #dbeafe;
-      background: #eef4ff;
+      border: 1px solid #cddbf0;
+      background: #ffffff;
       color: var(--primary);
       font-family: Poppins, Inter, sans-serif;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 18px rgba(11, 79, 140, 0.08);
+      box-shadow: 0 8px 20px rgba(11, 79, 140, 0.08);
       transition: transform var(--ease), background var(--ease), box-shadow var(--ease);
       flex: 0 0 auto;
+      position: relative;
+      z-index: 6;
+      pointer-events: auto;
+      touch-action: manipulation;
     }
     .skip-btn:hover {
       transform: translateY(-2px);
-      background: #e2edff;
-      box-shadow: 0 10px 22px rgba(11, 79, 140, 0.12);
+      background: #f4f8fc;
+      box-shadow: 0 10px 24px rgba(11, 79, 140, 0.12);
     }
 
     .heading {
@@ -292,6 +299,10 @@
       background: #fff;
       cursor: pointer;
     }
+    .consent-check.invalid {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    }
     .consent-check input {
       width: 18px;
       height: 18px;
@@ -333,6 +344,16 @@
       font-size: 14px;
       line-height: 1.6;
       margin-bottom: 18px;
+    }
+    .edit-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      padding: 0;
     }
     .card-grid {
       display: grid;
@@ -1100,7 +1121,7 @@
             <small>NURSING CARE</small>
           </span>
         </div>
-        <button type="button" class="skip-btn" id="skipToScreen2Btn">Skip</button>
+        <button type="button" class="skip-btn" id="skipToScreen2Btn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(2)">Skip</button>
       </div>
 
       <header class="heading">
@@ -1231,7 +1252,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="skipToScreen3Btn">Skip</button>
+          <button type="button" class="skip-btn" id="skipToScreen3Btn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(3)">Skip</button>
         </div>
         <header class="heading">
           <h1>Biological Information</h1>
@@ -1322,7 +1343,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="skipToScreen4Btn">Skip</button>
+          <button type="button" class="skip-btn" id="skipToScreen4Btn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(4)">Skip</button>
         </div>
         <header class="heading">
           <h1>Contact Information</h1>
@@ -1377,7 +1398,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="skipToScreen5Btn">Skip</button>
+          <button type="button" class="skip-btn" id="skipToScreen5Btn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(5)">Skip</button>
         </div>
         <header class="heading">
           <h1>Address Information</h1>
@@ -1474,7 +1495,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="skipToScreen6Btn">Skip</button>
+          <button type="button" class="skip-btn" id="skipToScreen6Btn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(6)">Skip</button>
         </div>
         <header class="heading">
           <h1>Emergency Contact</h1>
@@ -1584,7 +1605,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="screen6BackBtn">Back</button>
+          <button type="button" class="skip-btn" id="screen6BackBtn">Skip</button>
         </div>
         <header class="heading">
           <h1>Healthcare Preferences</h1>
@@ -1656,7 +1677,6 @@
           <h1>Consent &amp; Privacy</h1>
           <p>Review the information below and provide your consent so CareWell can safely deliver healthcare services.</p>
         </header>
-        <div class="progress-full" aria-hidden="true"><span></span></div>
         <div class="summary-list" id="consentSummaryList"></div>
         <form class="form" id="consentForm" novalidate>
           <div class="consent-list">
@@ -1665,11 +1685,13 @@
             <label class="consent-check"><input type="checkbox" id="consentPrivacy" /><span>I agree to the Privacy Policy.</span></label>
             <label class="consent-check"><input type="checkbox" id="consentTerms" /><span>I agree to the Terms &amp; Conditions.</span></label>
             <label class="consent-check"><input type="checkbox" id="consentContact" /><span>I authorize CareWell to contact me regarding healthcare services.</span></label>
+            <label class="consent-check"><input type="checkbox" id="consentSignatureCorrect" /><span>The digital signature provided by me is correct.</span></label>
             <label class="consent-check"><input type="checkbox" id="consentUpdates" /><span>I would like to receive healthcare tips and service updates.</span></label>
           </div>
           <div class="signature-box">
             <label for="digitalSignature">Digital Signature *</label>
             <input id="digitalSignature" name="digitalSignature" type="text" placeholder="Type your full name" />
+            <div class="helper" style="display:block;color:#64748b;">Use the exact full name you entered earlier, or the exact name part from your email address. Any different name will be rejected.</div>
             <div class="helper" id="digitalSignatureError"></div>
           </div>
           <div class="notice-card">
@@ -1748,13 +1770,14 @@
     const preferencesContinueBtn = document.getElementById('preferencesContinueBtn');
     const consentForm = document.getElementById('consentForm');
     const consentCompleteBtn = document.getElementById('consentCompleteBtn');
-    const screen7BackBtn = document.getElementById('screen7BackBtn');
     const consentSummaryList = document.getElementById('consentSummaryList');
+    const screen7BackBtn = document.getElementById('screen7BackBtn');
     const consentTruth = document.getElementById('consentTruth');
     const consentStore = document.getElementById('consentStore');
     const consentPrivacy = document.getElementById('consentPrivacy');
     const consentTerms = document.getElementById('consentTerms');
     const consentContact = document.getElementById('consentContact');
+    const consentSignatureCorrect = document.getElementById('consentSignatureCorrect');
     const consentUpdates = document.getElementById('consentUpdates');
     const digitalSignatureInput = document.getElementById('digitalSignature');
     const useCurrentLocationBtn = document.getElementById('useCurrentLocationBtn');
@@ -1848,7 +1871,7 @@
       input: document.querySelector(`[data-photo-input="${index}"]`),
     }));
     const photoData = { 1: '', 2: '', 3: '' };
-    const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Don’t Know'];
+    const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Donâ€™t Know'];
     const allergyOptions = ['None', 'Food', 'Medicine', 'Dust', 'Pollen', 'Other'];
     const conditionOptions = ['Diabetes', 'High Blood Pressure', 'Heart Disease', 'Asthma', 'Arthritis', 'Kidney Disease', 'Cancer', 'Thyroid Disorder', 'None', 'Other'];
     const mobilityOptions = ['Independent', 'Needs Assistance', 'Wheelchair User', 'Bedridden'];
@@ -1898,8 +1921,35 @@
       terms: false,
       contact: false,
       updates: false,
+      signatureCorrect: false,
       signature: '',
     };
+
+    function collectStateSummary() {
+      const state = window.CareWellRegistration?.getState?.() || {};
+      return {
+        personal: state.personalInformation || {},
+        biological: state.biologicalInformation || {},
+        contact: state.contactInformation || {},
+        address: state.addressInformation || {},
+        emergency: state.emergencyContact || {},
+        preferences: state.healthcarePreferences || {},
+      };
+    }
+
+    function openStep(step) {
+      if (window.CareWellRegistration?.setState) {
+        window.CareWellRegistration.setState({ registrationStep: step });
+      }
+      showScreen(step);
+      if (step === 1) hydrate();
+      if (step === 2) hydrateScreen2();
+      if (step === 3) hydrateScreen3();
+      if (step === 4) hydrateScreen4();
+      if (step === 5) hydrateScreen5();
+      if (step === 6) hydrateScreen6();
+      if (step === 7) hydrateScreen7();
+    }
     const preferenceAliases = {
       whoNeedsCare: ['whoNeedsCare', 'patientType', 'careRecipient', 'personNeedingCare'],
       servicesNeeded: ['servicesNeeded', 'requiredServices', 'careServices', 'selectedServices'],
@@ -2046,36 +2096,48 @@
       screen7.hidden = activeStep !== 7;
     }
 
-    skipToScreen2Btn?.addEventListener('click', () => {
+    const jumpToStep = (step) => {
       if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 2 });
+        window.CareWellRegistration.setState({ registrationStep: step });
       }
-      showScreen(2);
-      hydrateScreen2();
+      showScreen(step);
+      if (step === 2) hydrateScreen2();
+      if (step === 3) hydrateScreen3();
+      if (step === 4) hydrateScreen4();
+      if (step === 5) hydrateScreen5();
+      if (step === 6) hydrateScreen6();
+      if (step === 7) hydrateScreen7();
+    };
+    window.CareWellRegistrationJumpStep = jumpToStep;
+
+    skipToScreen2Btn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToStep(2);
     });
 
-    skipToScreen3Btn?.addEventListener('click', () => {
-      if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 3 });
-      }
-      showScreen(3);
-      hydrateScreen3();
+    skipToScreen3Btn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToStep(3);
     });
 
-    skipToScreen4Btn?.addEventListener('click', () => {
-      if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 4 });
-      }
-      showScreen(4);
-      hydrateScreen4();
+    skipToScreen4Btn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToStep(4);
     });
 
-    skipToScreen5Btn?.addEventListener('click', () => {
-      if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 5 });
-      }
-      showScreen(5);
-      hydrateScreen5();
+    skipToScreen5Btn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToStep(5);
+    });
+
+    skipToScreen6Btn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToStep(6);
     });
 
     function setLoadingScreen2(isLoading) {
@@ -2094,6 +2156,17 @@
       preferencesContinueBtn.disabled = isLoading;
       preferencesContinueBtn.textContent = isLoading ? 'Saving...' : 'Continue';
       screen6BackBtn.disabled = isLoading;
+    }
+
+    function setLoadingScreen7(isLoading) {
+      consentCompleteBtn.disabled = isLoading;
+      consentCompleteBtn.textContent = isLoading ? 'Saving...' : 'Complete Registration';
+      screen7BackBtn.disabled = isLoading;
+    }
+
+    function goToDashboard() {
+      const target = new URL('./dashboard.html', window.location.href).href;
+      window.location.assign(target);
     }
 
     function selectedValues(group) {
@@ -2309,6 +2382,98 @@
       servicesOtherInput.value = merged.servicesOther || '';
       preferenceNotesInput.value = merged.additionalNotes || '';
       servicesOtherField.classList.toggle('is-visible', selectedPreferences.servicesNeeded.includes('Other'));
+    }
+
+    function hydrateScreen7() {
+      const state = collectStateSummary();
+      const consent = (window.CareWellRegistration?.getState?.() || {}).consentInformation || {};
+      selectedConsent.truth = Boolean(consent.consentTruth);
+      selectedConsent.store = Boolean(consent.consentStore);
+      selectedConsent.privacy = Boolean(consent.consentPrivacy);
+      selectedConsent.terms = Boolean(consent.consentTerms);
+      selectedConsent.contact = Boolean(consent.consentContact);
+      selectedConsent.signatureCorrect = Boolean(consent.consentSignatureCorrect);
+      selectedConsent.updates = Boolean(consent.consentUpdates);
+      selectedConsent.signature = consent.signature || '';
+      const sections = [
+        { label: 'Personal Information', value: [state.personal.firstName, state.personal.lastName].filter(Boolean).join(' ') || 'Provided', step: 1 },
+        { label: 'Biological Information', value: [state.biological.height ? `Height: ${state.biological.height}` : '', state.biological.weight ? `Weight: ${state.biological.weight}` : '', state.biological.bloodGroup ? `Blood: ${state.biological.bloodGroup}` : ''].filter(Boolean).join(' • ') || 'Provided', step: 2 },
+        { label: 'Contact Information', value: [state.contact.primaryMobile ? `Mobile: ${state.contact.primaryMobile}` : '', state.contact.preferredContactMethod ? `Contact: ${state.contact.preferredContactMethod}` : '', state.contact.preferredLanguage ? `Language: ${state.contact.preferredLanguage}` : ''].filter(Boolean).join(' • ') || 'Provided', step: 3 },
+        { label: 'Address Information', value: state.address.fullAddress || [state.address.houseNumber, state.address.buildingName, state.address.areaLocality, state.address.city, state.address.state, state.address.pinCode].filter(Boolean).join(', ') || 'Provided', step: 4 },
+        { label: 'Emergency Contact', value: [state.emergency.fullName, state.emergency.relationship].filter(Boolean).join(' • ') || 'Provided', step: 5 },
+        { label: 'Healthcare Preferences', value: [state.preferences.whoNeedsCare, state.preferences.urgency, state.preferences.communicationMethod].filter(Boolean).join(' • ') || 'Provided', step: 6 },
+      ];
+      consentSummaryList.innerHTML = sections.map((section) => `
+        <div class="summary-item">
+          <div class="summary-item-head">
+            <strong>${section.label}</strong>
+            <button type="button" class="edit-link" data-edit-step="${section.step}">Edit</button>
+          </div>
+          <div class="summary-value">${section.value}</div>
+        </div>
+      `).join('');
+      consentSummaryList.querySelectorAll('[data-edit-step]').forEach((btn) => {
+        btn.addEventListener('click', () => openStep(Number(btn.dataset.editStep || 1)));
+      });
+      consentTruth.checked = Boolean(selectedConsent.truth);
+      consentStore.checked = Boolean(selectedConsent.store);
+      consentPrivacy.checked = Boolean(selectedConsent.privacy);
+      consentTerms.checked = Boolean(selectedConsent.terms);
+      consentContact.checked = Boolean(selectedConsent.contact);
+      consentUpdates.checked = Boolean(selectedConsent.updates);
+      digitalSignatureInput.value = selectedConsent.signature || '';
+    }
+
+    function buildConsentPayload() {
+      return {
+        consentTruth: Boolean(consentTruth.checked),
+        consentStore: Boolean(consentStore.checked),
+        consentPrivacy: Boolean(consentPrivacy.checked),
+        consentTerms: Boolean(consentTerms.checked),
+        consentContact: Boolean(consentContact.checked),
+        consentSignatureCorrect: Boolean(consentSignatureCorrect?.checked),
+        consentUpdates: Boolean(consentUpdates.checked),
+        signature: digitalSignatureInput.value.trim(),
+      };
+    }
+
+    function getAllowedSignatureValues() {
+      const profile = collectStateSummary();
+      const fullName = `${profile.personal.firstName || ''} ${profile.personal.lastName || ''}`.trim().toLowerCase();
+      const emailValue = (profile.contact.emailAddress || profile.profile?.email || '').trim().toLowerCase();
+      const emailLocal = emailValue.includes('@') ? emailValue.split('@')[0].trim() : emailValue;
+      return new Set([fullName, emailValue, emailLocal].filter(Boolean));
+    }
+
+    function validateConsent() {
+      clearErrors();
+      let valid = true;
+      const data = buildConsentPayload();
+      const requiredChecks = [
+        ['consentTruth', data.consentTruth],
+        ['consentStore', data.consentStore],
+        ['consentPrivacy', data.consentPrivacy],
+        ['consentTerms', data.consentTerms],
+        ['consentContact', data.consentContact],
+        ['consentSignatureCorrect', data.consentSignatureCorrect],
+      ];
+      requiredChecks.forEach(([id, checked]) => {
+        const checkbox = document.getElementById(id);
+        if (!checked) {
+          checkbox?.closest('.consent-check')?.classList.add('invalid');
+          valid = false;
+        }
+      });
+      const sig = data.signature.trim().toLowerCase();
+      const acceptedSignatures = getAllowedSignatureValues();
+      if (!sig) {
+        setError('digitalSignature', 'Digital signature is required.');
+        valid = false;
+      } else if (!acceptedSignatures.has(sig)) {
+        setError('digitalSignature', 'Signature must match the user name or email.');
+        valid = false;
+      }
+      return { valid, data };
     }
 
     function buildPreferencesPayload() {
@@ -2707,21 +2872,13 @@
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 4 });
         }
-        window.location.href = 'registration.html';
+        openStep(4);
       } catch (error) {
         console.error(error);
         showToast('Unable to save your information. Please try again.');
       } finally {
         setLoadingScreen3(false);
       }
-    });
-
-    skipToScreen6Btn?.addEventListener('click', () => {
-      if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 6 });
-      }
-      showScreen(6);
-      hydrateScreen6();
     });
 
     relationshipGroup?.addEventListener('change', () => {
@@ -2788,8 +2945,7 @@
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 6 });
         }
-        showScreen(6);
-        hydrateScreen6();
+        openStep(6);
       } catch (error) {
         console.error(error);
         showToast('Unable to save your information. Please try again.');
@@ -2801,13 +2957,13 @@
 
     screen6BackBtn?.addEventListener('click', () => {
       if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 5 });
+        window.CareWellRegistration.setState({ registrationStep: 7 });
       }
-      showScreen(5);
-      hydrateScreen5();
+      showScreen(7);
+      hydrateScreen7();
     });
 
-    preferencesForm.addEventListener('submit', async (event) => {
+    async function handlePreferencesContinue(event) {
       event.preventDefault();
       if (preferencesContinueBtn.disabled) return;
       const { valid, data } = validatePreferences();
@@ -2829,13 +2985,72 @@
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 7 });
         }
-        window.location.href = 'dashboard.html';
+        showScreen(7);
+        hydrateScreen7();
       } catch (error) {
         console.error(error);
         showToast('Unable to save your information. Please try again.');
       } finally {
         preferencesContinueBtn.disabled = false;
         preferencesContinueBtn.textContent = 'Continue';
+      }
+    }
+
+    preferencesForm.addEventListener('submit', handlePreferencesContinue);
+    preferencesContinueBtn?.addEventListener('click', handlePreferencesContinue);
+
+    screen7BackBtn?.addEventListener('click', () => {
+      openStep(6);
+    });
+
+    consentTruth?.addEventListener('change', () => { selectedConsent.truth = consentTruth.checked; });
+    consentStore?.addEventListener('change', () => { selectedConsent.store = consentStore.checked; });
+    consentPrivacy?.addEventListener('change', () => { selectedConsent.privacy = consentPrivacy.checked; });
+    consentTerms?.addEventListener('change', () => { selectedConsent.terms = consentTerms.checked; });
+    consentContact?.addEventListener('change', () => { selectedConsent.contact = consentContact.checked; });
+    consentUpdates?.addEventListener('change', () => { selectedConsent.updates = consentUpdates.checked; });
+    digitalSignatureInput?.addEventListener('input', () => {
+      selectedConsent.signature = digitalSignatureInput.value.trim();
+      const helper = document.getElementById('digitalSignatureError');
+      if (helper) helper.textContent = '';
+    });
+
+    consentForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (consentCompleteBtn.disabled) return;
+      const { valid, data } = validateConsent();
+      if (!valid) {
+        showToast('Please complete the required fields.');
+        return;
+      }
+
+      try {
+        setLoadingScreen7(true);
+        const payload = {
+          consentTruth: data.consentTruth,
+          consentStore: data.consentStore,
+          consentPrivacy: data.consentPrivacy,
+          consentTerms: data.consentTerms,
+          consentContact: data.consentContact,
+          consentUpdates: data.consentUpdates,
+          signature: data.signature,
+        };
+        if (window.CareWellRegistration?.recordSection) {
+          window.CareWellRegistration.recordSection('consentInformation', payload, { registrationStep: 7, autosave: false, registrationCompleted: true });
+        }
+        await window.CareWellRegistration.saveRegistrationStep({
+          registrationStep: 7,
+          sectionName: 'consentInformation',
+          sectionData: payload,
+          registrationCompleted: true,
+        });
+        showToast('All details verified. Registration completed successfully.');
+        setTimeout(goToDashboard, 250);
+      } catch (error) {
+        console.error(error);
+        showToast('Unable to complete registration. Please try again.');
+      } finally {
+        setLoadingScreen7(false);
       }
     });
 
@@ -2893,7 +3108,7 @@
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 3 });
         }
-        window.location.href = 'registration.html';
+        openStep(3);
       } catch (error) {
         console.error(error);
         showToast('Unable to save your information. Please try again.');
@@ -2934,7 +3149,7 @@
         remove.type = 'button';
         remove.className = 'remove-chip';
         remove.setAttribute('aria-label', `Remove photo ${index}`);
-        remove.textContent = '×';
+        remove.textContent = 'Ã—';
         remove.addEventListener('click', (event) => {
           event.stopPropagation();
           photoData[index] = '';
@@ -3250,7 +3465,7 @@
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 2 });
         }
-        window.location.href = 'registration.html';
+        openStep(2);
       } catch (error) {
         console.error(error);
         showToast('Unable to save your information. Please try again.');
@@ -3264,7 +3479,7 @@
         if (window.CareWellRegistration?.resumeRegistration) {
           const status = await window.CareWellRegistration.resumeRegistration();
           if (status?.registrationCompleted) {
-            window.location.replace('dashboard.html');
+            goToDashboard();
             return;
           }
           showScreen(status?.registrationStep || 1);
@@ -3293,3 +3508,4 @@
   </script>
 </body>
 </html>
+
