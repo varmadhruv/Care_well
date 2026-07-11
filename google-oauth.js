@@ -3,7 +3,7 @@
   const SDK_SRC = 'https://accounts.google.com/gsi/client';
   const BACKEND_BASE_URL =
     window.CAREWELL_API_BASE_URL ||
-    'http://127.0.0.1:3000';
+    'https://care-well-1.onrender.com';
   const BACKEND_EXCHANGE_URL = `${BACKEND_BASE_URL}/api/auth/google/exchange`;
 
   let sdkPromise = null;

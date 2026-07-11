@@ -13,12 +13,14 @@ function buildCookie(token) {
     `carewell_session=${encodeURIComponent(token)}`,
     "Path=/",
     "HttpOnly",
-    "SameSite=Lax",
     `Max-Age=${SESSION_DAYS * 24 * 60 * 60}`,
   ];
 
   if (process.env.NODE_ENV === "production") {
+    parts.push("SameSite=None");
     parts.push("Secure");
+  } else {
+    parts.push("SameSite=Lax");
   }
 
   return parts.join("; ");
