@@ -395,6 +395,12 @@
       box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
       background: #f8fbff;
     }
+    .chip.locked {
+      cursor: default;
+    }
+    .chip.locked input {
+      pointer-events: none;
+    }
     .readonly-input {
       background: #f3f4f6 !important;
       color: #475569;
@@ -1907,8 +1913,9 @@
       'emergencyPinCode',
       'emergencyNotes',
     ];
+    const MAX_WHO_NEEDS_CARE_SELECTIONS = 3;
     const selectedPreferences = {
-      whoNeedsCare: '',
+      whoNeedsCare: [],
       servicesNeeded: [],
       urgency: '',
       visitTime: '',
@@ -1956,6 +1963,21 @@
       urgency: ['urgency', 'serviceUrgency', 'careUrgency'],
       visitTime: ['visitTime', 'preferredVisitTime', 'preferredTime'],
       communicationMethod: ['communicationMethod', 'preferredCommunicationMethod', 'contactMethod'],
+    };
+    const whoNeedsCareValueMap = {
+      'adult-male': 'Adult Male',
+      'adult female': 'Adult Female',
+      'adult-female': 'Adult Female',
+      'elder-male': 'Elder Male',
+      'elder female': 'Elder Female',
+      'elder-female': 'Elder Female',
+      'child-boy': 'Child Boy',
+      'child girl': 'Child Girl',
+      'child-girl': 'Child Girl',
+      'multiple': 'Multiple Family Members',
+      'multiple family members': 'Multiple Family Members',
+      'multiple-family-members': 'Multiple Family Members',
+      other: 'Other',
     };
     const selectedBiological = {
       bloodGroup: '',
@@ -2073,7 +2095,7 @@
     createChipGroup(languageGroup, languageOptions, 'preferredLanguage', { multi: false });
     createChipGroup(relationshipGroup, relationshipOptions, 'relationship', { multi: false });
     createChipGroup(sameAddressGroup, sameAddressOptions, 'sameAddress', { multi: false });
-    createChipGroup(whoNeedsCareGroup, whoNeedsCareOptions, 'whoNeedsCare', { multi: false });
+    createChipGroup(whoNeedsCareGroup, whoNeedsCareOptions, 'whoNeedsCare', { multi: true });
     createChipGroup(servicesNeededGroup, servicesNeededOptions, 'servicesNeeded', { multi: true });
     createChipGroup(urgencyGroup, urgencyOptions, 'urgency', { multi: false });
     createChipGroup(visitTimeGroup, visitTimeOptions, 'visitTime', { multi: false });
@@ -2182,6 +2204,19 @@
       });
     }
 
+    function lockSelectedChipGroup(group, lockedValue) {
+      if (!group) return;
+      group.querySelectorAll('.chip').forEach((chip) => {
+        const input = chip.querySelector('input');
+        if (!input) return;
+        const isLocked = Boolean(lockedValue) && input.value === lockedValue;
+        input.disabled = Boolean(lockedValue);
+        input.checked = isLocked;
+        chip.classList.toggle('selected', isLocked);
+        chip.classList.toggle('locked', Boolean(lockedValue));
+      });
+    }
+
     function createChipGroup(target, options, stateKey, { multi = false } = {}) {
       if (!target) return;
       target.innerHTML = '';
@@ -2210,11 +2245,35 @@
       const aliases = preferenceAliases[key] || [key];
       for (const alias of aliases) {
         const sectionValue = section[alias];
-        if (Array.isArray(sectionValue) ? sectionValue.length : Boolean(sectionValue)) return sectionValue;
+        if (Array.isArray(sectionValue)) {
+          if (!sectionValue.length) continue;
+          const normalized = key === 'whoNeedsCare'
+            ? sectionValue.map((item) => whoNeedsCareValueMap[String(item || '').trim().toLowerCase()] || item).filter(Boolean)
+            : sectionValue;
+          return normalized;
+        }
+        if (Boolean(sectionValue)) {
+          if (key === 'whoNeedsCare') {
+            return [whoNeedsCareValueMap[String(sectionValue).trim().toLowerCase()] || sectionValue];
+          }
+          return sectionValue;
+        }
         const profileValue = profile[alias];
-        if (Array.isArray(profileValue) ? profileValue.length : Boolean(profileValue)) return profileValue;
+        if (Array.isArray(profileValue)) {
+          if (!profileValue.length) continue;
+          const normalized = key === 'whoNeedsCare'
+            ? profileValue.map((item) => whoNeedsCareValueMap[String(item || '').trim().toLowerCase()] || item).filter(Boolean)
+            : profileValue;
+          return normalized;
+        }
+        if (Boolean(profileValue)) {
+          if (key === 'whoNeedsCare') {
+            return [whoNeedsCareValueMap[String(profileValue).trim().toLowerCase()] || profileValue];
+          }
+          return profileValue;
+        }
       }
-      return key === 'servicesNeeded' ? [] : '';
+      return key === 'whoNeedsCare' || key === 'servicesNeeded' ? [] : '';
     }
 
     function hydrateScreen2() {
@@ -2360,8 +2419,9 @@
       const state = window.CareWellRegistration?.getState?.() || {};
       const pref = state.healthcarePreferences || {};
       const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      const onboardingCareRaw = pref.whoNeedsCare || profile?.healthcarePreferences?.whoNeedsCare || [];
       const merged = {
-        whoNeedsCare: getPreferenceSeed(state, 'whoNeedsCare'),
+        whoNeedsCare: getPreferenceSeed(state, 'whoNeedsCare') || onboardingCareRaw,
         servicesNeeded: getPreferenceSeed(state, 'servicesNeeded'),
         urgency: getPreferenceSeed(state, 'urgency'),
         visitTime: getPreferenceSeed(state, 'visitTime'),
@@ -2369,12 +2429,12 @@
         servicesOther: pref.servicesOther || profile.servicesOther || '',
         additionalNotes: pref.additionalNotes || profile.additionalNotes || '',
       };
-      selectedPreferences.whoNeedsCare = merged.whoNeedsCare || '';
+      selectedPreferences.whoNeedsCare = Array.isArray(merged.whoNeedsCare) ? merged.whoNeedsCare : [merged.whoNeedsCare].filter(Boolean);
       selectedPreferences.servicesNeeded = Array.isArray(merged.servicesNeeded) ? merged.servicesNeeded : [];
       selectedPreferences.urgency = merged.urgency || '';
       selectedPreferences.visitTime = merged.visitTime || '';
       selectedPreferences.communicationMethod = merged.communicationMethod || '';
-      fillSelected(whoNeedsCareGroup, selectedPreferences.whoNeedsCare, false);
+      fillSelected(whoNeedsCareGroup, selectedPreferences.whoNeedsCare, true);
       fillSelected(servicesNeededGroup, selectedPreferences.servicesNeeded, true);
       fillSelected(urgencyGroup, selectedPreferences.urgency, false);
       fillSelected(visitTimeGroup, selectedPreferences.visitTime, false);
@@ -2492,7 +2552,7 @@
       clearErrors();
       let valid = true;
       const data = buildPreferencesPayload();
-      if (!data.whoNeedsCare) {
+      if (!data.whoNeedsCare.length) {
         const field = whoNeedsCareGroup.closest('.field');
         field?.classList.add('invalid', 'shake');
         const helper = document.getElementById('whoNeedsCareError');
@@ -2897,7 +2957,16 @@
     });
 
     whoNeedsCareGroup?.addEventListener('change', () => {
-      selectedPreferences.whoNeedsCare = whoNeedsCareGroup.querySelector('input:checked')?.value || '';
+      const nextSelection = [...whoNeedsCareGroup.querySelectorAll('input:checked')].map((node) => node.value);
+      if (nextSelection.length > MAX_WHO_NEEDS_CARE_SELECTIONS) {
+        const lastChecked = nextSelection[nextSelection.length - 1];
+        const lastInput = whoNeedsCareGroup.querySelector(`input[value="${CSS.escape(lastChecked)}"]`);
+        if (lastInput) lastInput.checked = false;
+        fillSelected(whoNeedsCareGroup, selectedPreferences.whoNeedsCare, true);
+        showToast('You can select up to 3 options only.');
+        return;
+      }
+      selectedPreferences.whoNeedsCare = nextSelection;
       clearErrors();
     });
 

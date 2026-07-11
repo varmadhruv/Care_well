@@ -316,16 +316,35 @@
     const continueBtn = document.getElementById('continueBtn');
     const cards = Array.from(document.querySelectorAll('.card'));
     let selected = null;
+    const initialState = window.CareWellRegistration?.getState?.() || {};
+    const initialCareValue = initialState.healthcarePreferences?.whoNeedsCare;
+    const initialCareNeeds = Array.isArray(initialCareValue)
+      ? initialCareValue
+      : (typeof initialCareValue === 'string' && initialCareValue ? [initialCareValue] : []);
 
     function setSelected(card) {
       cards.forEach((c) => c.classList.toggle('selected', c === card));
       selected = card;
       continueBtn.disabled = !selected;
+      if (window.CareWellRegistration?.setState) {
+        const nextValue = card?.querySelector('.label')?.textContent?.trim() || card?.dataset?.value || '';
+        window.CareWellRegistration.setState({
+          healthcarePreferences: {
+            ...(initialState.healthcarePreferences || {}),
+            whoNeedsCare: nextValue,
+          },
+        });
+      }
     }
 
     cards.forEach((card) => {
       card.addEventListener('click', () => setSelected(card));
     });
+
+    if (initialCareNeeds.length) {
+      const match = cards.find((card) => card.dataset.value === initialCareNeeds[0]);
+      if (match) setSelected(match);
+    }
 
     continueBtn.addEventListener('click', () => {
       if (!selected) return;

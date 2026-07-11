@@ -513,27 +513,39 @@
           return;
         }
 
-        const response = await fetch(`${backendBaseUrl}/api/auth/session`, {
-          headers: sessionStorage.getItem('carewellSessionToken')
-            ? { 'X-CareWell-Session': sessionStorage.getItem('carewellSessionToken') }
-            : {},
-        });
+        const apiCandidates = Array.from(new Set([
+          backendBaseUrl,
+          ...(Array.isArray(window.CAREWELL_API_BASE_URLS) ? window.CAREWELL_API_BASE_URLS : []),
+        ].filter(Boolean)));
 
-        if (!response.ok) return;
+        for (const candidate of apiCandidates) {
+          try {
+            const response = await fetch(`${String(candidate).replace(/\/$/, '')}/api/auth/session`, {
+              headers: sessionStorage.getItem('carewellSessionToken')
+                ? { 'X-CareWell-Session': sessionStorage.getItem('carewellSessionToken') }
+                : {},
+            });
 
-        const payload = await response.json();
-        const serverProfile = payload?.profile || {};
-        const serverName = serverProfile.fullName || name;
-        const serverEmail = serverProfile.email || email;
-        const serverPhoto = serverProfile.profilePicture || photo;
+            if (!response.ok) continue;
 
-        fullNameValue.textContent = serverName;
-        emailValue.textContent = serverEmail;
+            const payload = await response.json();
+            const serverProfile = payload?.profile || {};
+            const serverName = serverProfile.fullName || name;
+            const serverEmail = serverProfile.email || email;
+            const serverPhoto = serverProfile.profilePicture || photo;
 
-        if (serverPhoto) {
-          profilePhotoImg.src = serverPhoto;
-          profilePhotoImg.hidden = false;
-          fallbackAvatar.hidden = true;
+            fullNameValue.textContent = serverName;
+            emailValue.textContent = serverEmail;
+
+            if (serverPhoto) {
+              profilePhotoImg.src = serverPhoto;
+              profilePhotoImg.hidden = false;
+              fallbackAvatar.hidden = true;
+            }
+            return;
+          } catch (error) {
+            continue;
+          }
         }
       } catch (error) {
         // Keep the already-rendered profile state if the session endpoint is unavailable.

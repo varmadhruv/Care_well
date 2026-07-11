@@ -174,6 +174,8 @@
       position: relative;
       width: 100%;
       height: 64px;
+      padding: 0;
+      appearance: none;
       border-radius: 20px;
       border: 1px solid var(--line);
       background: #fff;
@@ -185,7 +187,7 @@
       gap: 16px;
       text-decoration: none;
       font-family: Poppins, Inter, sans-serif;
-      font-size: 20px;
+      font-size: 21px;
       font-weight: 600;
       transition: transform var(--ease), box-shadow var(--ease), background var(--ease), border-color var(--ease);
       -webkit-tap-highlight-color: transparent;
@@ -196,7 +198,7 @@
       background: var(--primary);
       color: #fff;
       box-shadow: var(--shadow-blue);
-      font-size: 22px;
+      font-size: 21px;
     }
 
     .auth-btn:hover,
@@ -243,6 +245,13 @@
       object-fit: contain;
       display: block;
       border-radius: 0;
+    }
+
+    .another-google-btn .icon-circle img {
+      width: 84%;
+      height: 84%;
+      object-fit: contain;
+      background: transparent;
     }
 
     .phone-icon img {
@@ -361,7 +370,7 @@
       .welcome h1 { font-size: 40px; }
       .welcome p { font-size: 17px; margin-bottom: 2px; }
       .actions { gap: 12px; margin-top: 2px; }
-      .auth-btn { height: 58px; border-radius: 18px; font-size: 17px; }
+      .auth-btn { height: 58px; border-radius: 18px; font-size: 18px; }
       .auth-btn.primary { font-size: 18px; }
       .icon-circle { left: 10px; width: 40px; height: 40px; }
       .divider { gap: 12px; margin: 0; }
@@ -379,7 +388,7 @@
       .welcome h1 { font-size: 50px; }
       .welcome p { font-size: 20px; }
       .actions { gap: 16px; }
-      .auth-btn { height: 64px; }
+      .auth-btn { height: 64px; font-size: 21px; }
     }
 
     @media (min-width: 1100px) {
@@ -389,7 +398,7 @@
       .brand-subtitle { font-size: 18px; }
       .hero { width: 440px; }
       .welcome h1 { font-size: 52px; }
-      .auth-btn { height: 66px; }
+      .auth-btn { height: 66px; font-size: 21px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -433,6 +442,11 @@
           <span>Continue with Google</span>
         </a>
 
+        <button class="auth-btn secondary-action another-google-btn" type="button" aria-label="Continue other account">
+          <span class="icon-circle"><img src="gmail_img.png" alt="" /></span>
+          <span>Continue other account</span>
+        </button>
+
         <a class="auth-btn apple-btn" href="#" aria-disabled="true" onclick="return false;" aria-label="Continue with Apple" hidden>
           <span class="icon-circle apple-icon"><img src="screen7-apple-clean.png" alt="" /></span>
           <span>Continue with Apple</span>
@@ -457,13 +471,63 @@
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const appleButton = document.querySelector('.apple-btn');
+      const anotherGoogleButton = document.querySelector('.another-google-btn');
       const googleButton = document.querySelector('.auth-btn[href="google-auth.html"]');
       const platform = navigator.userAgentData?.platform || navigator.platform || '';
       const userAgent = navigator.userAgent || '';
       const isAppleDevice = /Mac|iPhone|iPad|iPod/i.test(platform) || /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
+      const ensureToastHost = () => {
+        let host = document.getElementById('carewell-toast-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'carewell-toast-host';
+          host.style.position = 'fixed';
+          host.style.left = '50%';
+          host.style.bottom = '24px';
+          host.style.transform = 'translateX(-50%)';
+          host.style.zIndex = '9999';
+          host.style.pointerEvents = 'none';
+          document.body.appendChild(host);
+        }
+        return host;
+      };
+      const showToast = (message) => {
+        const host = ensureToastHost();
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.background = 'rgba(15, 23, 42, 0.95)';
+        toast.style.color = '#fff';
+        toast.style.padding = '14px 18px';
+        toast.style.borderRadius = '999px';
+        toast.style.boxShadow = '0 14px 34px rgba(15, 23, 42, 0.18)';
+        toast.style.font = '600 14px Inter, system-ui, sans-serif';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
+        host.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateY(0)';
+        });
+        window.setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(8px)';
+          window.setTimeout(() => toast.remove(), 220);
+        }, 2800);
+      };
 
       if (isAppleDevice && appleButton) {
         appleButton.hidden = false;
+        appleButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          showToast('Apple sign-in is coming soon.');
+        });
+      }
+
+      if (anotherGoogleButton) {
+        anotherGoogleButton.addEventListener('click', () => {
+          showToast('This feature is coming soon.');
+        });
       }
 
       if (window.CareWellGoogleAuth && googleButton) {

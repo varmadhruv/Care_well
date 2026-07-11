@@ -1,10 +1,15 @@
 (() => {
   const CLIENT_ID = '65018618868-5keclcugaqha3hus3lc6903p4a7gpq2h.apps.googleusercontent.com';
   const SDK_SRC = 'https://accounts.google.com/gsi/client';
-  const BACKEND_BASE_URL =
-    window.CAREWELL_API_BASE_URL ||
-    'https://care-well-1.onrender.com';
-  const BACKEND_EXCHANGE_URL = `${BACKEND_BASE_URL}/api/auth/google/exchange`;
+  const DEFAULT_BASE_URLS = [
+    window.CAREWELL_API_BASE_URL,
+    ...(Array.isArray(window.CAREWELL_API_BASE_URLS) ? window.CAREWELL_API_BASE_URLS : []),
+    window.location.origin && window.location.origin !== 'null' ? window.location.origin : '',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+    'https://care-well-1.onrender.com',
+  ].filter(Boolean);
+  const BACKEND_BASE_URLS = Array.from(new Set(DEFAULT_BASE_URLS.map((value) => String(value).trim()).filter(Boolean)));
 
   let sdkPromise = null;
   let tokenClient = null;
@@ -132,20 +137,48 @@
                 return;
               }
 
-              const response = await fetch(BACKEND_EXCHANGE_URL, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  accessToken: tokenResponse.access_token,
-                }),
-              });
+              let payload = {};
+              let response = null;
+              let lastNetworkError = null;
 
-              const payload = await response.json().catch(() => ({}));
-              if (!response.ok) {
-                throw new Error(payload?.message || 'Unable to connect to Google. Please try again later.');
+              for (const baseUrl of BACKEND_BASE_URLS) {
+                const exchangeUrl = `${baseUrl.replace(/\/$/, '')}/api/auth/google/exchange`;
+                try {
+                  response = await fetch(exchangeUrl, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                      accessToken: tokenResponse.access_token,
+                    }),
+                  });
+
+                  payload = await response.json().catch(() => ({}));
+
+                  if (response.ok) {
+                    break;
+                  }
+
+                  const status = Number(response.status || 0);
+                  if (![404, 408, 425, 429, 500, 502, 503, 504].includes(status)) {
+                    throw new Error(payload?.message || 'Unable to connect to Google. Please try again later.');
+                  }
+                } catch (networkError) {
+                  lastNetworkError = networkError;
+                  response = null;
+                  payload = {};
+                }
+              }
+
+              if (!response || !response.ok) {
+                const message =
+                  payload?.message ||
+                  lastNetworkError?.message ||
+                  'Unable to connect to Google. Please try again later.';
+                throw new Error(message);
               }
 
               const profile = normalizeProfile(payload.profile || {});
