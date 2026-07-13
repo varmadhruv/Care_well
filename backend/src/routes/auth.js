@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const { User } = require("../models/User");
 const { onlyDigits } = require("../utils/sanitize");
 const { isValidPhone, isValidEmail } = require("../utils/validators");
+const { sendMail } = require("../services/mailService");
 
 const authRouter = express.Router();
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -325,5 +326,249 @@ authRouter.get("/session", async (req, res) => {
     return res.status(500).json({ code: "SERVER_ERROR", message: "Unable to restore session." });
   }
 });
+
+async function handleAssistanceRequest(req, res) {
+  try {
+    const phoneNumber = onlyDigits(req.body?.phoneNumber || "");
+    const selectedService = String(req.body?.service || "Request a Call Back").trim();
+    const source = String(req.body?.source || "Onboarding Screen 5").trim();
+
+    let name = "";
+    let email = "";
+    let date = "";
+    let time = "";
+    let period = "";
+
+    if (selectedService === "Schedule Consultation") {
+      name = String(req.body?.name || "").trim();
+      email = String(req.body?.email || "").trim().toLowerCase();
+      date = String(req.body?.date || "").trim();
+      time = String(req.body?.time || "").trim();
+      period = String(req.body?.period || "AM").trim().toUpperCase();
+
+      if (!name) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Name is required." });
+      }
+      if (!isValidPhone(phoneNumber)) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid 10-digit mobile number." });
+      }
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid email address." });
+      }
+      if (!date || !/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid date in DD-MM-YYYY format." });
+      }
+      if (!time || !/^(0[1-9]|1[0-2]):[0-5]\d$/.test(time)) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid 12-hour time in HH:MM format (01:00 to 12:59)." });
+      }
+      if (period !== "AM" && period !== "PM") {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please select a valid period (AM/PM)." });
+      }
+
+      // Parse and check if date is not in past or beyond 2 days from today
+      const parts = date.split("-");
+      const d = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10) - 1;
+      const y = parseInt(parts[2], 10);
+      const parsedDate = new Date(y, m, d);
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const maxDate = new Date(today);
+      maxDate.setDate(today.getDate() + 2);
+
+      if (parsedDate < today || parsedDate > maxDate) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Consultation date must be from today up to 2 days in the future." });
+      }
+
+      // Check working hours 9:00 AM to 9:00 PM
+      const timeParts = time.split(":");
+      const hours = parseInt(timeParts[0], 10);
+      const minutes = parseInt(timeParts[1], 10);
+
+      let hours24 = hours;
+      if (period === "PM" && hours !== 12) {
+        hours24 += 12;
+      } else if (period === "AM" && hours === 12) {
+        hours24 = 0;
+      }
+
+      const totalMinutes = hours24 * 60 + minutes;
+      const minMinutes = 9 * 60;   // 9:00 AM
+      const maxMinutes = 21 * 60;  // 9:00 PM
+
+      if (totalMinutes < minMinutes || totalMinutes > maxMinutes) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Consultation hours are strictly from 9:00 AM to 9:00 PM." });
+      }
+    } else if (selectedService === "Email Me Information") {
+      email = String(req.body?.email || "").trim().toLowerCase();
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid email address." });
+      }
+    } else if (selectedService === "Request a Call Back" && !isValidPhone(phoneNumber)) {
+      return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid 10-digit mobile number." });
+    } else if (selectedService === "Chat on WhatsApp" && !isValidPhone(phoneNumber)) {
+      return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid 10-digit mobile number." });
+    }
+
+    let messageLines;
+    let textLines;
+    let mailTarget = "carewelldeveloperr@gmail.com";
+    let mailSubject = "CareWell assistance request";
+
+    if (selectedService === "Schedule Consultation") {
+      messageLines = [
+        "<p style=\"margin:0 0 16px;\"><strong>New Consultation Scheduled</strong></p>",
+        `<p style="margin:0 0 12px;">A user has scheduled a video consultation with CareWell.</p>`,
+        `<p style="margin:0 0 8px;"><strong>👤 Full Name:</strong> ${name}</p>`,
+        `<p style="margin:0 0 8px;"><strong>📞 Contact Number:</strong> <span style="font-size:18px; font-weight:600; color:#0b4f8c;">${phoneNumber}</span></p>`,
+        `<p style="margin:0 0 8px;"><strong>📧 Email Address:</strong> ${email}</p>`,
+        `<p style="margin:0 0 8px;"><strong>📅 Scheduled Date:</strong> ${date}</p>`,
+        `<p style="margin:0 0 8px;"><strong>⏰ Scheduled Time:</strong> ${time} ${period}</p>`,
+        `<p style="margin:0 0 8px;"><strong>Service Type:</strong> ${selectedService}</p>`,
+        `<p style="margin:0 0 8px;"><strong>Request From:</strong> ${source}</p>`,
+      ];
+
+      textLines = [
+        "NEW CONSULTATION SCHEDULED",
+        "",
+        "A user has scheduled a video consultation with CareWell.",
+        "",
+        `Full Name: ${name}`,
+        `Contact Number: ${phoneNumber}`,
+        `Email Address: ${email}`,
+        `Scheduled Date: ${date}`,
+        `Scheduled Time: ${time} ${period}`,
+        `Service Type: ${selectedService}`,
+        `Request From: ${source}`,
+      ];
+    } else if (selectedService === "Email Me Information") {
+      const utcDate = new Date();
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const istDate = new Date(utcDate.getTime() + istOffset);
+      const hour = istDate.getUTCHours();
+      let greeting = "Good morning";
+      if (hour >= 12 && hour < 17) {
+        greeting = "Good afternoon";
+      } else if (hour >= 17 && hour < 21) {
+        greeting = "Good evening";
+      } else if (hour >= 21 || hour < 4) {
+        greeting = "Good night";
+      }
+
+      mailTarget = email;
+      mailSubject = "Healthcare services at Home - CareWell Nursing Care";
+
+      messageLines = [
+        `<p style="margin:0 0 12px;">${greeting},</p>`,
+        `<p style="margin:0 0 12px;">Dear Sir/Madam,</p>`,
+        `<p style="margin:0 0 16px;">Greetings from CareWell Nursing Care at Home.</p>`,
+        `<p style="margin:0 0 16px;">We are pleased to introduce our healthcare services designed to provide professional medical care and nursing support at the comfort of your home.</p>`,
+        `<p style="margin:0 0 8px;"><strong>Our services include:</strong></p>`,
+        `<ul style="margin:0 0 16px; padding-left:20px;">`,
+        `  <li style="margin-bottom:6px;">Home Nursing Care</li>`,
+        `  <li style="margin-bottom:6px;">Caregiver / Attendant Services</li>`,
+        `  <li style="margin-bottom:6px;">Physiotherapy at Home</li>`,
+        `  <li style="margin-bottom:6px;">Doctor Consultation at Home</li>`,
+        `  <li style="margin-bottom:6px;">Post-Hospitalization Care</li>`,
+        `  <li style="margin-bottom:6px;">Elderly Care</li>`,
+        `  <li style="margin-bottom:6px;">Patient Monitoring & Assistance</li>`,
+        `  <li style="margin-bottom:6px;">Medical Equipment Support (as available)</li>`,
+        `</ul>`,
+        `<p style="margin:0 0 16px;">Our mission is to deliver compassionate, reliable, and high-quality healthcare services with experienced professionals, ensuring comfort, safety, and convenience for every patient.</p>`,
+        `<p style="margin:0 0 16px;">If you, your family members, or your organization require any home healthcare assistance, we would be happy to serve you.</p>`,
+        `<p style="margin:0 0 16px;">For inquiries or bookings, please feel free to contact us.</p>`,
+        `<p style="margin:0 0 20px;">Thank you for your valuable time.</p>`,
+        `<p style="margin:0; line-height:1.5; color:#0f172a;">`,
+        `  Kind Regards,<br/>`,
+        `  <strong>CareWell Nursing Care at Home</strong><br/>`,
+        `  📞 Contact: 8446204228<br/>`,
+        `  📧 Email: carewellofficiall@gmail.com<br/>`,
+        `  🌐 Website: <a href="https://care-well-1.onrender.com" style="color:#0b4f8c; text-decoration:none;">https://care-well-1.onrender.com</a>`,
+        `</p>`
+      ];
+
+      textLines = [
+        `${greeting},`,
+        "",
+        "Dear Sir/Madam,",
+        "",
+        "Greetings from CareWell Nursing Care at Home.",
+        "",
+        "We are pleased to introduce our healthcare services designed to provide professional medical care and nursing support at the comfort of your home.",
+        "",
+        "Our services include:",
+        " - Home Nursing Care",
+        " - Caregiver / Attendant Services",
+        " - Physiotherapy at Home",
+        " - Doctor Consultation at Home",
+        " - Post-Hospitalization Care",
+        " - Elderly Care",
+        " - Patient Monitoring & Assistance",
+        " - Medical Equipment Support (as available)",
+        "",
+        "Our mission is to deliver compassionate, reliable, and high-quality healthcare services with experienced professionals, ensuring comfort, safety, and convenience for every patient.",
+        "",
+        "If you, your family members, or your organization require any home healthcare assistance, we would be happy to serve you.",
+        "",
+        "For inquiries or bookings, please feel free to contact us.",
+        "",
+        "Thank you for your valuable time.",
+        "",
+        "Kind Regards,",
+        "",
+        "CareWell Nursing Care at Home",
+        "Contact: 8446204228",
+        "Email: carewellofficiall@gmail.com",
+        "Website: https://care-well-1.onrender.com"
+      ];
+    } else {
+      const isWhatsApp = selectedService === "Chat on WhatsApp";
+      const callInstruction = isWhatsApp
+        ? "Please talk through WhatsApp <strong style=\"color:#e74c3c;\">(do not connect call)</strong>"
+        : "Please call this person to provide CareWell assistance.";
+
+      messageLines = [
+        "<p style=\"margin:0 0 16px;\"><strong>New Assistance Request</strong></p>",
+        `<p style="margin:0 0 12px;">A user wants to talk with CareWell for assistance.</p>`,
+        `<p style="margin:0 0 8px;"><strong>📞 Contact Number:</strong> <span style="font-size:18px; font-weight:600; color:#0b4f8c;">${phoneNumber || "Not provided"}</span></p>`,
+        `<p style="margin:0 0 8px;"><strong>Service Type:</strong> ${selectedService}</p>`,
+        `<p style="margin:0 0 8px;"><strong>Request From:</strong> ${source}</p>`,
+        `<p style="margin:0; color:#666;\"><em>${callInstruction}</em></p>`,
+      ];
+
+      textLines = [
+        "NEW ASSISTANCE REQUEST",
+        "",
+        "A user wants to talk with CareWell for assistance.",
+        "",
+        `Contact Number: ${phoneNumber || "Not provided"}`,
+        `Service Type: ${selectedService}`,
+        `Request From: ${source}`,
+        "",
+        isWhatsApp ? "Please talk through WhatsApp (do not connect call)" : "Please call this person to provide CareWell assistance.",
+      ];
+    }
+
+    await sendMail({
+      to: mailTarget,
+      subject: mailSubject,
+      title: "CareWell Information",
+      heading: selectedService === "Email Me Information" ? "Introduction of Services" : "New care assistance request",
+      message: messageLines.join(""),
+      text: textLines.join("\n"),
+    });
+
+    return res.json({ ok: true, message: "Assistance request sent successfully." });
+  } catch (error) {
+    const detailMessage = error?.message || "Unable to send your request. Please try again.";
+    console.error("assistance request failed:", error);
+    return res.status(500).json({ code: "SERVER_ERROR", message: detailMessage });
+  }
+}
+
+authRouter.post("/assistance/request", handleAssistanceRequest);
+authRouter.post("/assistance/callback-request", handleAssistanceRequest);
 
 module.exports = { authRouter };

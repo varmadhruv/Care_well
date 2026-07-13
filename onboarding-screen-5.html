@@ -225,6 +225,160 @@
       outline: none;
     }
 
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(15, 23, 42, 0.95);
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 999px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .callback-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.28);
+      backdrop-filter: blur(10px);
+      z-index: 9998;
+    }
+    .callback-modal.is-open { display: flex; }
+    .callback-card {
+      width: min(100%, 420px);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+    .callback-card h2 {
+      margin: 0;
+      font-family: Poppins, Inter, sans-serif;
+      font-size: 24px;
+      line-height: 1.15;
+      color: var(--text);
+    }
+    .callback-card p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--soft);
+    }
+    .callback-input {
+      width: 100%;
+      height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--border-strong);
+      background: #fff;
+      padding: 0 16px;
+      font-size: 18px;
+      color: var(--text);
+      outline: none;
+    }
+    .callback-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
+    }
+    .callback-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .callback-actions .btn {
+      min-width: 120px;
+      height: 52px;
+      border-radius: 16px;
+      border: 0;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 0 18px;
+    }
+    .callback-actions .btn.secondary {
+      background: #eef4ff;
+      color: var(--blue);
+    }
+    .callback-actions .btn.primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .schedule-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      background: #fff;
+      padding: 0 12px;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(11, 79, 140, 0.08);
+    }
+
+    .schedule-disclaimer {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #856404;
+    }
+
+    .schedule-disclaimer strong {
+      color: #d32f2f;
+      font-size: 14px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -360,25 +514,607 @@
     </section>
   </main>
 
+  <div class="callback-modal" id="callbackModal" aria-hidden="true">
+    <div class="callback-card" role="dialog" aria-modal="true" aria-labelledby="callbackTitle">
+      <h2 id="callbackTitle">Request a Call Back</h2>
+      <p>Please enter the mobile number that should receive the callback. Make sure the number is correct so our care team can reach you.</p>
+      <p style="font-weight:600;color:#0f172a;">Disclaimer: The number must be active and correct before you continue.</p>
+      <input class="callback-input" id="callbackPhoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
+      <div class="callback-actions">
+        <button class="btn secondary" type="button" id="callbackCancelBtn">Cancel</button>
+        <button class="btn primary" type="button" id="callbackOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callback-modal" id="whatsappModal" aria-hidden="true">
+    <div class="callback-card" role="dialog" aria-modal="true" aria-labelledby="whatsappTitle">
+      <h2 id="whatsappTitle">Chat on WhatsApp</h2>
+      <p>Please enter your mobile number. Our team will connect with you on WhatsApp.</p>
+      <p style="font-weight:600;color:#0f172a;">Disclaimer: The number must be active and correct before you continue.</p>
+      <input class="callback-input" id="whatsappPhoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
+      <div class="callback-actions">
+        <button class="btn secondary" type="button" id="whatsappCancelBtn">Cancel</button>
+        <button class="btn primary" type="button" id="whatsappOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callback-modal" id="emailModal" aria-hidden="true">
+    <div class="callback-card" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
+      <h2 id="emailTitle">Email Me Information</h2>
+      <p>Please enter your email address to receive details about CareWell healthcare services.</p>
+      <p style="font-weight:600;color:#0f172a;">Disclaimer: The email address must be active and correct before you continue.</p>
+      <input class="callback-input" id="emailAddressInput" type="email" placeholder="Enter email address" />
+      <div class="callback-actions">
+        <button class="btn secondary" type="button" id="emailCancelBtn">Cancel</button>
+        <button class="btn primary" type="button" id="emailOkBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callback-modal" id="scheduleModal" aria-hidden="true">
+    <div class="callback-card" role="dialog" aria-modal="true" aria-labelledby="scheduleTitle">
+      <h2 id="scheduleTitle">Schedule Consultation</h2>
+      <p>Please enter your details to schedule a video consultation.</p>
+      
+      <div class="schedule-form">
+        <div class="form-group">
+          <label for="scheduleNameInput">Full Name</label>
+          <input class="callback-input" id="scheduleNameInput" type="text" placeholder="Enter your full name" />
+        </div>
+
+        <div class="form-group">
+          <label for="schedulePhoneInput">Mobile Number</label>
+          <input class="callback-input" id="schedulePhoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
+        </div>
+
+        <div class="form-group">
+          <label for="scheduleEmailInput">Email Address</label>
+          <input class="callback-input" id="scheduleEmailInput" type="email" placeholder="Enter email address" />
+        </div>
+
+        <div class="form-group">
+          <label for="scheduleDateInput">Date (DD-MM-YYYY)</label>
+          <input class="callback-input" id="scheduleDateInput" type="text" placeholder="DD-MM-YYYY (e.g. 14-07-2026)" maxlength="10" />
+        </div>
+
+        <div class="form-group">
+          <label for="scheduleTimeInput">Time (HH:MM)</label>
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <input class="callback-input" id="scheduleTimeInput" type="text" placeholder="HH:MM (e.g. 10:30)" maxlength="5" style="flex: 1;" />
+            <select class="callback-input" id="schedulePeriodSelect" style="width: 90px; padding: 0 10px; flex: 0 0 auto;">
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="schedule-disclaimer" style="background: #fff5f5; border: 1px solid #feb2b2; border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.5; color: #9b2c2c; margin-top: 8px; text-align: left;">
+          <strong style="color: #c53030; font-size: 14px; display: block; margin-bottom: 6px; text-align: center;">📹 Important Video Call Disclaimer & Guidelines</strong>
+          <ul style="margin: 0; padding-left: 18px;">
+            <li>This assistance is provided exclusively via <strong>Video Call</strong>.</li>
+            <li>Ensure all details (Name, Phone, Email, Date, and Time) are correct. The video call link will be sent to the email address provided.</li>
+            <li>The video call duration is strictly limited to <strong>5 to 10 minutes</strong>.</li>
+            <li><strong>Strict Code of Conduct:</strong> Any form of misbehaviour, usage of inappropriate words/language, poor attitude, offensive gestures, or other inappropriate activities will lead to immediate termination of the call and direct legal action by CareWell. Please ensure strictly professional conduct.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callback-actions">
+        <button class="btn secondary" type="button" id="scheduleCancelBtn">Cancel</button>
+        <button class="btn primary" type="button" id="scheduleOkBtn">Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
   <script src="registration-state.js" defer></script>
   <script>
     const continueBtn = document.getElementById('continueBtn');
     const cards = Array.from(document.querySelectorAll('.card'));
+    const callbackModal = document.getElementById('callbackModal');
+    const callbackPhoneInput = document.getElementById('callbackPhoneInput');
+    const callbackCancelBtn = document.getElementById('callbackCancelBtn');
+    const callbackOkBtn = document.getElementById('callbackOkBtn');
+    const whatsappModal = document.getElementById('whatsappModal');
+    const whatsappPhoneInput = document.getElementById('whatsappPhoneInput');
+    const whatsappCancelBtn = document.getElementById('whatsappCancelBtn');
+    const whatsappOkBtn = document.getElementById('whatsappOkBtn');
+    const scheduleModal = document.getElementById('scheduleModal');
+    const scheduleNameInput = document.getElementById('scheduleNameInput');
+    const schedulePhoneInput = document.getElementById('schedulePhoneInput');
+    const scheduleEmailInput = document.getElementById('scheduleEmailInput');
+    const scheduleDateInput = document.getElementById('scheduleDateInput');
+    const scheduleTimeInput = document.getElementById('scheduleTimeInput');
+    const schedulePeriodSelect = document.getElementById('schedulePeriodSelect');
+    const scheduleCancelBtn = document.getElementById('scheduleCancelBtn');
+    const scheduleOkBtn = document.getElementById('scheduleOkBtn');
+    const emailModal = document.getElementById('emailModal');
+    const emailAddressInput = document.getElementById('emailAddressInput');
+    const emailCancelBtn = document.getElementById('emailCancelBtn');
+    const emailOkBtn = document.getElementById('emailOkBtn');
+    const toast = document.getElementById('toast');
     let selected = null;
+    let selectedValue = '';
+
+    let isScheduled = false;
+    const cardsMapped = {}; // Keep empty map to align placeholders if needed
+    let isCallbackRequested = false;
+    let isWhatsappRequested = false;
+    let isEmailRequested = false;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast._timer);
+      showToast._timer = window.setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    function openCallbackModal() {
+      callbackModal.classList.add('is-open');
+      callbackModal.setAttribute('aria-hidden', 'false');
+      const storedPhone = JSON.parse(sessionStorage.getItem('userProfile') || '{}')?.phoneNumber || '';
+      callbackPhoneInput.value = String(storedPhone || '').replace(/\D/g, '').slice(0, 10);
+      window.setTimeout(() => callbackPhoneInput.focus(), 50);
+    }
+
+    function closeCallbackModal() {
+      callbackModal.classList.remove('is-open');
+      callbackModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openWhatsappModal() {
+      whatsappModal.classList.add('is-open');
+      whatsappModal.setAttribute('aria-hidden', 'false');
+      const storedPhone = JSON.parse(sessionStorage.getItem('userProfile') || '{}')?.phoneNumber || '';
+      whatsappPhoneInput.value = String(storedPhone || '').replace(/\D/g, '').slice(0, 10);
+      window.setTimeout(() => whatsappPhoneInput.focus(), 50);
+    }
+
+    function closeWhatsappModal() {
+      whatsappModal.classList.remove('is-open');
+      whatsappModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openScheduleModal() {
+      scheduleModal.classList.add('is-open');
+      scheduleModal.setAttribute('aria-hidden', 'false');
+      const storedProfile = JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+      const storedPhone = storedProfile?.phoneNumber || '';
+      schedulePhoneInput.value = String(storedPhone || '').replace(/\D/g, '').slice(0, 10);
+      scheduleNameInput.value = storedProfile?.fullName || '';
+      scheduleEmailInput.value = storedProfile?.email || '';
+      window.setTimeout(() => {
+        if (!scheduleNameInput.value) scheduleNameInput.focus();
+        else if (!schedulePhoneInput.value) schedulePhoneInput.focus();
+        else if (!scheduleEmailInput.value) scheduleEmailInput.focus();
+        else scheduleDateInput.focus();
+      }, 50);
+    }
+
+    function closeScheduleModal() {
+      scheduleModal.classList.remove('is-open');
+      scheduleModal.setAttribute('aria-hidden', 'true');
+    }
 
     function selectCard(card) {
       cards.forEach((c) => c.classList.toggle('selected', c === card));
       selected = card;
+      selectedValue = card?.dataset?.value || '';
       continueBtn.disabled = !selected;
+    }
+
+    function getSelectedServiceLabel() {
+      switch (selectedValue) {
+        case 'call-back':
+          return 'Request a Call Back';
+        case 'whatsapp':
+          return 'Chat on WhatsApp';
+        case 'schedule':
+          return 'Schedule Consultation';
+        case 'email':
+          return 'Email Me Information';
+        case 'no-assistance':
+          return 'No Need Any Assistance';
+        default:
+          return '';
+      }
+    }
+
+    async function submitAssistanceRequest(extraParams = {}) {
+      const service = getSelectedServiceLabel();
+      if (!service) {
+        throw new Error('Please select an assistance option.');
+      }
+
+      const apiUrl = 'http://localhost:3000/api/auth/assistance/request';
+
+      console.log('submitAssistanceRequest:', { service, apiUrl, ...extraParams });
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            service,
+            source: 'Onboarding Screen 5',
+            ...extraParams,
+          }),
+        });
+
+        console.log('fetch response status:', response.status, 'ok:', response.ok);
+
+        const payload = await response.json().catch((err) => {
+          console.error('json parse error:', err);
+          return {};
+        });
+
+        console.log('response payload:', payload);
+
+        if (!response.ok) {
+          const errorMsg = payload?.message || 'Unable to send your request. Please try again.';
+          console.error('request failed:', errorMsg);
+          throw new Error(errorMsg);
+        }
+
+        return payload;
+      } catch (error) {
+        console.error('submitAssistanceRequest error:', error?.message || error);
+        throw error;
+      }
     }
 
     cards.forEach((card) => {
       card.addEventListener('click', () => selectCard(card));
     });
 
-    continueBtn.addEventListener('click', () => {
+    const callBackCard = cards.find((card) => card.dataset.value === 'call-back');
+    if (callBackCard) {
+      callBackCard.addEventListener('click', () => {
+        openCallbackModal();
+        continueBtn.disabled = false;
+      });
+    }
+
+    const whatsappCard = cards.find((card) => card.dataset.value === 'whatsapp');
+    if (whatsappCard) {
+      whatsappCard.addEventListener('click', () => {
+        openWhatsappModal();
+        continueBtn.disabled = false;
+      });
+    }
+
+    const scheduleCard = cards.find((card) => card.dataset.value === 'schedule');
+    if (scheduleCard) {
+      scheduleCard.addEventListener('click', () => {
+        openScheduleModal();
+        continueBtn.disabled = false;
+      });
+    }
+
+    const emailCard = cards.find((card) => card.dataset.value === 'email');
+    if (emailCard) {
+      emailCard.addEventListener('click', () => {
+        openEmailModal();
+        continueBtn.disabled = false;
+      });
+    }
+
+    continueBtn.addEventListener('click', async () => {
       if (!selected) return;
-      window.location.href = 'onboarding-screen-6.html';
+
+      if (selectedValue === 'call-back') {
+        if (!isCallbackRequested) {
+          openCallbackModal();
+          return;
+        }
+        window.location.href = 'onboarding-screen-6.html';
+        return;
+      }
+
+      if (selectedValue === 'whatsapp') {
+        if (!isWhatsappRequested) {
+          openWhatsappModal();
+          return;
+        }
+        window.location.href = 'onboarding-screen-6.html';
+        return;
+      }
+
+      if (selectedValue === 'schedule') {
+        if (!isScheduled) {
+          openScheduleModal();
+          return;
+        }
+        window.location.href = 'onboarding-screen-6.html';
+        return;
+      }
+
+      if (selectedValue === 'email') {
+        if (!isEmailRequested) {
+          openEmailModal();
+          return;
+        }
+        window.location.href = 'onboarding-screen-6.html';
+        return;
+      }
+
+      if (selectedValue === 'no-assistance') {
+        window.location.href = 'onboarding-screen-6.html';
+        return;
+      }
+
+      try {
+        continueBtn.disabled = true;
+        continueBtn.textContent = 'Sending...';
+        await submitAssistanceRequest();
+        showToast(`${getSelectedServiceLabel()} request sent.`);
+        window.location.href = 'onboarding-screen-6.html';
+      } catch (error) {
+        showToast(error?.message || 'Unable to send your request. Please try again.');
+      } finally {
+        continueBtn.disabled = !selected;
+        continueBtn.textContent = 'Continue →';
+      }
+    });
+
+    // Callback modal handlers
+    callbackCancelBtn.addEventListener('click', closeCallbackModal);
+    callbackModal.addEventListener('click', (event) => {
+      if (event.target === callbackModal) closeCallbackModal();
+    });
+    callbackPhoneInput.addEventListener('input', () => {
+      callbackPhoneInput.value = callbackPhoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+    callbackOkBtn.addEventListener('click', async () => {
+      const phoneNumber = callbackPhoneInput.value.replace(/\D/g, '').slice(0, 10);
+      if (!/^\d{10}$/.test(phoneNumber)) {
+        showToast('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+
+      try {
+        callbackOkBtn.disabled = true;
+        callbackOkBtn.textContent = 'Sending...';
+        console.log('Submitting assistance request...');
+        await submitAssistanceRequest({ phoneNumber });
+        console.log('Request succeeded!');
+        isCallbackRequested = true;
+        closeCallbackModal();
+        showToast('Your callback request has been sent.');
+        setTimeout(() => {
+          window.location.href = 'onboarding-screen-6.html';
+        }, 1200);
+      } catch (error) {
+        console.error('Assistance request failed:', error);
+        showToast(error?.message || 'Unable to send your request. Please try again.');
+      } finally {
+        callbackOkBtn.disabled = false;
+        callbackOkBtn.textContent = 'OK';
+      }
+    });
+
+    // WhatsApp modal handlers
+    whatsappCancelBtn.addEventListener('click', closeWhatsappModal);
+    whatsappModal.addEventListener('click', (event) => {
+      if (event.target === whatsappModal) closeWhatsappModal();
+    });
+    whatsappPhoneInput.addEventListener('input', () => {
+      whatsappPhoneInput.value = whatsappPhoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+    whatsappOkBtn.addEventListener('click', async () => {
+      const phoneNumber = whatsappPhoneInput.value.replace(/\D/g, '').slice(0, 10);
+      if (!/^\d{10}$/.test(phoneNumber)) {
+        showToast('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+
+      try {
+        whatsappOkBtn.disabled = true;
+        whatsappOkBtn.textContent = 'Sending...';
+        console.log('Submitting WhatsApp request...');
+        await submitAssistanceRequest({ phoneNumber });
+        console.log('WhatsApp request succeeded!');
+        isWhatsappRequested = true;
+        closeWhatsappModal();
+        showToast('Your WhatsApp request has been sent.');
+        setTimeout(() => {
+          window.location.href = 'onboarding-screen-6.html';
+        }, 1200);
+      } catch (error) {
+        console.error('WhatsApp request failed:', error);
+        showToast(error?.message || 'Unable to send your request. Please try again.');
+      } finally {
+        whatsappOkBtn.disabled = false;
+        whatsappOkBtn.textContent = 'OK';
+      }
+    });
+
+    // Email modal handlers
+    function openEmailModal() {
+      emailModal.classList.add('is-open');
+      emailModal.setAttribute('aria-hidden', 'false');
+      const storedEmail = JSON.parse(sessionStorage.getItem('userProfile') || '{}')?.email || '';
+      emailAddressInput.value = storedEmail;
+      window.setTimeout(() => emailAddressInput.focus(), 50);
+    }
+
+    function closeEmailModal() {
+      emailModal.classList.remove('is-open');
+      emailModal.setAttribute('aria-hidden', 'true');
+    }
+
+    emailCancelBtn.addEventListener('click', closeEmailModal);
+    emailModal.addEventListener('click', (event) => {
+      if (event.target === emailModal) closeEmailModal();
+    });
+
+    emailOkBtn.addEventListener('click', async () => {
+      const email = emailAddressInput.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('Please enter a valid email address.');
+        return;
+      }
+
+      try {
+        emailOkBtn.disabled = true;
+        emailOkBtn.textContent = 'Sending...';
+        await submitAssistanceRequest({ email });
+        isEmailRequested = true;
+        closeEmailModal();
+        showToast('Information email has been sent.');
+        setTimeout(() => {
+          window.location.href = 'onboarding-screen-6.html';
+        }, 1200);
+      } catch (error) {
+        console.error('Email request failed:', error);
+        showToast(error?.message || 'Unable to send email. Please try again.');
+      } finally {
+        emailOkBtn.disabled = false;
+        emailOkBtn.textContent = 'OK';
+      }
+    });
+
+    // Schedule modal handlers
+    scheduleCancelBtn.addEventListener('click', closeScheduleModal);
+    scheduleModal.addEventListener('click', (event) => {
+      if (event.target === scheduleModal) closeScheduleModal();
+    });
+    
+    // Auto formatting Date as DD-MM-YYYY
+    scheduleDateInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 8) val = val.slice(0, 8);
+      if (val.length > 4) {
+        val = val.slice(0, 2) + '-' + val.slice(2, 4) + '-' + val.slice(4);
+      } else if (val.length > 2) {
+        val = val.slice(0, 2) + '-' + val.slice(2);
+      }
+      e.target.value = val;
+    });
+
+    // Auto formatting Time as HH:MM
+    scheduleTimeInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 4) val = val.slice(0, 4);
+      if (val.length > 2) {
+        val = val.slice(0, 2) + ':' + val.slice(2);
+      }
+      e.target.value = val;
+    });
+
+    schedulePhoneInput.addEventListener('input', () => {
+      schedulePhoneInput.value = schedulePhoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    function parseInputDate(str) {
+      const parts = str.split('-');
+      if (parts.length !== 3) return null;
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // 0-based month
+      const year = parseInt(parts[2], 10);
+      if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+      const date = new Date(year, month, day);
+      if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
+        return null;
+      }
+      return date;
+    }
+
+    scheduleOkBtn.addEventListener('click', async () => {
+      const name = scheduleNameInput.value.trim();
+      const phoneNumber = schedulePhoneInput.value.replace(/\D/g, '').slice(0, 10);
+      const email = scheduleEmailInput.value.trim();
+      const dateStr = scheduleDateInput.value.trim();
+      const timeStr = scheduleTimeInput.value.trim();
+
+      if (!name) {
+        showToast('Please enter your full name.');
+        return;
+      }
+      if (!/^\d{10}$/.test(phoneNumber)) {
+        showToast('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('Please enter a valid email address.');
+        return;
+      }
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        showToast('Please enter date in DD-MM-YYYY format.');
+        return;
+      }
+      
+      const parsedDate = parseInputDate(dateStr);
+      if (!parsedDate) {
+        showToast('Please enter a valid calendar date.');
+        return;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const maxDate = new Date(today);
+      maxDate.setDate(today.getDate() + 2); // strictly max 2 days from today
+
+      if (parsedDate < today || parsedDate > maxDate) {
+        showToast('Consultation date must be from today up to 2 days in the future.');
+        return;
+      }
+
+      if (!/^(0[1-9]|1[0-2]):[0-5]\d$/.test(timeStr)) {
+        showToast('Please enter time in HH:MM format (12-hour, e.g. 10:30).');
+        return;
+      }
+      
+      const timeParts = timeStr.split(':');
+      const hours = parseInt(timeParts[0], 10);
+      const minutes = parseInt(timeParts[1], 10);
+      const period = schedulePeriodSelect.value;
+
+      let hours24 = hours;
+      if (period === 'PM' && hours !== 12) {
+        hours24 += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours24 = 0;
+      }
+
+      const totalMinutes = hours24 * 60 + minutes;
+      const minMinutes = 9 * 60;   // 9:00 AM
+      const maxMinutes = 21 * 60;  // 9:00 PM
+
+      if (totalMinutes < minMinutes || totalMinutes > maxMinutes) {
+        showToast('Consultation hours are strictly from 9:00 AM to 9:00 PM.');
+        return;
+      }
+
+      try {
+        scheduleOkBtn.disabled = true;
+        scheduleOkBtn.textContent = 'Scheduling...';
+        await submitAssistanceRequest({
+          name,
+          phoneNumber,
+          email,
+          date: dateStr,
+          time: timeStr,
+          period: period
+        });
+        isScheduled = true;
+        closeScheduleModal();
+        showToast('Your video consultation has been scheduled.');
+        setTimeout(() => {
+          window.location.href = 'onboarding-screen-6.html';
+        }, 1200);
+      } catch (error) {
+        console.error('Schedule consultation failed:', error);
+        showToast(error?.message || 'Unable to schedule consultation. Please try again.');
+      } finally {
+        scheduleOkBtn.disabled = false;
+        scheduleOkBtn.textContent = 'Schedule';
+      }
     });
   </script>
 </body>
