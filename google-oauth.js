@@ -5,8 +5,6 @@
     window.CAREWELL_API_BASE_URL,
     ...(Array.isArray(window.CAREWELL_API_BASE_URLS) ? window.CAREWELL_API_BASE_URLS : []),
     window.location.origin && window.location.origin !== 'null' ? window.location.origin : '',
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
     'https://care-well-1.onrender.com',
   ].filter(Boolean);
   const BACKEND_BASE_URLS = Array.from(new Set(DEFAULT_BASE_URLS.map((value) => String(value).trim()).filter(Boolean)));

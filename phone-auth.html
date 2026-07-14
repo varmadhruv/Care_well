@@ -346,21 +346,17 @@
 
   <script src="carewell-config.js"></script>
   <script>
-    const API_HOSTS = Array.from(new Set([
-      window.CAREWELL_API_BASE_URL,
-      window.location.origin,
-      'https://care-well-1.onrender.com',
-      'http://127.0.0.1:3000',
-      'http://localhost:3000',
-    ].filter(Boolean)));
-    const apiBaseUrl = window.CAREWELL_API_BASE_URL;
+    const API_BASE = window.CAREWELL_API_BASE_URL;
+    const API_HOSTS = Array.isArray(window.CAREWELL_API_BASE_URLS) ? window.CAREWELL_API_BASE_URLS : [API_BASE];
+
+    const inputs = Array.from(document.querySelectorAll('.digit'));
     const confirmBtn = document.getElementById('confirmBtn');
     const helperText = document.getElementById('helperText');
-    const inputs = Array.from(document.querySelectorAll('.digit'));
 
     function getValue() {
       return inputs.map((input) => input.value).join('');
     }
+
 
     function updateState() {
       const value = getValue();
@@ -457,24 +453,19 @@
 
       (async () => {
         let lastError = null;
-        for (const baseUrl of API_HOSTS) {
-          try {
-            const payload = await submitPhone(baseUrl);
-            if (payload.profile?.sessionToken) {
-              sessionStorage.setItem('carewellSessionToken', payload.profile.sessionToken);
-            }
-            sessionStorage.setItem('userProfile', JSON.stringify(payload.profile || { phoneNumber }));
-            window.location.href = 'registration.html';
-            return;
-          } catch (error) {
-            lastError = error;
+        try {
+          const payload = await submitPhone(API_BASE);
+          if (payload.profile?.sessionToken) {
+            sessionStorage.setItem('carewellSessionToken', payload.profile.sessionToken);
           }
+          sessionStorage.setItem('userProfile', JSON.stringify(payload.profile || { phoneNumber }));
+          window.location.href = 'registration.html';
+        } catch (error) {
+          helperText.textContent = error?.message || 'Unable to save your information. Please try again.';
+          helperText.classList.add('show');
+          confirmBtn.textContent = 'Confirm';
+          confirmBtn.disabled = false;
         }
-
-        helperText.textContent = lastError?.message || 'Unable to save your information. Please try again.';
-        helperText.classList.add('show');
-        confirmBtn.textContent = 'Confirm';
-        confirmBtn.disabled = false;
       })();
     });
 

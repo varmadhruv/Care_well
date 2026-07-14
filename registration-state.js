@@ -1,8 +1,8 @@
-(() => {
-  const API_HOSTS = ['http://127.0.0.1:3000', 'http://localhost:3000'];
-  const API_BASE =
-    window.CAREWELL_API_BASE_URL ||
-    API_HOSTS[0];
+﻿(() => {
+  const API_BASE = window.CAREWELL_API_BASE_URL || '';
+  const API_HOSTS = Array.isArray(window.CAREWELL_API_BASE_URLS) && window.CAREWELL_API_BASE_URLS.length
+    ? window.CAREWELL_API_BASE_URLS
+    : [API_BASE].filter(Boolean);
 
   const STORAGE_KEYS = {
     draft: "carewellRegistrationDraft",
@@ -90,7 +90,6 @@
       if (!raw) {
         return clone(DEFAULT_STATE);
       }
-
       const parsed = JSON.parse(raw);
       return normalizeState(parsed);
     } catch (error) {
@@ -132,11 +131,9 @@
     };
   }
 
-  function normalizeState(input = {}) {
-    const merged = {
-      ...clone(DEFAULT_STATE),
-      ...clone(input),
-    };
+  function normalizeState(input) {
+    input = input || {};
+    const merged = Object.assign({}, clone(DEFAULT_STATE), clone(input));
 
     merged.registrationStep = normalizeStep(merged.registrationStep);
     merged.registrationCompleted = Boolean(merged.registrationCompleted);
@@ -159,7 +156,7 @@
   function emit() {
     const snapshot = getState();
     persistDraft(snapshot);
-    state.listeners.forEach((listener) => {
+    state.listeners.forEach(function(listener) {
       try {
         listener(snapshot);
       } catch (error) {
@@ -169,10 +166,7 @@
   }
 
   function setState(nextState) {
-    state.data = normalizeState({
-      ...state.data,
-      ...clone(nextState),
-    });
+    state.data = normalizeState(Object.assign({}, state.data, clone(nextState)));
     emit();
     return getState();
   }
@@ -207,7 +201,8 @@
     return !Number.isNaN(parsed.getTime());
   }
 
-  function validateSection(sectionName, sectionData = {}) {
+  function validateSection(sectionName, sectionData) {
+    sectionData = sectionData || {};
     if (!sectionName || !KNOWN_SECTIONS.has(sectionName)) {
       return { valid: false, message: "Invalid registration section." };
     }
@@ -242,15 +237,17 @@
 
   function deepMerge(baseValue, incomingValue) {
     if (Array.isArray(baseValue) || Array.isArray(incomingValue)) {
-      return clone(incomingValue ?? baseValue ?? []);
+      return clone(incomingValue != null ? incomingValue : (baseValue != null ? baseValue : []));
     }
 
     if (!isPlainObject(baseValue) || !isPlainObject(incomingValue)) {
-      return clone(incomingValue ?? baseValue ?? {});
+      return clone(incomingValue != null ? incomingValue : (baseValue != null ? baseValue : {}));
     }
 
-    const result = { ...clone(baseValue) };
-    Object.entries(incomingValue).forEach(([key, value]) => {
+    const result = Object.assign({}, clone(baseValue));
+    Object.entries(incomingValue).forEach(function(entry) {
+      const key = entry[0];
+      const value = entry[1];
       if (isPlainObject(value) && isPlainObject(baseValue[key])) {
         result[key] = deepMerge(baseValue[key], value);
       } else if (value !== undefined) {
@@ -260,18 +257,15 @@
     return result;
   }
 
-  async function requestJson(url, options = {}) {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...(options.headers || {}),
-        ...buildAuthHeaders(),
-      },
-    });
+  async function requestJson(url, options) {
+    options = options || {};
+    const response = await fetch(url, Object.assign({}, options, {
+      headers: Object.assign({}, options.headers || {}, buildAuthHeaders()),
+    }));
 
-    const payload = await response.json().catch(() => ({}));
+    const payload = await response.json().catch(function() { return {}; });
     if (!response.ok) {
-      throw new Error(payload?.message || "Unable to restore registration progress.");
+      throw new Error(payload && payload.message ? payload.message : "Unable to restore registration progress.");
     }
     return payload;
   }
@@ -280,7 +274,7 @@
     let lastError;
     for (const baseUrl of API_HOSTS) {
       try {
-        return await requestJson(`${baseUrl}/api/users/me/status`);
+        return await requestJson(baseUrl + '/api/users/me/status');
       } catch (error) {
         lastError = error;
       }
@@ -292,7 +286,7 @@
     let lastError;
     for (const baseUrl of API_HOSTS) {
       try {
-        return await requestJson(`${baseUrl}/api/users/me`);
+        return await requestJson(baseUrl + '/api/users/me');
       } catch (error) {
         lastError = error;
       }
@@ -300,29 +294,26 @@
     throw lastError || new Error("Unable to restore registration progress.");
   }
 
-  function normalizeSectionPayload(sectionName, payload = {}) {
+  function normalizeSectionPayload(sectionName, payload) {
+    payload = payload || {};
     if (Object.prototype.hasOwnProperty.call(payload, sectionName) && isPlainObject(payload[sectionName])) {
       return clone(payload[sectionName]);
     }
-
     if (isPlainObject(payload.sectionData)) {
       return clone(payload.sectionData);
     }
-
     if (isPlainObject(payload.data)) {
       return clone(payload.data);
     }
-
     return {};
   }
 
-  async function saveRegistrationStep({
-    registrationStep,
-    sectionName,
-    sectionData = {},
-    registrationCompleted = false,
-    immediate = true,
-  }) {
+  async function saveRegistrationStep(opts) {
+    const registrationStep = opts.registrationStep;
+    const sectionName = opts.sectionName;
+    const sectionData = opts.sectionData || {};
+    const registrationCompleted = opts.registrationCompleted || false;
+
     const resolvedStep = normalizeStep(registrationStep || getStepForSection(sectionName));
     const resolvedSectionName = sectionName || getSectionForStep(resolvedStep);
     const validation = validateSection(resolvedSectionName, sectionData);
@@ -341,56 +332,66 @@
       return state.pendingSave;
     }
 
-    const savePromise = fetch(`${API_BASE}/api/users/me/registration`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        ...buildAuthHeaders(),
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(async (response) => {
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          throw new Error(result?.message || "Unable to save your information. Please try again.");
-        }
+    async function trySave() {
+      let lastError;
+      for (const baseUrl of API_HOSTS) {
+        try {
+          const response = await fetch(baseUrl + '/api/users/me/registration', {
+            method: "PATCH",
+            credentials: "include",
+            headers: Object.assign({ "Content-Type": "application/json" }, buildAuthHeaders()),
+            body: JSON.stringify(payload),
+          });
 
-        if (result?.profile) {
-          setUserProfile(result.profile);
-          state.data.profile = result.profile;
+          const result = await response.json().catch(function() { return {}; });
+          if (!response.ok) {
+            const status = Number(response.status || 0);
+            if ([404, 408, 425, 429, 500, 502, 503, 504].indexOf(status) === -1) {
+              throw new Error(result && result.message ? result.message : "Unable to save your information. Please try again.");
+            }
+            lastError = new Error(result && result.message ? result.message : "Unable to save your information. Please try again.");
+            continue;
+          }
+
+          if (result && result.profile) {
+            setUserProfile(result.profile);
+            state.data.profile = result.profile;
+          }
+          if (result && typeof result.registrationStep === "number") {
+            state.data.registrationStep = normalizeStep(result.registrationStep);
+          }
+          if (result && typeof result.registrationCompleted === "boolean") {
+            state.data.registrationCompleted = result.registrationCompleted;
+          }
+          if (result && result.profile && result.profile[resolvedSectionName]) {
+            state.data[resolvedSectionName] = deepMerge(state.data[resolvedSectionName], result.profile[resolvedSectionName]);
+          } else {
+            state.data[resolvedSectionName] = deepMerge(state.data[resolvedSectionName], sectionData);
+          }
+          state.data.progress = computeProgress(state.data.registrationStep, state.data.registrationCompleted);
+          emit();
+          return result;
+        } catch (networkError) {
+          lastError = networkError;
         }
-        if (typeof result?.registrationStep === "number") {
-          state.data.registrationStep = normalizeStep(result.registrationStep);
-        }
-        if (typeof result?.registrationCompleted === "boolean") {
-          state.data.registrationCompleted = result.registrationCompleted;
-        }
-        if (result?.profile?.[resolvedSectionName]) {
-          state.data[resolvedSectionName] = deepMerge(state.data[resolvedSectionName], result.profile[resolvedSectionName]);
-        } else {
-          state.data[resolvedSectionName] = deepMerge(state.data[resolvedSectionName], sectionData);
-        }
-        state.data.progress = computeProgress(state.data.registrationStep, state.data.registrationCompleted);
-        emit();
-        return result;
-      })
-      .finally(() => {
-        state.pendingSave = null;
-        state.pendingSaveKey = "";
-      });
+      }
+      throw lastError || new Error("Unable to save your information. Please try again.");
+    }
+
+    const savePromise = trySave().finally(function() {
+      state.pendingSave = null;
+      state.pendingSaveKey = "";
+    });
 
     state.pendingSave = savePromise;
     state.pendingSaveKey = saveKey;
 
-    if (immediate) {
-      return savePromise;
-    }
-
     return savePromise;
   }
 
-  function scheduleAutosave(sectionName, sectionData = {}, options = {}) {
+  function scheduleAutosave(sectionName, sectionData, options) {
+    sectionData = sectionData || {};
+    options = options || {};
     const resolvedSectionName = sectionName || getSectionForStep(options.registrationStep || getState().registrationStep);
     const timerKey = resolvedSectionName;
     const currentTimer = state.autosaveTimers.get(timerKey);
@@ -398,14 +399,14 @@
       clearTimeout(currentTimer);
     }
 
-    const timerId = window.setTimeout(() => {
+    const timerId = window.setTimeout(function() {
       state.autosaveTimers.delete(timerKey);
       saveRegistrationStep({
         registrationStep: options.registrationStep || getStepForSection(resolvedSectionName),
         sectionName: resolvedSectionName,
-        sectionData,
+        sectionData: sectionData,
         registrationCompleted: Boolean(options.registrationCompleted),
-      }).catch(() => {
+      }).catch(function() {
         // Autosave failures are surfaced by the page layer if needed.
       });
     }, SAVE_DEBOUNCE_MS);
@@ -414,16 +415,18 @@
     return timerId;
   }
 
-  function recordSection(sectionName, sectionData = {}, options = {}) {
+  function recordSection(sectionName, sectionData, options) {
+    sectionData = sectionData || {};
+    options = options || {};
     const resolvedSectionName = sectionName || getSectionForStep(options.registrationStep || getState().registrationStep);
     const resolvedStep = normalizeStep(options.registrationStep || getStepForSection(resolvedSectionName));
-    state.data = normalizeState({
-      ...state.data,
+    const regCompleted = options.registrationCompleted != null ? options.registrationCompleted : state.data.registrationCompleted;
+    state.data = normalizeState(Object.assign({}, state.data, {
       registrationStep: resolvedStep,
-      registrationCompleted: Boolean(options.registrationCompleted ?? state.data.registrationCompleted),
+      registrationCompleted: Boolean(regCompleted),
       [resolvedSectionName]: deepMerge(state.data[resolvedSectionName], sectionData),
-      progress: computeProgress(resolvedStep, Boolean(options.registrationCompleted ?? state.data.registrationCompleted)),
-    });
+      progress: computeProgress(resolvedStep, Boolean(regCompleted)),
+    }));
     emit();
 
     if (options.autosave !== false) {
@@ -440,18 +443,20 @@
     const localDraft = loadDraft();
     const nextState = normalizeState(localDraft);
 
-    const [status, profile] = await Promise.allSettled([loadRegistrationStatus(), loadCurrentUser()]);
+    const results = await Promise.allSettled([loadRegistrationStatus(), loadCurrentUser()]);
+    const status = results[0];
+    const profile = results[1];
 
     if (status.status === "fulfilled") {
-      nextState.registrationStep = normalizeStep(status.value?.registrationStep || nextState.registrationStep || 1);
-      nextState.registrationCompleted = Boolean(status.value?.registrationCompleted ?? nextState.registrationCompleted);
+      nextState.registrationStep = normalizeStep((status.value && status.value.registrationStep) || nextState.registrationStep || 1);
+      nextState.registrationCompleted = Boolean((status.value && status.value.registrationCompleted != null) ? status.value.registrationCompleted : nextState.registrationCompleted);
     }
 
     if (profile.status === "fulfilled") {
-      const serverProfile = profile.value?.profile || {};
+      const serverProfile = (profile.value && profile.value.profile) || {};
       nextState.profile = serverProfile;
       nextState.registrationStep = normalizeStep(serverProfile.registrationStep || nextState.registrationStep || 1);
-      nextState.registrationCompleted = Boolean(serverProfile.registrationCompleted ?? nextState.registrationCompleted);
+      nextState.registrationCompleted = Boolean(serverProfile.registrationCompleted != null ? serverProfile.registrationCompleted : nextState.registrationCompleted);
       nextState.personalInformation = deepMerge(nextState.personalInformation, serverProfile.personalInformation || {});
       nextState.biologicalInformation = deepMerge(nextState.biologicalInformation, serverProfile.biologicalInformation || {});
       nextState.contactInformation = deepMerge(nextState.contactInformation, serverProfile.contactInformation || {});
@@ -486,7 +491,9 @@
     return true;
   }
 
-  function navigateToStep(step, { replace = true } = {}) {
+  function navigateToStep(step, opts) {
+    opts = opts || {};
+    const replace = opts.replace !== false;
     const route = getRouteForStep(step);
     if (replace) {
       window.location.replace(route);
@@ -514,7 +521,7 @@
     state.data = clone(DEFAULT_STATE);
     state.pendingSave = null;
     state.pendingSaveKey = "";
-    state.autosaveTimers.forEach((timerId) => clearTimeout(timerId));
+    state.autosaveTimers.forEach(function(timerId) { clearTimeout(timerId); });
     state.autosaveTimers.clear();
     try {
       sessionStorage.removeItem(STORAGE_KEYS.draft);
@@ -525,29 +532,30 @@
   }
 
   function onChange(listener) {
-    if (typeof listener !== "function") return () => {};
+    if (typeof listener !== "function") return function() {};
     state.listeners.add(listener);
-    return () => state.listeners.delete(listener);
+    return function() { state.listeners.delete(listener); };
   }
 
   function isCompleted() {
     return Boolean(getState().registrationCompleted);
   }
 
-  function hydrateFromProfile(profile = {}) {
-    const nextState = normalizeState({
-      ...getState(),
-      profile,
-      registrationStep: profile.registrationStep || getState().registrationStep,
-      registrationCompleted: Boolean(profile.registrationCompleted ?? getState().registrationCompleted),
-      personalInformation: profile.personalInformation || getState().personalInformation,
-      biologicalInformation: profile.biologicalInformation || getState().biologicalInformation,
-      contactInformation: profile.contactInformation || getState().contactInformation,
-      addressInformation: profile.addressInformation || getState().addressInformation,
-      emergencyContact: profile.emergencyContact || getState().emergencyContact,
-      healthcarePreferences: profile.healthcarePreferences || getState().healthcarePreferences,
-      consentInformation: profile.consentInformation || getState().consentInformation,
-    });
+  function hydrateFromProfile(profile) {
+    profile = profile || {};
+    const current = getState();
+    const nextState = normalizeState(Object.assign({}, current, {
+      profile: profile,
+      registrationStep: profile.registrationStep || current.registrationStep,
+      registrationCompleted: Boolean(profile.registrationCompleted != null ? profile.registrationCompleted : current.registrationCompleted),
+      personalInformation: profile.personalInformation || current.personalInformation,
+      biologicalInformation: profile.biologicalInformation || current.biologicalInformation,
+      contactInformation: profile.contactInformation || current.contactInformation,
+      addressInformation: profile.addressInformation || current.addressInformation,
+      emergencyContact: profile.emergencyContact || current.emergencyContact,
+      healthcarePreferences: profile.healthcarePreferences || current.healthcarePreferences,
+      consentInformation: profile.consentInformation || current.consentInformation,
+    }));
 
     state.data = nextState;
     emit();
@@ -555,31 +563,31 @@
   }
 
   window.CareWellRegistration = {
-    API_BASE,
-    STORAGE_KEYS,
-    getUserProfile,
-    setUserProfile,
-    getState,
-    setState,
-    getProgress,
-    getSectionForStep,
-    getStepForSection,
-    getRouteForStep,
-    validateSection,
-    recordSection,
-    scheduleAutosave,
-    saveRegistrationStep,
-    resumeRegistration,
-    refreshAndRoute,
-    gateDashboard,
-    navigateToStep,
-    goNext,
-    goBack,
-    loadRegistrationStatus,
-    loadCurrentUser,
-    hydrateFromProfile,
-    reset,
-    onChange,
-    isCompleted,
+    API_BASE: API_BASE,
+    STORAGE_KEYS: STORAGE_KEYS,
+    getUserProfile: getUserProfile,
+    setUserProfile: setUserProfile,
+    getState: getState,
+    setState: setState,
+    getProgress: getProgress,
+    getSectionForStep: getSectionForStep,
+    getStepForSection: getStepForSection,
+    getRouteForStep: getRouteForStep,
+    validateSection: validateSection,
+    recordSection: recordSection,
+    scheduleAutosave: scheduleAutosave,
+    saveRegistrationStep: saveRegistrationStep,
+    resumeRegistration: resumeRegistration,
+    refreshAndRoute: refreshAndRoute,
+    gateDashboard: gateDashboard,
+    navigateToStep: navigateToStep,
+    goNext: goNext,
+    goBack: goBack,
+    loadRegistrationStatus: loadRegistrationStatus,
+    loadCurrentUser: loadCurrentUser,
+    hydrateFromProfile: hydrateFromProfile,
+    reset: reset,
+    onChange: onChange,
+    isCompleted: isCompleted,
   };
 })();

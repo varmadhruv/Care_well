@@ -610,6 +610,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="carewell-config.js"></script>
   <script src="registration-state.js" defer></script>
   <script>
     const continueBtn = document.getElementById('continueBtn');
@@ -729,7 +730,7 @@
         throw new Error('Please select an assistance option.');
       }
 
-      const apiUrl = 'http://localhost:3000/api/auth/assistance/request';
+      const apiUrl = (window.CAREWELL_API_BASE_URL || 'https://care-well-1.onrender.com').replace(/\/$/, '') + '/api/auth/assistance/request';
 
       console.log('submitAssistanceRequest:', { service, apiUrl, ...extraParams });
 
