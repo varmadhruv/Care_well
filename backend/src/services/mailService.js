@@ -95,8 +95,9 @@ async function sendMail({ to, subject, title, heading, message, ctaLabel, ctaUrl
     };
 
     persistFallbackEmail(fallbackPayload);
-    console.warn("Mail delivery failed. Saved request to fallback file:", error?.message || error);
-    return { fallback: true, savedTo: path.join("backend", "data", "assistance-requests.jsonl") };
+    console.error("Mail delivery failed. Saved request to fallback file:", error?.message || error);
+    // Re-throw so the caller can return a proper error response to the client
+    throw new Error("Mail delivery failed. Please check email credentials and try again.");
   }
 }
 

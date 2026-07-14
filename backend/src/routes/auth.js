@@ -562,9 +562,10 @@ async function handleAssistanceRequest(req, res) {
 
     return res.json({ ok: true, message: "Assistance request sent successfully." });
   } catch (error) {
-    const detailMessage = error?.message || "Unable to send your request. Please try again.";
-    console.error("assistance request failed:", error);
-    return res.status(500).json({ code: "SERVER_ERROR", message: detailMessage });
+    console.error("assistance request failed:", error?.message || error);
+    // Give user-friendly message regardless of internal error
+    const userMessage = "Unable to send your request. Please try again.";
+    return res.status(500).json({ code: "SERVER_ERROR", message: userMessage });
   }
 }
 
