@@ -21,7 +21,17 @@
 
   if (isLocalOrigin) {
     // Running locally — prefer current origin, then localhost fallbacks, then production
-    if (!isFileOrigin && currentOrigin) {
+    let isStaticServer = false;
+    if (currentOrigin) {
+      try {
+        const url = new URL(currentOrigin);
+        // Exclude common static preview servers (like VS Code Live Server on 5500-5505) from being the API host
+        if (url.port && ['5500', '5501', '5502', '5503', '5504', '5505'].includes(url.port)) {
+          isStaticServer = true;
+        }
+      } catch (e) {}
+    }
+    if (!isFileOrigin && currentOrigin && !isStaticServer) {
       pushUnique(currentOrigin);
     }
     pushUnique('http://127.0.0.1:3000');
