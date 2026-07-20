@@ -1,6 +1,7 @@
 const express = require("express");
 const crypto = require("crypto");
 const { User } = require("../models/User");
+const { AssistanceRequest } = require("../models/AssistanceRequest");
 const { onlyDigits } = require("../utils/sanitize");
 const { isValidPhone, isValidEmail } = require("../utils/validators");
 const { sendMail } = require("../services/mailService");
@@ -551,19 +552,67 @@ async function handleAssistanceRequest(req, res) {
       ];
     }
 
-    await sendMail({
-      to: mailTarget,
-      subject: mailSubject,
-      title: "CareWell Information",
-      heading: selectedService === "Email Me Information" ? "Introduction of Services" : "New care assistance request",
-      message: messageLines.join(""),
-      text: textLines.join("\n"),
-    });
+    let requestRecord = null;
+    try {
+      requestRecord = await AssistanceRequest.create({
+        service: selectedService,
+        phoneNumber,
+        email,
+        name,
+        date,
+        time,
+        period,
+        source,
+        emailSent: false,
+      });
+    } catch (dbErr) {
+      console.error("Failed to save assistance request to database:", dbErr.message);
+    }
 
-    return res.json({ ok: true, message: "Assistance request sent successfully." });
+    let emailSent = false;
+    let emailError = "";
+
+    try {
+      await sendMail({
+        to: mailTarget,
+        subject: mailSubject,
+        title: "CareWell Information",
+        heading: selectedService === "Email Me Information" ? "Introduction of Services" : "New care assistance request",
+        message: messageLines.join(""),
+        text: textLines.join("\n"),
+      });
+      emailSent = true;
+    } catch (mailErr) {
+      emailError = mailErr?.message || "Unknown mail delivery error";
+      console.warn("Mail delivery failed (likely blocked on Render free tier). Saved request to database instead. Error:", emailError);
+    }
+
+    if (requestRecord) {
+      try {
+        await AssistanceRequest.updateOne(
+          { _id: requestRecord._id },
+          { $set: { emailSent, emailError } }
+        );
+      } catch (dbUpdateErr) {
+        console.error("Failed to update database record with email status:", dbUpdateErr.message);
+      }
+    }
+
+    if (emailSent || requestRecord) {
+      return res.json({
+        ok: true,
+        message: emailSent
+          ? "Assistance request sent successfully."
+          : "Assistance request recorded successfully."
+      });
+    } else {
+      return res.status(500).json({
+        code: "SERVER_ERROR",
+        message: "Unable to process your request. Please try again."
+      });
+    }
   } catch (error) {
     console.error("assistance request failed:", error?.message || error);
-    // Give user-friendly message regardless of internal error
     const userMessage = "Unable to send your request. Please try again.";
     return res.status(500).json({ code: "SERVER_ERROR", message: userMessage });
   }
