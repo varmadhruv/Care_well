@@ -409,6 +409,143 @@
         scroll-behavior: auto !important;
       }
     }
+
+    /* Premium OTP UI Styles */
+    .otp-modal {
+      background: #0b0b0d !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      padding: 36px 24px 32px !important;
+      align-items: center !important;
+      width: 340px !important;
+    }
+    @media(min-width: 768px) { .otp-modal { width: 400px !important; padding: 40px 32px 36px !important; } }
+    @media(min-width: 1024px) { .otp-modal { width: 430px !important; } }
+
+    .otp-header { text-align: center; margin-bottom: 36px; width: 100%; }
+    .otp-title { font-family: Poppins, sans-serif; font-size: 28px; font-weight: 700; margin: 0; line-height: 1.1; }
+    .otp-v2 { color: #ff9d00; display: block; margin-top: 4px; font-size: 24px; }
+    .otp-subtitle { color: #94a3b8; font-size: 15px; margin: 12px 0 0; }
+
+    .otp-inputs-wrapper { 
+      position: relative; 
+      display: flex; 
+      justify-content: center; 
+      margin-bottom: 36px; 
+      --box-w: 52px;
+      --gap: 12px;
+      height: var(--box-w);
+      width: 100%;
+    }
+    @media(min-width: 768px) { .otp-inputs-wrapper { --box-w: 58px; } }
+
+    .otp-inputs { display: flex; gap: var(--gap); position: absolute; }
+    
+    .otp-box {
+      width: var(--box-w); 
+      height: var(--box-w);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+      font-family: Inter, sans-serif;
+      transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+      padding: 0;
+    }
+
+    .otp-box:focus {
+      border-color: #ff9d00;
+      background: rgba(255, 157, 0, 0.05);
+      transform: scale(1.08);
+    }
+    .otp-box.pop {
+      animation: popAnim 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); border-color: #ff9d00; }
+      100% { transform: scale(1); border-color: rgba(255, 255, 255, 0.08); }
+    }
+
+    /* Collapse Animation */
+    .otp-inputs.collapsing .otp-box {
+      transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0;
+    }
+    .otp-inputs.collapsing .otp-box:nth-child(1) { transform: translateX(calc(1.5 * (var(--box-w) + var(--gap)))) scale(1); opacity: 1; }
+    .otp-inputs.collapsing .otp-box:nth-child(2) { transform: translateX(calc(0.5 * (var(--box-w) + var(--gap)))) scale(0.5); }
+    .otp-inputs.collapsing .otp-box:nth-child(3) { transform: translateX(calc(-0.5 * (var(--box-w) + var(--gap)))) scale(0.5); }
+    .otp-inputs.collapsing .otp-box:nth-child(4) { transform: translateX(calc(-1.5 * (var(--box-w) + var(--gap)))) scale(0.5); }
+
+    /* Success Animation */
+    .otp-inputs.success .otp-box:first-child {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
+      color: transparent;
+      animation: pulseSuccess 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pulseSuccess {
+      0% { transform: translateX(calc(1.5 * (var(--box-w) + var(--gap)))) scale(0.8); }
+      50% { transform: translateX(calc(1.5 * (var(--box-w) + var(--gap)))) scale(1.15); }
+      100% { transform: translateX(calc(1.5 * (var(--box-w) + var(--gap)))) scale(1); }
+    }
+
+    .otp-check-icon {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .otp-inputs.success ~ .otp-check-icon {
+      opacity: 1;
+    }
+    .otp-inputs.success ~ .otp-check-icon polyline {
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: drawCheck 400ms 200ms ease forwards;
+    }
+    @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+    /* Failure Animation */
+    .otp-inputs.failure { animation: shake 400ms ease-in-out; }
+    .otp-inputs.failure .otp-box { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .otp-verify-btn {
+      width: 100%;
+      background: #ff9d00;
+      color: #000;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-family: Poppins, sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .otp-verify-btn:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+    .otp-verify-btn:not(:disabled):hover { background: #ffaa22; transform: translateY(-2px); }
+
+    .otp-resend { margin-top: 24px; color: #64748b; font-size: 14px; text-align: center; }
+    .otp-resend button { background: none; border: none; color: #ff9d00; font-weight: 600; cursor: pointer; padding: 0; margin-left: 4px; font: inherit; }
+    .otp-resend button:hover { text-decoration: underline; }
+    .otp-resend button:disabled { color: #475569; cursor: default; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -476,57 +613,402 @@
       const platform = navigator.userAgentData?.platform || navigator.platform || '';
       const userAgent = navigator.userAgent || '';
       const isAppleDevice = /Mac|iPhone|iPad|iPod/i.test(platform) || /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
+      
       const ensureToastHost = () => {
         let host = document.getElementById('carewell-toast-host');
         if (!host) {
           host = document.createElement('div');
           host.id = 'carewell-toast-host';
           host.style.position = 'fixed';
-          host.style.left = '50%';
-          host.style.bottom = '24px';
-          host.style.transform = 'translateX(-50%)';
+          host.style.inset = '0';
+          host.style.width = '100vw';
+          host.style.height = '100vh';
+          host.style.background = 'rgba(15, 23, 42, 0.6)';
+          host.style.backdropFilter = 'blur(6px)';
           host.style.zIndex = '9999';
-          host.style.pointerEvents = 'none';
+          host.style.display = 'flex';
+          host.style.justifyContent = 'center';
+          host.style.alignItems = 'center';
+          host.style.padding = '20px';
           document.body.appendChild(host);
         }
         return host;
       };
-      const showToast = (message) => {
-        const host = ensureToastHost();
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.background = 'rgba(15, 23, 42, 0.95)';
-        toast.style.color = '#fff';
-        toast.style.padding = '14px 18px';
-        toast.style.borderRadius = '999px';
-        toast.style.boxShadow = '0 14px 34px rgba(15, 23, 42, 0.18)';
-        toast.style.font = '600 14px Inter, system-ui, sans-serif';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(8px)';
-        toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
-        host.appendChild(toast);
-        requestAnimationFrame(() => {
-          toast.style.opacity = '1';
-          toast.style.transform = 'translateY(0)';
-        });
-        window.setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transform = 'translateY(8px)';
-          window.setTimeout(() => toast.remove(), 220);
-        }, 2800);
+
+      const clearHost = (host) => {
+        while (host.firstChild) {
+          host.removeChild(host.firstChild);
+        }
       };
 
-      if (isAppleDevice && appleButton) {
+      const showAppleSnackbar = () => {
+        const host = ensureToastHost();
+        clearHost(host);
+        host.style.pointerEvents = 'auto';
+
+        const snackbar = document.createElement('div');
+        snackbar.style.background = '#ffffff';
+        snackbar.style.color = '#0f172a';
+        snackbar.style.padding = '40px';
+        snackbar.style.borderRadius = '24px';
+        snackbar.style.boxShadow = '0 24px 60px rgba(15, 23, 42, 0.2)';
+        snackbar.style.border = '1px solid #e5e7eb';
+        snackbar.style.font = '500 20px Inter, system-ui, sans-serif';
+        snackbar.style.width = 'min(96vw, 600px)';
+        snackbar.style.maxWidth = '100%';
+        snackbar.style.display = 'flex';
+        snackbar.style.flexDirection = 'column';
+        snackbar.style.gap = '28px';
+        snackbar.style.opacity = '0';
+        snackbar.style.transform = 'scale(0.95) translateY(16px)';
+        snackbar.style.transition = 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+        const msg = document.createElement('div');
+        msg.innerHTML = ' <strong>Apple Sign-In is brewing!</strong><br/><br/>We are crafting a beautiful and seamless experience for you. It will be ready very soon!';
+        msg.style.lineHeight = '1.6';
+        msg.style.fontSize = '22px';
+        msg.style.textAlign = 'center';
+
+        const btn = document.createElement('button');
+        btn.textContent = 'I Understand';
+        btn.style.background = '#0b4f8c';
+        btn.style.color = '#fff';
+        btn.style.border = 'none';
+        btn.style.padding = '18px';
+        btn.style.borderRadius = '14px';
+        btn.style.font = '600 20px Poppins, sans-serif';
+        btn.style.cursor = 'pointer';
+        btn.style.transition = 'background 0.2s';
+        btn.onmouseover = () => btn.style.background = '#084476';
+        btn.onmouseout = () => btn.style.background = '#0b4f8c';
+        
+        btn.onclick = () => {
+          snackbar.style.opacity = '0';
+          snackbar.style.transform = 'scale(0.95) translateY(16px)';
+          setTimeout(() => {
+             snackbar.remove();
+             host.remove();
+          }, 250);
+        };
+
+        snackbar.appendChild(msg);
+        snackbar.appendChild(btn);
+        host.appendChild(snackbar);
+
+        requestAnimationFrame(() => {
+          snackbar.style.opacity = '1';
+          snackbar.style.transform = 'scale(1) translateY(0)';
+        });
+      };
+
+      function showOtherAccountSnackbar() {
+        const host = ensureToastHost();
+        clearHost(host);
+        
+        const API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || window.location.protocol === 'file:') 
+          ? 'http://localhost:3000' 
+          : 'https://care-well-1.onrender.com';
+
+        const safeFetchJson = async (url, options) => {
+          const res = await fetch(API_BASE + url, options);
+          const text = await res.text();
+          let data = {};
+          try { data = JSON.parse(text); } catch(e) { console.error('Non-JSON response:', text); }
+          if (!res.ok) throw new Error(data.message || 'Server error. Please try again.');
+          return data;
+        };
+
+        host.style.pointerEvents = 'auto';
+
+        const snackbar = document.createElement('div');
+        snackbar.style.background = '#ffffff';
+        snackbar.style.color = '#0f172a';
+        snackbar.style.padding = '40px';
+        snackbar.style.borderRadius = '24px';
+        snackbar.style.boxShadow = '0 24px 60px rgba(15, 23, 42, 0.2)';
+        snackbar.style.border = '1px solid #e5e7eb';
+        snackbar.style.font = '500 20px Inter, system-ui, sans-serif';
+        snackbar.style.width = 'min(96vw, 600px)';
+        snackbar.style.maxWidth = '100%';
+        snackbar.style.display = 'flex';
+        snackbar.style.flexDirection = 'column';
+        snackbar.style.gap = '24px';
+        snackbar.style.opacity = '0';
+        snackbar.style.transform = 'scale(0.95) translateY(16px)';
+        snackbar.style.transition = 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+        // Email Entry State
+        const renderEmailState = () => {
+          snackbar.innerHTML = '';
+          snackbar.className = '';
+          const header = document.createElement('div');
+          header.style.display = 'flex';
+          header.style.justifyContent = 'space-between';
+          header.style.alignItems = 'center';
+          
+          const title = document.createElement('div');
+          title.textContent = 'Continue with Email';
+          title.style.fontWeight = '700';
+          title.style.fontFamily = 'Poppins, sans-serif';
+          title.style.fontSize = '26px';
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '&times;';
+          closeBtn.style.background = 'none';
+          closeBtn.style.border = 'none';
+          closeBtn.style.fontSize = '36px';
+          closeBtn.style.lineHeight = '1';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.style.color = '#64748b';
+          closeBtn.onclick = () => {
+            snackbar.style.opacity = '0';
+            snackbar.style.transform = 'scale(0.95) translateY(16px)';
+            setTimeout(() => {
+               snackbar.remove();
+               host.remove();
+            }, 250);
+          };
+          header.appendChild(title);
+          header.appendChild(closeBtn);
+
+          const input = document.createElement('input');
+          input.type = 'email';
+          input.placeholder = 'Enter your email address';
+          input.style.width = '100%';
+          input.style.padding = '18px';
+          input.style.borderRadius = '14px';
+          input.style.border = '2px solid #e5e7eb';
+          input.style.fontSize = '20px';
+          input.style.fontFamily = 'inherit';
+          input.style.outline = 'none';
+          input.style.transition = 'border-color 0.2s';
+          
+          input.onfocus = () => input.style.borderColor = '#0b4f8c';
+          input.onblur = () => input.style.borderColor = '#e5e7eb';
+
+          const sendOtpBtn = document.createElement('button');
+          sendOtpBtn.textContent = 'Send 4-digit OTP';
+          sendOtpBtn.style.background = '#0b4f8c';
+          sendOtpBtn.style.color = '#fff';
+          sendOtpBtn.style.border = 'none';
+          sendOtpBtn.style.padding = '18px';
+          sendOtpBtn.style.borderRadius = '14px';
+          sendOtpBtn.style.font = '600 20px Poppins, sans-serif';
+          sendOtpBtn.style.cursor = 'pointer';
+          sendOtpBtn.style.transition = 'background 0.2s';
+
+          const errorMessage = document.createElement('div');
+          errorMessage.style.color = '#ef4444';
+          errorMessage.style.fontSize = '15px';
+          errorMessage.style.marginTop = '-12px';
+          errorMessage.style.display = 'none';
+
+          sendOtpBtn.onclick = async () => {
+             const email = input.value.trim();
+             if(email === '' || !email.includes('@')) {
+               input.style.borderColor = '#ef4444';
+               return;
+             }
+             input.style.borderColor = '#e5e7eb';
+             errorMessage.style.display = 'none';
+             sendOtpBtn.textContent = 'Sending...';
+             sendOtpBtn.disabled = true;
+             sendOtpBtn.style.opacity = '0.7';
+             
+             try {
+               await safeFetchJson('/api/auth/email/send-otp', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ email })
+               });
+               
+               // Transition to Premium OTP View
+               renderOtpState(email);
+             } catch (err) {
+               errorMessage.textContent = err.message;
+               errorMessage.style.display = 'block';
+               sendOtpBtn.textContent = 'Send 4-digit OTP';
+               sendOtpBtn.disabled = false;
+               sendOtpBtn.style.opacity = '1';
+             }
+          };
+
+          snackbar.appendChild(header);
+          snackbar.appendChild(input);
+          snackbar.appendChild(errorMessage);
+          snackbar.appendChild(sendOtpBtn);
+        };
+
+        const renderOtpState = (email) => {
+          snackbar.classList.add('otp-modal');
+          snackbar.innerHTML = `
+            <div class="otp-header">
+              <h2 class="otp-title">OTP Verification <span class="otp-v2">V2</span></h2>
+              <p class="otp-subtitle">Let's verify your number</p>
+            </div>
+            
+            <div class="otp-inputs-wrapper">
+              <div class="otp-inputs">
+                <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" />
+                <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" />
+                <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" />
+                <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" />
+              </div>
+              <svg class="otp-check-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            
+            <button class="otp-verify-btn" disabled>Verify</button>
+            <div class="otp-resend">Resend OTP in <span class="otp-timer">30</span>s</div>
+          `;
+
+          const inputs = Array.from(snackbar.querySelectorAll('.otp-box'));
+          const wrapper = snackbar.querySelector('.otp-inputs');
+          const verifyBtn = snackbar.querySelector('.otp-verify-btn');
+          const timerEl = snackbar.querySelector('.otp-timer');
+          const resendWrap = snackbar.querySelector('.otp-resend');
+          
+          let timeLeft = 30;
+          const timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+              resendWrap.innerHTML = `Didn't receive it? <button id="resend-btn">Resend OTP</button>`;
+              snackbar.querySelector('#resend-btn').onclick = async () => {
+                const btn = snackbar.querySelector('#resend-btn');
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                try {
+                  await safeFetchJson('/api/auth/email/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                  });
+                  btn.textContent = 'Sent!';
+                } catch (err) {
+                  btn.textContent = err.message || 'Failed. Try again';
+                  btn.disabled = false;
+                  btn.style.color = '#ef4444'; // turn red on error to read clearly
+                }
+              };
+            }
+          }, 1000);
+
+          const getOtp = () => inputs.map(i => i.value).join('');
+
+          inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+              if (e.target.value.length > 1) e.target.value = e.target.value[0]; // Paste handle fallback
+              if (e.target.value.match(/[0-9]/)) {
+                input.classList.add('pop');
+                setTimeout(() => input.classList.remove('pop'), 200);
+                if (index < inputs.length - 1) inputs[index + 1].focus();
+              } else {
+                e.target.value = '';
+              }
+              verifyBtn.disabled = getOtp().length !== 4;
+            });
+
+            input.addEventListener('keydown', (e) => {
+              if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                inputs[index - 1].focus();
+                inputs[index - 1].value = '';
+              }
+              if (e.key === 'ArrowLeft' && index > 0) inputs[index - 1].focus();
+              if (e.key === 'ArrowRight' && index < inputs.length - 1) inputs[index + 1].focus();
+            });
+
+            input.addEventListener('paste', (e) => {
+              e.preventDefault();
+              const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/\\D/g, '');
+              if (pastedData) {
+                for (let i = 0; i < inputs.length; i++) {
+                  if (pastedData[i]) {
+                    inputs[i].value = pastedData[i];
+                    if (i === inputs.length - 1) inputs[i].focus();
+                  }
+                }
+                verifyBtn.disabled = getOtp().length !== 4;
+              }
+            });
+          });
+
+          // Focus first input initially
+          setTimeout(() => inputs[0].focus(), 100);
+
+          verifyBtn.onclick = async () => {
+            const otp = getOtp();
+            if (otp.length !== 4) return;
+            
+            verifyBtn.textContent = 'Verifying...';
+            verifyBtn.disabled = true;
+
+            // Trigger collapse animation
+            wrapper.classList.add('collapsing');
+
+            try {
+              await safeFetchJson('/api/auth/email/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp })
+              });
+              
+              // Success Animation
+              setTimeout(() => {
+                wrapper.classList.add('success');
+                setTimeout(() => {
+                  window.location.href = 'registration.html';
+                }, 1000);
+              }, 400); // Wait for collapse to finish
+              
+            } catch (err) {
+              // Failure Animation
+              setTimeout(() => {
+                wrapper.classList.remove('collapsing');
+                wrapper.classList.add('failure');
+                verifyBtn.textContent = err.message || 'Invalid OTP';
+                verifyBtn.style.background = '#ef4444';
+                verifyBtn.style.color = '#fff';
+                verifyBtn.disabled = false;
+                inputs.forEach(i => i.value = '');
+                setTimeout(() => {
+                  wrapper.classList.remove('failure');
+                  inputs[0].focus();
+                  setTimeout(() => {
+                    verifyBtn.textContent = 'Verify';
+                    verifyBtn.style.background = '#ff9d00';
+                    verifyBtn.style.color = '#000';
+                  }, 2500);
+                }, 400);
+              }, 400);
+            }
+          };
+        };
+
+        renderEmailState();
+        host.appendChild(snackbar);
+
+        requestAnimationFrame(() => {
+          snackbar.style.opacity = '1';
+          snackbar.style.transform = 'scale(1) translateY(0)';
+        });
+      };
+
+      if (appleButton) {
+        // ALWAYS display apple button so user can see it! 
         appleButton.hidden = false;
         appleButton.addEventListener('click', (event) => {
           event.preventDefault();
-          showToast('Apple sign-in is coming soon.');
+          showAppleSnackbar();
         });
       }
 
       if (anotherGoogleButton) {
-        anotherGoogleButton.addEventListener('click', () => {
-          showToast('This feature is coming soon.');
+        anotherGoogleButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          showOtherAccountSnackbar();
         });
       }
 

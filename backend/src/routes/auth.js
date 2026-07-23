@@ -2,9 +2,10 @@ const express = require("express");
 const crypto = require("crypto");
 const { User } = require("../models/User");
 const { AssistanceRequest } = require("../models/AssistanceRequest");
+const { OtpVerification } = require("../models/OtpVerification");
 const { onlyDigits } = require("../utils/sanitize");
 const { isValidPhone, isValidEmail } = require("../utils/validators");
-const { sendMail } = require("../services/mailService");
+const { sendMail, sendBrevoMail } = require("../services/mailService");
 
 const authRouter = express.Router();
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -290,7 +291,7 @@ authRouter.post("/phone/start", async (req, res) => {
     });
   } catch (error) {
     console.error("phone start failed:", error);
-    return res.status(500).json({ code: "SERVER_ERROR", message: "Unable to save your information. Please try again." });
+    return res.status(500).json({ code: "SERVER_ERROR", message: error.message || "Unable to save your information. Please try again." });
   }
 });
 
@@ -413,38 +414,37 @@ async function handleAssistanceRequest(req, res) {
       return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid 10-digit mobile number." });
     }
 
-    let messageLines;
-    let textLines;
-    let mailTarget = "carewelldeveloperr@gmail.com";
-    let mailSubject = "CareWell assistance request";
+    let requestRecord = null;
+    try {
+      requestRecord = await AssistanceRequest.create({
+        service: selectedService,
+        phoneNumber,
+        email,
+        name,
+        date,
+        time,
+        period,
+        source,
+        emailSent: false,
+      });
+    } catch (dbErr) {
+      console.error("Failed to save assistance request to database:", dbErr.message);
+    }
 
-    if (selectedService === "Schedule Consultation") {
-      messageLines = [
-        "<p style=\"margin:0 0 16px;\"><strong>New Consultation Scheduled</strong></p>",
-        `<p style="margin:0 0 12px;">A user has scheduled a video consultation with CareWell.</p>`,
-        `<p style="margin:0 0 8px;"><strong>👤 Full Name:</strong> ${name}</p>`,
-        `<p style="margin:0 0 8px;"><strong>📞 Contact Number:</strong> <span style="font-size:18px; font-weight:600; color:#0b4f8c;">${phoneNumber}</span></p>`,
-        `<p style="margin:0 0 8px;"><strong>📧 Email Address:</strong> ${email}</p>`,
-        `<p style="margin:0 0 8px;"><strong>📅 Scheduled Date:</strong> ${date}</p>`,
-        `<p style="margin:0 0 8px;"><strong>⏰ Scheduled Time:</strong> ${time} ${period}</p>`,
-        `<p style="margin:0 0 8px;"><strong>Service Type:</strong> ${selectedService}</p>`,
-        `<p style="margin:0 0 8px;"><strong>Request From:</strong> ${source}</p>`,
-      ];
+    let emailSent = false;
+    let emailError = "";
 
-      textLines = [
-        "NEW CONSULTATION SCHEDULED",
-        "",
-        "A user has scheduled a video consultation with CareWell.",
-        "",
-        `Full Name: ${name}`,
-        `Contact Number: ${phoneNumber}`,
-        `Email Address: ${email}`,
-        `Scheduled Date: ${date}`,
-        `Scheduled Time: ${time} ${period}`,
-        `Service Type: ${selectedService}`,
-        `Request From: ${source}`,
-      ];
-    } else if (selectedService === "Email Me Information") {
+    // 1. Send dynamic developer notification for every enquiry
+    try {
+      await sendBrevoMail(req.body);
+      emailSent = true;
+    } catch (mailErr) {
+      emailError = mailErr?.message || "Unknown mail delivery error";
+      console.warn("Mail delivery failed:", emailError);
+    }
+
+    // 2. Send information email to the user if requested
+    if (selectedService === "Email Me Information") {
       const utcDate = new Date();
       const istOffset = 5.5 * 60 * 60 * 1000;
       const istDate = new Date(utcDate.getTime() + istOffset);
@@ -458,10 +458,7 @@ async function handleAssistanceRequest(req, res) {
         greeting = "Good night";
       }
 
-      mailTarget = email;
-      mailSubject = "Healthcare services at Home - CareWell Nursing Care";
-
-      messageLines = [
+      const messageLines = [
         `<p style="margin:0 0 12px;">${greeting},</p>`,
         `<p style="margin:0 0 12px;">Dear Sir/Madam,</p>`,
         `<p style="margin:0 0 16px;">Greetings from CareWell Nursing Care at Home.</p>`,
@@ -490,7 +487,7 @@ async function handleAssistanceRequest(req, res) {
         `</p>`
       ];
 
-      textLines = [
+      const textLines = [
         `${greeting},`,
         "",
         "Dear Sir/Madam,",
@@ -524,67 +521,19 @@ async function handleAssistanceRequest(req, res) {
         "Email: carewellofficiall@gmail.com",
         "Website: https://care-well-1.onrender.com"
       ];
-    } else {
-      const isWhatsApp = selectedService === "Chat on WhatsApp";
-      const callInstruction = isWhatsApp
-        ? "Please talk through WhatsApp <strong style=\"color:#e74c3c;\">(do not connect call)</strong>"
-        : "Please call this person to provide CareWell assistance.";
 
-      messageLines = [
-        "<p style=\"margin:0 0 16px;\"><strong>New Assistance Request</strong></p>",
-        `<p style="margin:0 0 12px;">A user wants to talk with CareWell for assistance.</p>`,
-        `<p style="margin:0 0 8px;"><strong>📞 Contact Number:</strong> <span style="font-size:18px; font-weight:600; color:#0b4f8c;">${phoneNumber || "Not provided"}</span></p>`,
-        `<p style="margin:0 0 8px;"><strong>Service Type:</strong> ${selectedService}</p>`,
-        `<p style="margin:0 0 8px;"><strong>Request From:</strong> ${source}</p>`,
-        `<p style="margin:0; color:#666;\"><em>${callInstruction}</em></p>`,
-      ];
-
-      textLines = [
-        "NEW ASSISTANCE REQUEST",
-        "",
-        "A user wants to talk with CareWell for assistance.",
-        "",
-        `Contact Number: ${phoneNumber || "Not provided"}`,
-        `Service Type: ${selectedService}`,
-        `Request From: ${source}`,
-        "",
-        isWhatsApp ? "Please talk through WhatsApp (do not connect call)" : "Please call this person to provide CareWell assistance.",
-      ];
-    }
-
-    let requestRecord = null;
-    try {
-      requestRecord = await AssistanceRequest.create({
-        service: selectedService,
-        phoneNumber,
-        email,
-        name,
-        date,
-        time,
-        period,
-        source,
-        emailSent: false,
-      });
-    } catch (dbErr) {
-      console.error("Failed to save assistance request to database:", dbErr.message);
-    }
-
-    let emailSent = false;
-    let emailError = "";
-
-    try {
-      await sendMail({
-        to: mailTarget,
-        subject: mailSubject,
-        title: "CareWell Information",
-        heading: selectedService === "Email Me Information" ? "Introduction of Services" : "New care assistance request",
-        message: messageLines.join(""),
-        text: textLines.join("\n"),
-      });
-      emailSent = true;
-    } catch (mailErr) {
-      emailError = mailErr?.message || "Unknown mail delivery error";
-      console.warn("Mail delivery failed (likely blocked on Render free tier). Saved request to database instead. Error:", emailError);
+      try {
+        await sendMail({
+          to: email,
+          subject: "Healthcare services at Home - CareWell Nursing Care",
+          title: "CareWell Information",
+          heading: "Introduction of Services",
+          message: messageLines.join(""),
+          text: textLines.join("\n"),
+        });
+      } catch (err) {
+        console.warn("Failed to send information email to user:", err.message);
+      }
     }
 
     if (requestRecord) {
@@ -620,5 +569,114 @@ async function handleAssistanceRequest(req, res) {
 
 authRouter.post("/assistance/request", handleAssistanceRequest);
 authRouter.post("/assistance/callback-request", handleAssistanceRequest);
+
+authRouter.post("/email/send-otp", async (req, res) => {
+  try {
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ code: "VALIDATION_ERROR", message: "Please enter a valid email address." });
+    }
+
+    // Generate 4-digit OTP
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    await OtpVerification.deleteMany({ email }); // clear old OTPs for this email
+    await OtpVerification.create({ email, otp, expiresAt });
+
+    const htmlMessage = `
+      <div style="font-family: Arial, sans-serif; text-align: center;">
+        <h2 style="color: #0b4f8c;">CareWell Authentication</h2>
+        <p>Your One-Time Password (OTP) for verification is:</p>
+        <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #ff9d00; margin: 20px 0;">
+          ${otp}
+        </div>
+        <p>This OTP is valid for 5 minutes. Do not share it with anyone.</p>
+      </div>
+    `;
+
+    try {
+      await sendMail({
+        to: email,
+        subject: "Your CareWell Verification Code",
+        title: "Verify your email",
+        heading: "Verification Code",
+        message: htmlMessage,
+        text: `Your CareWell verification code is: ${otp}. It is valid for 5 minutes.`,
+      });
+      return res.json({ ok: true, message: "OTP sent successfully." });
+    } catch (mailErr) {
+      console.warn("Failed to send OTP email:", mailErr.message);
+      return res.status(500).json({ code: "SERVER_ERROR", message: "Unable to send OTP email." });
+    }
+  } catch (error) {
+    console.error("send-otp failed:", error);
+    return res.status(500).json({ code: "SERVER_ERROR", message: error.message || "An error occurred." });
+  }
+});
+
+authRouter.post("/email/verify-otp", async (req, res) => {
+  try {
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const otp = String(req.body?.otp || "").trim();
+
+    if (!isValidEmail(email) || !otp) {
+      return res.status(400).json({ code: "VALIDATION_ERROR", message: "Invalid email or OTP." });
+    }
+
+    const verificationRecord = await OtpVerification.findOne({ email, otp });
+    if (!verificationRecord) {
+      return res.status(400).json({ code: "VALIDATION_ERROR", message: "Invalid or expired OTP." });
+    }
+
+    // OTP is valid. Delete it so it can't be used again
+    await OtpVerification.deleteOne({ _id: verificationRecord._id });
+
+    const now = new Date();
+    const sessionToken = crypto.randomUUID();
+    const sessionExpiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+
+    const existingUser = await User.findOne({ "authentication.email": email }).lean() || await User.findOne({ email }).lean();
+    
+    const update = {
+      $set: {
+        "authentication.provider": "Google", // Treating email sign-in similar to Google for now
+        "authentication.email": email,
+        "authentication.emailVerified": true,
+        email,
+        emailVerified: true,
+        provider: existingUser?.provider || "credentials",
+        sessionToken,
+        sessionExpiresAt,
+        lastLogin: now,
+        updatedAt: now,
+        registrationStep: existingUser?.registrationStep || 1,
+      },
+      $setOnInsert: {
+        createdAt: now,
+        registrationCompleted: false,
+      },
+    };
+
+    const user = await User.findOneAndUpdate(
+      existingUser ? { _id: existingUser._id } : { email },
+      update,
+      { new: true, upsert: true, runValidators: true }
+    ).lean();
+
+    if (!user) {
+      return res.status(500).json({ code: "SERVER_ERROR", message: "Unable to save your information." });
+    }
+
+    res.setHeader("Set-Cookie", buildCookie(sessionToken));
+    return res.json({
+      profile: sanitizeProfile(user),
+      nextRoute: "registration",
+    });
+  } catch (error) {
+    console.error("verify-otp failed:", error);
+    return res.status(500).json({ code: "SERVER_ERROR", message: error.message || "An error occurred." });
+  }
+});
 
 module.exports = { authRouter };

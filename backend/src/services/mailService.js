@@ -1,38 +1,22 @@
 const fs = require("fs");
 const path = require("path");
-const nodemailer = require("nodemailer");
+const axios = require("axios");
+
+/* ─── helpers ────────────────────────────────────────────────────── */
+
+function getEnv(name) {
+  return String(process.env[name] || "").trim();
+}
 
 function requireEnv(name) {
-  const value = String(process.env[name] || "").trim();
+  const value = getEnv(name);
   if (!value) {
     throw new Error(`${name} is missing.`);
   }
   return value;
 }
 
-function createTransport() {
-  const emailUser = requireEnv("EMAIL_USER");
-  const emailPass = requireEnv("EMAIL_PASS");
-
-  if (!emailUser.includes("@")) {
-    throw new Error("EMAIL_USER must be a valid email address.");
-  }
-
-  if (/^https?:\/\//i.test(emailPass)) {
-    throw new Error("EMAIL_PASS looks like a URL. Please set a real Gmail app password instead.");
-  }
-
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: emailUser,
-      pass: emailPass,
-    },
-    connectionTimeout: 30000,
-    greetingTimeout: 15000,
-    socketTimeout: 30000,
-  });
-}
+/* ─── HTML email template ────────────────────────────────────────── */
 
 function buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl }) {
   const safeTitle = String(title || "CareWell").trim();
@@ -63,43 +47,131 @@ function buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl }) {
 </html>`;
 }
 
+/* ─── Fallback file persistence ──────────────────────────────────── */
+
 function persistFallbackEmail(payload) {
-  const fallbackDir = path.join(__dirname, "..", "..", "data");
-  const fallbackFile = path.join(fallbackDir, "assistance-requests.jsonl");
-  fs.mkdirSync(fallbackDir, { recursive: true });
-  fs.appendFileSync(fallbackFile, `${JSON.stringify(payload)}\n`);
+  try {
+    const fallbackDir = path.join(__dirname, "..", "..", "data");
+    const fallbackFile = path.join(fallbackDir, "assistance-requests.jsonl");
+    if (!fs.existsSync(fallbackDir)) {
+      fs.mkdirSync(fallbackDir, { recursive: true });
+    }
+    fs.appendFileSync(fallbackFile, `${JSON.stringify(payload)}\n`);
+  } catch (err) {
+    console.error("Failed to write to fallback file", err);
+  }
 }
 
-async function sendMail({ to, subject, title, heading, message, ctaLabel, ctaUrl, text }) {
-  const transport = createTransport();
-  const from = process.env.EMAIL_FROM || requireEnv("EMAIL_USER");
-  const mailOptions = {
-    from,
-    to,
-    subject,
-    text: text || String(message || "").replace(/<[^>]+>/g, ""),
-    html: buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl }),
+/* ─── Main send function (Brevo API) ─────────────────────────────── */
+
+async function sendBrevoMail(formData) {
+  const apiKey = getEnv("BREVO_API_KEY");
+  const fromEmail = getEnv("MAIL_FROM");
+  const fromName = getEnv("MAIL_FROM_NAME");
+  const toEmail = getEnv("MAIL_TO");
+
+  if (!apiKey || !fromEmail || !toEmail) {
+    throw new Error("BREVO_API_KEY, MAIL_FROM or MAIL_TO is missing in environment variables.");
+  }
+
+  let htmlContent = `
+    <div style="font-family: Arial, sans-serif;">
+      <p>--------------------------------</p>
+      <h3>New CareWell Enquiry</h3>
+  `;
+
+  for (const [key, value] of Object.entries(formData || {})) {
+    if (value !== undefined && value !== null && value !== "") {
+      const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim();
+      htmlContent += `
+        <p><strong>${formattedKey}:</strong><br/>
+        ${value}</p>
+      `;
+    }
+  }
+
+  htmlContent += `
+      <p><strong>Submitted At:</strong><br/>
+      ${new Date().toLocaleString()}</p>
+      <p>--------------------------------</p>
+    </div>
+  `;
+
+  const payload = {
+    sender: { name: fromName, email: fromEmail },
+    to: [{ email: toEmail }],
+    subject: "New CareWell Enquiry",
+    htmlContent,
   };
 
   try {
-    return await transport.sendMail(mailOptions);
-  } catch (error) {
-    const fallbackPayload = {
-      createdAt: new Date().toISOString(),
-      to,
-      subject,
-      from,
-      text: mailOptions.text,
-      htmlPreview: String(message || "").slice(0, 240),
-      error: error?.message || "Unknown mail delivery error",
-    };
+    console.log("=== Brevo API Payload (sendBrevoMail) ===");
+    console.log(JSON.stringify(payload, null, 2));
 
-    persistFallbackEmail(fallbackPayload);
-    console.error("Mail delivery failed. Saved request to fallback file:", error?.message || error);
-    // Re-throw so the caller can return a proper error response to the client
-    throw new Error("Mail delivery failed. Please check email credentials and try again.");
+    const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("=== Brevo API Response (sendBrevoMail) ===");
+    console.log(JSON.stringify(response.data, null, 2));
+    console.log(`Email sent successfully. Message ID: ${response.data.messageId}`);
+    return response.data;
+  } catch (error) {
+    const errorResponse = error.response ? JSON.stringify(error.response.data) : error.message;
+    console.warn("Exact Brevo error response:", errorResponse);
+    throw new Error(`Brevo error: ${errorResponse}`);
   }
 }
+
+async function sendMail({ to, subject, title, heading, message, ctaLabel, ctaUrl, text }) {
+  const html = buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl });
+  const plainText = text || String(message || "").replace(/<[^>]+>/g, "");
+
+  const apiKey = getEnv("BREVO_API_KEY");
+  const fromEmail = getEnv("MAIL_FROM");
+  const fromName = getEnv("MAIL_FROM_NAME");
+  
+  if (!apiKey || !fromEmail) {
+    console.warn("BREVO_API_KEY or MAIL_FROM is missing. Saving to fallback file.");
+    persistFallbackEmail({ to, subject, text: plainText, htmlPreview: String(message || "").slice(0, 240) });
+    throw new Error("Mail delivery failed: Brevo API key or FROM email missing.");
+  }
+
+  const payload = {
+    sender: { name: fromName, email: fromEmail },
+    to: Array.isArray(to) ? to.map(e => ({ email: e })) : [{ email: to }],
+    subject,
+    htmlContent: html,
+    textContent: plainText,
+  };
+
+  try {
+    console.log("=== Brevo API Payload (sendMail) ===");
+    console.log(JSON.stringify(payload, null, 2));
+
+    const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
+      headers: {
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+      },
+    });
+    
+    console.log("=== Brevo API Response (sendMail) ===");
+    console.log(JSON.stringify(response.data, null, 2));
+    console.log(`Email sent successfully via Brevo. Message ID: ${response.data.messageId}`);
+    return response.data;
+  } catch (error) {
+    const errorResponse = error.response ? JSON.stringify(error.response.data) : error.message;
+    console.warn("SMTP delivery failed:", errorResponse);
+    persistFallbackEmail({ to, subject, errors: [errorResponse] });
+    throw new Error(`Mail delivery failed via all methods: ${errorResponse}`);
+  }
+}
+
+/* ─── Verification email helper ──────────────────────────────────── */
 
 async function sendVerificationEmail({ to, name, verifyUrl }) {
   return sendMail({
@@ -115,6 +187,7 @@ async function sendVerificationEmail({ to, name, verifyUrl }) {
 
 module.exports = {
   sendMail,
+  sendBrevoMail,
   sendVerificationEmail,
   buildHtmlEmail,
 };
