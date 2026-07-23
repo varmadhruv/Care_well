@@ -27,21 +27,19 @@ function buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl }) {
 
   return `<!doctype html>
 <html lang="en">
-  <body style="margin:0;padding:0;background:#f8fafc;font-family:Inter,Arial,sans-serif;color:#0f172a;">
-    <div style="max-width:850px;margin:0 auto;padding:32px 20px;">
-      <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:24px;box-shadow:0 16px 40px rgba(15,23,42,.08);overflow:hidden;">
-        <div style="padding:28px 28px 16px;">
-          <div style="font-size:13px;letter-spacing:.12em;font-weight:700;color:#6cbf43;text-transform:uppercase;">CareWell Nursing Care</div>
-          <h1 style="margin:12px 0 0;font-family:Poppins,Inter,Arial,sans-serif;font-size:28px;line-height:1.15;color:#0f172a;">${safeHeading}</h1>
-        </div>
-        <div style="padding:0 28px 24px;font-size:16px;line-height:1.7;color:#64748b;">
-          ${safeMessage}
-        </div>
-        ${safeCtaLabel && safeCtaUrl ? `
-        <div style="padding:0 28px 28px;">
-          <a href="${safeCtaUrl}" style="display:inline-block;background:#0b4f8c;color:#fff;text-decoration:none;font-weight:700;font-size:16px;line-height:1;border-radius:16px;padding:14px 22px;">${safeCtaLabel}</a>
-        </div>` : ""}
+  <body style="margin:0;padding:0;background:#ffffff;font-family:Inter,Arial,sans-serif;color:#1e293b;">
+    <div style="max-width:900px;margin:0 auto;padding:40px 20px;">
+      <div style="padding-bottom:24px;border-bottom:2px solid #f1f5f9;margin-bottom:32px;">
+        <div style="font-size:14px;letter-spacing:.15em;font-weight:800;color:#0b4f8c;text-transform:uppercase;">CareWell Nursing Care</div>
+        <h1 style="margin:16px 0 0;font-family:Poppins,Inter,Arial,sans-serif;font-size:32px;line-height:1.2;color:#0f172a;font-weight:700;">${safeHeading}</h1>
       </div>
+      <div style="font-size:17px;line-height:1.8;color:#334155;font-weight:500;">
+        ${safeMessage}
+      </div>
+      ${safeCtaLabel && safeCtaUrl ? `
+      <div style="margin-top:40px;">
+        <a href="${safeCtaUrl}" style="display:inline-block;background:#0b4f8c;color:#fff;text-decoration:none;font-weight:700;font-size:16px;line-height:1;border-radius:12px;padding:16px 32px;">${safeCtaLabel}</a>
+      </div>` : ""}
     </div>
   </body>
 </html>`;
