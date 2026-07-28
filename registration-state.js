@@ -1,8 +1,9 @@
-﻿(() => {
-  const API_BASE = window.CAREWELL_API_BASE_URL || '';
-  const API_HOSTS = Array.isArray(window.CAREWELL_API_BASE_URLS) && window.CAREWELL_API_BASE_URLS.length
+(() => {
+  const DEFAULT_PROD_URL = 'https://care-well-1.onrender.com';
+  const API_BASE = window.CAREWELL_API_BASE_URL || DEFAULT_PROD_URL;
+  const API_HOSTS = (Array.isArray(window.CAREWELL_API_BASE_URLS) && window.CAREWELL_API_BASE_URLS.length)
     ? window.CAREWELL_API_BASE_URLS
-    : [API_BASE].filter(Boolean);
+    : Array.from(new Set([API_BASE, DEFAULT_PROD_URL, 'http://127.0.0.1:3000', 'http://localhost:3000'])).filter(Boolean);
 
   const STORAGE_KEYS = {
     draft: "carewellRegistrationDraft",

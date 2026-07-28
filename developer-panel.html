@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell - Developer Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #0b4f8c;
+      --green: #16a34a;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 20px 40px rgba(22, 163, 74, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+    .brand-title {
+      font-family: Poppins, sans-serif;
+      font-weight: 700;
+      color: var(--blue);
+      font-size: 1.1rem;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.08em;
+    }
+    .panel-container {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 40px 32px;
+      text-align: center;
+      margin-top: 80px;
+      animation: rise 0.4s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 999px;
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-family: Poppins, sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    p.user-email {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+    .status-card {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .status-card strong {
+      display: block;
+      color: var(--text);
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+    .status-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 52px;
+      background: #16a34a;
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      font-family: Poppins, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.22);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .logout-btn:hover {
+      background: #15803d;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <img src="Main_logo_transparent_img_screen7.png" alt="CareWell Logo" />
+      </span>
+      <div>
+        <div class="brand-title">CareWell</div>
+        <div class="brand-subtitle">NURSING CARE</div>
+      </div>
+    </a>
+  </header>
+
+  <main class="panel-container">
+    <span class="badge">Developer Access</span>
+    <h1>Developer panel</h1>
+    <p class="user-email">Verified User: dhruvvarma@carewell-developer (dhruvvarma53@gmail.com)</p>
+
+    <div class="status-card">
+      <strong>Developer Panel Active</strong>
+      <span>You are successfully authenticated into the Developer Panel.</span>
+    </div>
+
+    <a href="index.html" class="logout-btn">Logout &amp; Return to Home</a>
+  </main>
+</body>
+</html>

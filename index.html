@@ -22,7 +22,7 @@
             <small>NURSING CARE</small>
           </span>
         </a>
-        <button class="skip-btn" type="button" id="skipBtn">Skip</button>
+        <button class="skip-btn" type="button" id="loginBtn">Login</button>
       </header>
 
       <section class="hero-grid">
@@ -97,9 +97,57 @@
         </div>
         <button class="next-btn" type="button" id="nextBtn">Next <span aria-hidden="true">&rarr;</span></button>
       </nav>
-    </section>
-  </main>
+  <!-- Center Login Snackbar / Modal -->
+  <div class="snackbar-overlay" id="loginModal" aria-hidden="true" style="display: none;">
+    <div class="snackbar-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <button type="button" class="snackbar-close" id="closeLoginModalBtn" aria-label="Close login modal">&times;</button>
+      <div class="snackbar-header">
+        <h2 id="loginTitle">Portal Login</h2>
+        <p>Enter your credentials to access system panels</p>
+      </div>
+      <form id="loginForm" novalidate>
+        <div class="snackbar-field">
+          <label for="loginUsername">UserName</label>
+          <input type="text" id="loginUsername" placeholder="Enter UserName" required autocomplete="username" />
+        </div>
+        <div class="snackbar-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter Password" required autocomplete="current-password" />
+        </div>
+        <div class="snackbar-error" id="loginError" style="display: none;"></div>
+        <button type="submit" class="snackbar-submit-btn" id="loginSubmitBtn">Login</button>
+      </form>
+    </div>
+  </div>
 
+  <!-- OTP Verification Snackbar / Modal -->
+  <div class="snackbar-overlay" id="otpModal" aria-hidden="true" style="display: none;">
+    <div class="snackbar-card otp-modal" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+      <button type="button" class="snackbar-close" id="closeOtpModalBtn" aria-label="Close OTP modal">&times;</button>
+      <div class="otp-header">
+        <h2 class="otp-title" id="otpTitle">OTP Verification</h2>
+        <p class="otp-subtitle" id="otpSubtitle">Code sent to your email</p>
+      </div>
+      
+      <div class="otp-inputs-wrapper">
+        <div class="otp-inputs" id="otpInputs">
+          <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+          <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+          <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+          <input type="text" class="otp-box" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+        </div>
+        <svg class="otp-check-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      
+      <div class="snackbar-error" id="otpError" style="display: none; background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #f87171;"></div>
+      <button class="otp-verify-btn" id="otpVerifyBtn" disabled>Verify</button>
+      <div class="otp-resend" id="otpResendWrap">Resend OTP in <span id="otpTimer">30</span>s</div>
+    </div>
+  </div>
+
+  <script src="carewell-config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

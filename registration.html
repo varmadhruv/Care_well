@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CareWell - Personal Information</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://care-well-1.onrender.com http://localhost:3000 http://127.0.0.1:3000; base-uri 'self'; frame-ancestors 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://care-well-1.onrender.com http://localhost:3000 http://127.0.0.1:3000 https://nominatim.openstreetmap.org https://api.bigdatacloud.net; base-uri 'self'; frame-ancestors 'none';" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -19,6 +19,7 @@
       --border: #e5e7eb;
       --input-border: #d1d5db;
       --error: #dc2626;
+      --success: #22c55e;
       --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
       --shadow-btn: 0 12px 28px rgba(11, 79, 140, 0.22);
       --radius: 24px;
@@ -402,8 +403,11 @@
       pointer-events: none;
     }
     .readonly-input {
-      background: #f3f4f6 !important;
-      color: #475569;
+      background: #f1f5f9 !important;
+      color: #64748b !important;
+      border-color: #cbd5e1 !important;
+      cursor: not-allowed !important;
+      user-select: none;
     }
     .field textarea {
       width: 100%;
@@ -468,14 +472,13 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-    .hidden-field {
-      display: none;
+    .hidden-field:not(.is-visible) {
+      display: none !important;
       opacity: 0;
-      transform: translateY(-4px);
-      transition: opacity var(--ease), transform var(--ease);
+      pointer-events: none;
     }
     .hidden-field.is-visible {
-      display: grid;
+      display: grid !important;
       opacity: 1;
       transform: translateY(0);
     }
@@ -716,6 +719,39 @@
       cursor: not-allowed;
       box-shadow: none;
     }
+    .camera-switch-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: #f1f5f9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 180ms ease, transform 300ms ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .camera-switch-btn:hover {
+      background: #e2e8f0;
+    }
+    .camera-switch-btn:active {
+      transform: rotate(180deg);
+    }
+    .camera-switch-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .camera-switch-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .disclaimer-modal {
       position: fixed;
@@ -812,7 +848,15 @@
     .field.invalid input,
     .field.invalid select {
       border-color: var(--error);
+      border-width: 2px;
       box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+    }
+
+    .field.valid input,
+    .field.valid select {
+      border-color: var(--success);
+      border-width: 2px;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.10);
     }
 
     .helper {
@@ -1060,7 +1104,7 @@
       }
       .card { padding: 22px; border-radius: 22px; }
       .top-row { margin-bottom: 28px; }
-      .brand-mark { width: 48px; height: 48px; }
+      .brand-mark { width: 48px; 48px; }
       .brand-copy strong { font-size: 17px; }
       .brand-copy small { font-size: 10px; }
       .heading h1 { font-size: 30px; }
@@ -1201,18 +1245,11 @@
           </div>
         </div>
 
-        <div class="grid-two">
-          <div class="field" data-field="lastName">
+        <div class="field" data-field="lastName">
             <label for="lastName">Last Name</label>
             <input id="lastName" name="lastName" type="text" autocomplete="family-name" />
             <div class="helper" id="lastNameError"></div>
           </div>
-          <div class="field" data-field="preferredName">
-            <label for="preferredName">Preferred Name <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
-            <input id="preferredName" name="preferredName" type="text" autocomplete="nickname" />
-            <div class="helper" id="preferredNameError"></div>
-          </div>
-        </div>
 
         <div class="grid-two">
           <div class="field" data-field="dateOfBirth">
@@ -1476,8 +1513,20 @@
 
           <div class="field" data-field="addressNotes">
             <label for="addressNotes">Additional Address Notes <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
-            <textarea id="addressNotes" name="addressNotes" placeholder="Any extra directions for home visits"></textarea>
-            <div class="helper" id="addressNotesError"></div>
+            <textarea id="addressNotes" name="addressNotes" maxlength="100" placeholder="Any extra directions for home visits"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <div class="helper" id="addressNotesError"></div>
+              <span id="addressNotesWordCount" style="font-size:12px;font-weight:600;color:#94a3b8;margin-left:auto;">0 / 100</span>
+            </div>
+          </div>
+
+          <div class="field" data-field="visitingPrecautions">
+            <label for="visitingPrecautions">Any Precautions to be Taken While Visiting? <span style="color:#94a3b8;font-weight:600;">(Optional)</span></label>
+            <textarea id="visitingPrecautions" name="visitingPrecautions" maxlength="100" placeholder="Be aware of dogs..."></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <div class="helper" id="visitingPrecautionsError"></div>
+              <span id="visitingPrecautionsWordCount" style="font-size:12px;font-weight:600;color:#94a3b8;margin-left:auto;">0 / 100</span>
+            </div>
           </div>
 
           <input type="hidden" id="latitude" name="latitude" />
@@ -1528,7 +1577,7 @@
 
           <div class="grid-two">
             <div class="field" data-field="emergencyPrimaryMobile">
-              <label for="emergencyPrimaryMobile">Primary Mobile Number *</label>
+              <label for="emergencyPrimaryMobile">  Mobile Number </label>
               <input id="emergencyPrimaryMobile" name="emergencyPrimaryMobile" type="tel" inputmode="numeric" maxlength="10" />
               <div class="helper" id="emergencyPrimaryMobileError"></div>
             </div>
@@ -1611,7 +1660,7 @@
               <small>NURSING CARE</small>
             </span>
           </div>
-          <button type="button" class="skip-btn" id="screen6BackBtn">Skip</button>
+          <button type="button" class="skip-btn" id="screen6BackBtn" onclick="window.CareWellRegistrationJumpStep && window.CareWellRegistrationJumpStep(7)">Skip</button>
         </div>
         <header class="heading">
           <h1>Healthcare Preferences</h1>
@@ -1631,19 +1680,13 @@
           </div>
 
           <div class="field hidden-field" id="servicesOtherField" data-field="servicesOther">
-            <label for="servicesOther">Other Service</label>
-            <input id="servicesOther" name="servicesOther" type="text" />
+            <label for="servicesOther">What kind of healthcare service do you want? *</label>
+            <input id="servicesOther" name="servicesOther" type="text" maxlength="100" placeholder="Specify healthcare service..." />
             <div class="helper" id="servicesOtherError"></div>
           </div>
 
-          <div class="field" data-field="urgency">
-            <label>Urgency *</label>
-            <div class="chip-grid" id="urgencyGroup"></div>
-            <div class="helper" id="urgencyError"></div>
-          </div>
-
           <div class="field" data-field="visitTime">
-            <label>Preferred Visit Time</label>
+            <label>When Do You Need a Visit?</label>
             <div class="chip-grid" id="visitTimeGroup"></div>
             <div class="helper" id="visitTimeError"></div>
           </div>
@@ -1717,7 +1760,12 @@
     <div class="camera-card" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
       <div class="camera-head">
         <strong id="cameraTitle">Capture Photo</strong>
-        <button type="button" class="camera-btn secondary" id="cameraCloseBtn" style="width:auto;padding:0 16px;">Close</button>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+          <button type="button" class="camera-switch-btn" id="cameraSwitchBtn" aria-label="Switch camera" title="Switch camera">
+            <svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/></svg>
+          </button>
+          <button type="button" class="camera-btn secondary" id="cameraCloseBtn" style="width:auto;padding:0 16px;">Close</button>
+        </div>
       </div>
       <div class="camera-stage">
         <video class="camera-video" id="cameraVideo" playsinline autoplay muted></video>
@@ -1829,6 +1877,7 @@
     const stateInput = document.getElementById('state');
     const pinCodeInput = document.getElementById('pinCode');
     const addressNotesInput = document.getElementById('addressNotes');
+    const visitingPrecautionsInput = document.getElementById('visitingPrecautions');
     const latitudeInput = document.getElementById('latitude');
     const longitudeInput = document.getElementById('longitude');
     const countryInput = document.getElementById('country');
@@ -1852,7 +1901,8 @@
     const servicesNeededGroup = document.getElementById('servicesNeededGroup');
     const servicesOtherField = document.getElementById('servicesOtherField');
     const servicesOtherInput = document.getElementById('servicesOther');
-    const urgencyGroup = document.getElementById('urgencyGroup');
+    const servicesOtherCharCount = document.getElementById('servicesOtherCharCount');
+
     const visitTimeGroup = document.getElementById('visitTimeGroup');
     const communicationGroup = document.getElementById('communicationGroup');
     const preferenceNotesInput = document.getElementById('preferenceNotes');
@@ -1860,6 +1910,8 @@
     let activePhotoIndex = 1;
     let pendingPhotoData = '';
     let pendingDisclaimerIndex = null;
+    let currentFacingMode = 'environment';
+    const cameraSwitchBtn = document.getElementById('cameraSwitchBtn');
     const toastHost = document.createElement('div');
     toastHost.style.position = 'fixed';
     toastHost.style.inset = 'auto 0 24px';
@@ -1867,7 +1919,7 @@
     toastHost.style.pointerEvents = 'none';
     document.body.appendChild(toastHost);
 
-    const fieldIds = ['firstName', 'middleName', 'lastName', 'preferredName', 'dateOfBirth', 'gender'];
+    const fieldIds = ['firstName', 'middleName', 'lastName', 'dateOfBirth', 'gender'];
     const fields = Object.fromEntries(fieldIds.map((id) => [id, document.getElementById(id)]));
     const errors = Object.fromEntries(fieldIds.map((id) => [id, document.getElementById(`${id}Error`)]));
     const photoSlots = [1, 2, 3].map((index) => ({
@@ -1877,7 +1929,7 @@
       input: document.querySelector(`[data-photo-input="${index}"]`),
     }));
     const photoData = { 1: '', 2: '', 3: '' };
-    const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Donâ€™t Know'];
+    const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', "Don't Know"];
     const allergyOptions = ['None', 'Food', 'Medicine', 'Dust', 'Pollen', 'Other'];
     const conditionOptions = ['Diabetes', 'High Blood Pressure', 'Heart Disease', 'Asthma', 'Arthritis', 'Kidney Disease', 'Cancer', 'Thyroid Disorder', 'None', 'Other'];
     const mobilityOptions = ['Independent', 'Needs Assistance', 'Wheelchair User', 'Bedridden'];
@@ -1888,7 +1940,7 @@
     const sameAddressOptions = ['Yes', 'No'];
     const whoNeedsCareOptions = ['Adult Male', 'Adult Female', 'Elder Male', 'Elder Female', 'Child Boy', 'Child Girl', 'Multiple Family Members', 'Other'];
     const servicesNeededOptions = ['Nursing Care', 'Physiotherapy', 'Doctor Visit', 'Elder Care', 'Post Surgery Care', 'Injection / Dressing', 'Medical Equipment Support', 'Other'];
-    const urgencyOptions = ['Immediately', 'Within 24 Hours', 'Within This Week', 'Flexible'];
+
     const visitTimeOptions = ['Morning', 'Afternoon', 'Evening', 'Anytime'];
     const communicationOptions = ['Phone Call', 'WhatsApp', 'Email'];
     const addressFields = [
@@ -1903,6 +1955,7 @@
       'country',
       'pinCode',
       'addressNotes',
+      'visitingPrecautions',
     ];
     const emergencyAddressFields = [
       'emergencyHouseNumber',
@@ -1960,7 +2013,7 @@
     const preferenceAliases = {
       whoNeedsCare: ['whoNeedsCare', 'patientType', 'careRecipient', 'personNeedingCare'],
       servicesNeeded: ['servicesNeeded', 'requiredServices', 'careServices', 'selectedServices'],
-      urgency: ['urgency', 'serviceUrgency', 'careUrgency'],
+
       visitTime: ['visitTime', 'preferredVisitTime', 'preferredTime'],
       communicationMethod: ['communicationMethod', 'preferredCommunicationMethod', 'contactMethod'],
     };
@@ -2053,32 +2106,52 @@
             target.querySelectorAll('.chip').forEach((item) => item.classList.remove('selected'));
             selectedBiological[name] = label;
           } else {
-            if (label === 'None' && input.checked) {
+            if ((label === 'None' || label === 'Other') && input.checked) {
               target.querySelectorAll('input').forEach((node) => {
                 if (node !== input) node.checked = false;
               });
             }
-            if (label !== 'None' && input.checked) {
+            if (label !== 'None' && label !== 'Other' && input.checked) {
               const noneInput = target.querySelector('input[value="None"]');
               if (noneInput) noneInput.checked = false;
+              const otherInput = target.querySelector('input[value="Other"]');
+              if (otherInput) otherInput.checked = false;
             }
+            target.querySelectorAll('.chip').forEach((chipItem) => {
+              const chipInput = chipItem.querySelector('input');
+              if (chipInput) chipItem.classList.toggle('selected', chipInput.checked);
+            });
             const values = [...target.querySelectorAll('input:checked')].map((node) => node.value);
             selectedBiological[name] = values;
             if (name === 'allergies') {
-              setFieldVisibility(allergyOtherField, values.includes('Other'));
+              const hasOther = values.includes('Other');
+              setFieldVisibility(allergyOtherField, hasOther);
+              if (!hasOther && allergyOtherInput) {
+                allergyOtherInput.value = '';
+              }
             }
             if (name === 'medicalConditions') {
-              setFieldVisibility(conditionOtherField, values.includes('Other'));
+              const hasOther = values.includes('Other');
+              setFieldVisibility(conditionOtherField, hasOther);
+              if (!hasOther && conditionOtherInput) {
+                conditionOtherInput.value = '';
+              }
             }
           }
-          btn.classList.toggle('selected', input.checked);
-          if (!multi && input.checked) {
-            target.querySelectorAll('.chip').forEach((item) => {
-              item.classList.toggle('selected', item === btn);
-            });
+          if (!multi) {
+            btn.classList.toggle('selected', input.checked);
+            if (input.checked) {
+              target.querySelectorAll('.chip').forEach((item) => {
+                item.classList.toggle('selected', item === btn);
+              });
+            }
           }
           if (name === 'disability') {
-            setFieldVisibility(disabilityDetailsField, input.value === 'Yes' && input.checked);
+            const isYes = input.value === 'Yes' && input.checked;
+            setFieldVisibility(disabilityDetailsField, isYes);
+            if (!isYes && disabilityDetailsInput) {
+              disabilityDetailsInput.value = '';
+            }
           }
           clearErrors();
         });
@@ -2097,7 +2170,7 @@
     createChipGroup(sameAddressGroup, sameAddressOptions, 'sameAddress', { multi: false });
     createChipGroup(whoNeedsCareGroup, whoNeedsCareOptions, 'whoNeedsCare', { multi: true });
     createChipGroup(servicesNeededGroup, servicesNeededOptions, 'servicesNeeded', { multi: true });
-    createChipGroup(urgencyGroup, urgencyOptions, 'urgency', { multi: false });
+
     createChipGroup(visitTimeGroup, visitTimeOptions, 'visitTime', { multi: false });
     createChipGroup(communicationGroup, communicationOptions, 'communicationMethod', { multi: false });
 
@@ -2290,15 +2363,17 @@
       allergyOtherInput.value = bio.allergyOther || '';
       conditionOtherInput.value = bio.conditionOther || '';
       disabilityDetailsInput.value = bio.disabilityDetails || '';
-      setFieldVisibility(allergyOtherField, selectedValues(allergyGroup).includes('Other') || Boolean(bio.allergyOther));
-      setFieldVisibility(conditionOtherField, selectedValues(conditionGroup).includes('Other') || Boolean(bio.conditionOther));
-      setFieldVisibility(disabilityDetailsField, (bio.disability || '') === 'Yes' || Boolean(bio.disabilityDetails));
+      setFieldVisibility(allergyOtherField, selectedValues(allergyGroup).includes('Other'));
+      setFieldVisibility(conditionOtherField, selectedValues(conditionGroup).includes('Other'));
+      setFieldVisibility(disabilityDetailsField, selectedValues(disabilityGroup).includes('Yes'));
     }
 
     function getProvider() {
       const state = window.CareWellRegistration?.getState?.() || {};
       const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
-      return String(profile?.authentication?.provider || profile?.provider || profile?.authProvider || '').toUpperCase();
+      const googleProvider = sessionStorage.getItem('googleProvider');
+      const raw = profile?.authentication?.provider || profile?.provider || profile?.authProvider || googleProvider || '';
+      return String(raw).toUpperCase();
     }
 
     function hydrateScreen3() {
@@ -2306,7 +2381,7 @@
       const contact = state.contactInformation || {};
       const profile = state.profile || JSON.parse(sessionStorage.getItem('userProfile') || '{}');
       const provider = getProvider();
-      const phone = profile.phoneNumber || profile.authentication?.phoneNumber || contact.primaryMobile || '';
+      const phone = profile.phoneNumber || profile.authentication?.phoneNumber || profile.phone || contact.primaryMobile || '';
       const email = profile.email || profile.authentication?.email || contact.emailAddress || '';
 
       primaryMobileInput.value = contact.primaryMobile || phone;
@@ -2317,12 +2392,31 @@
       fillSelected(contactMethodGroup, selectedContact.preferredContactMethod, false);
       fillSelected(languageGroup, selectedContact.preferredLanguage, false);
 
-      const primaryReadonly = provider === 'PHONE' && Boolean(phone);
-      const emailReadonly = provider === 'GOOGLE' && Boolean(email);
+      const isEmailAuth = provider === 'GOOGLE' || provider === 'EMAIL' || provider === 'CREDENTIALS' || (Boolean(email) && provider !== 'PHONE');
+      const isPhoneAuth = provider === 'PHONE' || (Boolean(phone) && !isEmailAuth);
+
+      const primaryReadonly = isPhoneAuth && Boolean(phone);
+      const emailReadonly = isEmailAuth && Boolean(email);
+
       primaryMobileInput.readOnly = primaryReadonly;
       primaryMobileInput.classList.toggle('readonly-input', primaryReadonly);
+      if (primaryReadonly) {
+        primaryMobileInput.setAttribute('tabindex', '-1');
+        primaryMobileInput.setAttribute('aria-readonly', 'true');
+      } else {
+        primaryMobileInput.removeAttribute('tabindex');
+        primaryMobileInput.removeAttribute('aria-readonly');
+      }
+
       emailAddressInput.readOnly = emailReadonly;
       emailAddressInput.classList.toggle('readonly-input', emailReadonly);
+      if (emailReadonly) {
+        emailAddressInput.setAttribute('tabindex', '-1');
+        emailAddressInput.setAttribute('aria-readonly', 'true');
+      } else {
+        emailAddressInput.removeAttribute('tabindex');
+        emailAddressInput.removeAttribute('aria-readonly');
+      }
     }
 
     function buildContactPayload() {
@@ -2388,6 +2482,9 @@
       countryInput.value = address.country || '';
       pinCodeInput.value = address.pinCode || '';
       addressNotesInput.value = address.addressNotes || '';
+      visitingPrecautionsInput.value = address.visitingPrecautions || address.precautions || '';
+      updateTextareaCharLimit(addressNotesInput, 'addressNotesWordCount', 'addressNotes');
+      updateTextareaCharLimit(visitingPrecautionsInput, 'visitingPrecautionsWordCount', 'visitingPrecautions');
       latitudeInput.value = address.latitude || '';
       longitudeInput.value = address.longitude || '';
     }
@@ -2431,17 +2528,20 @@
       };
       selectedPreferences.whoNeedsCare = Array.isArray(merged.whoNeedsCare) ? merged.whoNeedsCare : [merged.whoNeedsCare].filter(Boolean);
       selectedPreferences.servicesNeeded = Array.isArray(merged.servicesNeeded) ? merged.servicesNeeded : [];
-      selectedPreferences.urgency = merged.urgency || '';
+
       selectedPreferences.visitTime = merged.visitTime || '';
       selectedPreferences.communicationMethod = merged.communicationMethod || '';
       fillSelected(whoNeedsCareGroup, selectedPreferences.whoNeedsCare, true);
       fillSelected(servicesNeededGroup, selectedPreferences.servicesNeeded, true);
-      fillSelected(urgencyGroup, selectedPreferences.urgency, false);
+
       fillSelected(visitTimeGroup, selectedPreferences.visitTime, false);
       fillSelected(communicationGroup, selectedPreferences.communicationMethod, false);
       servicesOtherInput.value = merged.servicesOther || '';
+
       preferenceNotesInput.value = merged.additionalNotes || '';
       servicesOtherField.classList.toggle('is-visible', selectedPreferences.servicesNeeded.includes('Other'));
+
+      updateServicesOtherCharLimit();
     }
 
     function hydrateScreen7() {
@@ -2461,7 +2561,7 @@
         { label: 'Contact Information', value: [state.contact.primaryMobile ? `Mobile: ${state.contact.primaryMobile}` : '', state.contact.preferredContactMethod ? `Contact: ${state.contact.preferredContactMethod}` : '', state.contact.preferredLanguage ? `Language: ${state.contact.preferredLanguage}` : ''].filter(Boolean).join(' • ') || 'Provided', step: 3 },
         { label: 'Address Information', value: state.address.fullAddress || [state.address.houseNumber, state.address.buildingName, state.address.areaLocality, state.address.city, state.address.state, state.address.pinCode].filter(Boolean).join(', ') || 'Provided', step: 4 },
         { label: 'Emergency Contact', value: [state.emergency.fullName, state.emergency.relationship].filter(Boolean).join(' • ') || 'Provided', step: 5 },
-        { label: 'Healthcare Preferences', value: [state.preferences.whoNeedsCare, state.preferences.urgency, state.preferences.communicationMethod].filter(Boolean).join(' • ') || 'Provided', step: 6 },
+        { label: 'Healthcare Preferences', value: [state.preferences.whoNeedsCare, state.preferences.communicationMethod].filter(Boolean).join(' • ') || 'Provided', step: 6 },
       ];
       consentSummaryList.innerHTML = sections.map((section) => `
         <div class="summary-item">
@@ -2537,13 +2637,16 @@
     }
 
     function buildPreferencesPayload() {
+      const whoNeedsCare = [...whoNeedsCareGroup.querySelectorAll('input:checked')].map((n) => n.value);
+      const servicesNeeded = [...servicesNeededGroup.querySelectorAll('input:checked')].map((n) => n.value);
+      const visitTime = visitTimeGroup.querySelector('input:checked')?.value || '';
+      const communicationMethod = communicationGroup.querySelector('input:checked')?.value || '';
       return {
-        whoNeedsCare: selectedPreferences.whoNeedsCare,
-        servicesNeeded: selectedPreferences.servicesNeeded,
+        whoNeedsCare,
+        servicesNeeded,
         servicesOther: servicesOtherInput.value.trim(),
-        urgency: selectedPreferences.urgency,
-        visitTime: selectedPreferences.visitTime,
-        communicationMethod: selectedPreferences.communicationMethod,
+        visitTime,
+        communicationMethod,
         additionalNotes: preferenceNotesInput.value.trim(),
       };
     }
@@ -2572,14 +2675,8 @@
         setError('servicesOther', 'Please specify the other service.');
         valid = false;
       }
-      if (!data.urgency) {
-        const field = urgencyGroup.closest('.field');
-        field?.classList.add('invalid', 'shake');
-        const helper = document.getElementById('urgencyError');
-        helper.textContent = 'Select urgency.';
-        helper.classList.add('show');
-        valid = false;
-      }
+
+
       if (!data.communicationMethod) {
         const field = communicationGroup.closest('.field');
         field?.classList.add('invalid', 'shake');
@@ -2652,6 +2749,7 @@
         country: countryInput.value.trim(),
         pinCode: pinCodeInput.value.trim(),
         addressNotes: addressNotesInput.value.trim(),
+        visitingPrecautions: visitingPrecautionsInput.value.trim(),
         latitude: latitudeInput.value.trim(),
         longitude: longitudeInput.value.trim(),
       };
@@ -2735,21 +2833,88 @@
     }
 
     async function reverseGeocode(latitude, longitude) {
-      const url = new URL(`${window.location.origin}/api/location/reverse`);
-      url.searchParams.set('format', 'jsonv2');
-      url.searchParams.set('lat', latitude);
-      url.searchParams.set('lon', longitude);
+      const lat = String(latitude).trim();
+      const lon = String(longitude).trim();
 
-      const response = await fetch(url.toString(), {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-      if (!response.ok) {
-        throw new Error('REVERSE_GEOCODE_FAILED');
+      const apiBases = Array.from(new Set([
+        window.CAREWELL_API_BASE_URL,
+        'https://care-well-1.onrender.com',
+        'http://127.0.0.1:3000',
+        'http://localhost:3000',
+        window.location.origin,
+      ])).filter(Boolean);
+
+      for (const base of apiBases) {
+        try {
+          const url = new URL('/api/location/reverse', base.startsWith('http') ? base : window.location.origin);
+          url.searchParams.set('format', 'jsonv2');
+          url.searchParams.set('lat', lat);
+          url.searchParams.set('lon', lon);
+          const response = await fetch(url.toString(), {
+            headers: { Accept: 'application/json' },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data && (data.address || data.displayName || data.display_name)) {
+              return {
+                displayName: data.displayName || data.display_name || '',
+                address: data.address || {},
+              };
+            }
+          }
+        } catch (err) {
+        }
       }
-      const data = await response.json();
-      return data;
+
+      try {
+        const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&addressdetails=1`;
+        const res = await fetch(nomUrl, {
+          headers: { Accept: 'application/json' },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.address || data.display_name)) {
+            return {
+              displayName: data.display_name || '',
+              address: data.address || {},
+            };
+          }
+        }
+      } catch (err) {
+      }
+
+      try {
+        const bdcUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
+        const res = await fetch(bdcUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            const address = {
+              house_number: data.building || '',
+              road: data.localityInfo?.informative?.find(i => i.description === 'road')?.name || data.street || '',
+              suburb: data.locality || data.principalSubdivision || '',
+              city: data.city || data.locality || '',
+              state: data.principalSubdivision || '',
+              country: data.countryName || '',
+              postcode: data.postcode || '',
+            };
+            const fullStr = [data.locality, data.city, data.principalSubdivision, data.countryName].filter(Boolean).join(', ');
+            return {
+              displayName: fullStr,
+              address,
+            };
+          }
+        }
+      } catch (err) {
+      }
+
+      throw new Error('REVERSE_GEOCODE_FAILED');
+    }
+
+    function getPosition(options) {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
     }
 
     async function fetchCurrentLocation() {
@@ -2763,13 +2928,24 @@
       setLocationLoading(true);
       showToast('Fetching your current location...');
 
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
+      let position;
+      try {
+        position = await getPosition({
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 0,
         });
-      });
+      } catch (highAccErr) {
+        try {
+          position = await getPosition({
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 30000,
+          });
+        } catch (lowAccErr) {
+          throw lowAccErr;
+        }
+      }
 
       const latitude = String(position.coords.latitude);
       const longitude = String(position.coords.longitude);
@@ -2781,7 +2957,7 @@
         geocoded = await reverseGeocode(latitude, longitude);
       } catch (error) {
         updateAddressFromLocation({ latitude, longitude });
-        showToast('Location found, but address lookup failed. Please complete the remaining address details manually.');
+        showToast('Coordinates obtained. Please enter address details manually.');
         return;
       }
 
@@ -2791,10 +2967,11 @@
         latitude,
         longitude,
       });
-      if (geocoded.display_name && !fullAddressInput.value.trim()) {
-        fullAddressInput.value = geocoded.display_name;
+      const bestDisplayName = geocoded.displayName || parsed.fullAddress;
+      if (bestDisplayName) {
+        fullAddressInput.value = bestDisplayName;
       }
-      showToast('Current location added successfully.');
+      showToast('Current location loaded successfully.');
     }
 
     function buildBioPayload() {
@@ -2884,7 +3061,43 @@
       });
     });
 
-    [houseNumberInput, buildingNameInput, streetNameInput, landmarkInput, areaLocalityInput, cityInput, stateInput, pinCodeInput, addressNotesInput].forEach((input) => {
+    function updateTextareaCharLimit(textareaEl, counterId, fieldId) {
+      if (!textareaEl) return;
+      const text = textareaEl.value || '';
+      const count = text.length;
+
+      const counterEl = document.getElementById(counterId);
+      if (counterEl) {
+        counterEl.textContent = `${count} / 100`;
+        counterEl.style.color = count >= 100 ? '#dc2626' : '#94a3b8';
+      }
+
+      if (count > 100) {
+        textareaEl.value = text.substring(0, 100);
+        if (counterEl) {
+          counterEl.textContent = '100 / 100';
+          counterEl.style.color = '#dc2626';
+        }
+        setError(fieldId, 'Maximum 100 character limit reached.');
+      } else {
+        const helper = document.getElementById(`${fieldId}Error`);
+        if (helper) helper.textContent = '';
+        textareaEl.closest('.field')?.classList.remove('invalid', 'shake');
+      }
+    }
+
+    [
+      { input: addressNotesInput, counterId: 'addressNotesWordCount', fieldId: 'addressNotes' },
+      { input: visitingPrecautionsInput, counterId: 'visitingPrecautionsWordCount', fieldId: 'visitingPrecautions' }
+    ].forEach(({ input, counterId, fieldId }) => {
+      if (input) {
+        ['input', 'keyup', 'keydown', 'change', 'paste', 'blur', 'focus'].forEach((evtName) => {
+          input.addEventListener(evtName, () => updateTextareaCharLimit(input, counterId, fieldId));
+        });
+      }
+    });
+
+    [houseNumberInput, buildingNameInput, streetNameInput, landmarkInput, areaLocalityInput, cityInput, stateInput, pinCodeInput].forEach((input) => {
       input?.addEventListener('input', () => {
         const field = input.closest('.field');
         field?.classList.remove('invalid', 'shake');
@@ -2970,17 +3183,126 @@
       clearErrors();
     });
 
-    servicesNeededGroup?.addEventListener('change', () => {
-      selectedPreferences.servicesNeeded = [...servicesNeededGroup.querySelectorAll('input:checked')].map((node) => node.value);
-      servicesOtherField.classList.toggle('is-visible', selectedPreferences.servicesNeeded.includes('Other'));
-      if (!selectedPreferences.servicesNeeded.includes('Other')) servicesOtherInput.value = '';
+    servicesNeededGroup?.addEventListener('change', (evt) => {
+      const changedInput = evt.target;
+      if (!changedInput || changedInput.tagName !== 'INPUT') return;
+
+      const allInputs = [...servicesNeededGroup.querySelectorAll('input')];
+
+      if (changedInput.value === 'Other' && changedInput.checked) {
+        allInputs.forEach((node) => {
+          if (node !== changedInput) node.checked = false;
+        });
+      } else if (changedInput.value !== 'Other' && changedInput.checked) {
+        const otherInput = servicesNeededGroup.querySelector('input[value="Other"]');
+        if (otherInput) otherInput.checked = false;
+      }
+
+      servicesNeededGroup.querySelectorAll('.chip').forEach((chip) => {
+        const inp = chip.querySelector('input');
+        if (inp) chip.classList.toggle('selected', inp.checked);
+      });
+
+      selectedPreferences.servicesNeeded = allInputs.filter((n) => n.checked).map((n) => n.value);
+      const hasOther = selectedPreferences.servicesNeeded.includes('Other');
+      servicesOtherField.classList.toggle('is-visible', hasOther);
+      if (!hasOther) {
+        servicesOtherInput.value = '';
+        updateServicesOtherCharLimit();
+      }
       clearErrors();
     });
 
-    urgencyGroup?.addEventListener('change', () => {
-      selectedPreferences.urgency = urgencyGroup.querySelector('input:checked')?.value || '';
-      clearErrors();
+    function updateServicesOtherCharLimit() {
+      if (!servicesOtherInput) return;
+      const text = servicesOtherInput.value || '';
+      const count = text.length;
+      if (servicesOtherCharCount) {
+        servicesOtherCharCount.textContent = `${count} / 100`;
+        servicesOtherCharCount.style.color = count >= 100 ? '#dc2626' : '#94a3b8';
+      }
+      if (count > 100) {
+        servicesOtherInput.value = text.substring(0, 100);
+        if (servicesOtherCharCount) {
+          servicesOtherCharCount.textContent = '100 / 100';
+          servicesOtherCharCount.style.color = '#dc2626';
+        }
+        setError('servicesOther', 'Maximum 100 character limit reached.');
+      } else {
+        const helper = document.getElementById('servicesOtherError');
+        if (helper) helper.textContent = '';
+        servicesOtherInput.closest('.field')?.classList.remove('invalid', 'shake');
+      }
+    }
+
+    if (servicesOtherInput) {
+      ['input', 'keyup', 'keydown', 'change', 'paste', 'blur', 'focus'].forEach((evtName) => {
+        servicesOtherInput.addEventListener(evtName, updateServicesOtherCharLimit);
+      });
+    }
+
+    function isValidDateWithinWeek(inputStr) {
+      if (!inputStr || !inputStr.trim()) return false;
+      const str = inputStr.trim();
+
+      const match = str.match(/^(\d{2})-(\d{2})-(\d{2})$/);
+      if (!match) return false;
+
+      let day = Number(match[1]);
+      let month = Number(match[2]);
+      let year = Number(match[3]);
+
+      if (year < 100) {
+        year = 2000 + year;
+      }
+
+      // month and day already limited to 2 digits by regex; further range checks remain.
+      if (month < 1 || month > 12) return false;
+      if (day < 1 || day > 31) return false;
+
+      const inputDate = new Date(year, month - 1, day);
+      if (inputDate.getFullYear() !== year || inputDate.getMonth() !== month - 1 || inputDate.getDate() !== day) {
+        return false;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const maxDate = new Date(today);
+      maxDate.setDate(maxDate.getDate() + 7);
+      maxDate.setHours(23, 59, 59, 999);
+
+      inputDate.setHours(12, 0, 0, 0);
+
+      return inputDate >= today && inputDate <= maxDate;
+    }
+
+    urgencyWeekDateInput?.addEventListener('input', () => {
+      const field = urgencyWeekDateInput.closest('.field');
+      const helper = document.getElementById('urgencyWeekDateError');
+      // Auto‑format: keep only digits and insert dashes as DD‑MM‑YY
+      let raw = urgencyWeekDateInput.value.replace(/\D/g, '');
+      if (raw.length > 2) raw = raw.slice(0, 2) + '-' + raw.slice(2);
+      if (raw.length > 5) raw = raw.slice(0, 5) + '-' + raw.slice(5);
+      urgencyWeekDateInput.value = raw;
+      const value = raw.trim();
+      if (value) {
+        if (isValidDateWithinWeek(value)) {
+          field?.classList.remove('invalid');
+          field?.classList.add('valid');
+          if (helper) helper.textContent = '';
+        } else {
+          field?.classList.remove('valid');
+          field?.classList.add('invalid');
+          if (helper) helper.textContent = 'Invalid date.';
+        }
+      } else {
+        field?.classList.remove('valid', 'invalid');
+        if (helper) helper.textContent = '';
+      }
     });
+
+
 
     visitTimeGroup?.addEventListener('change', () => {
       selectedPreferences.visitTime = visitTimeGroup.querySelector('input:checked')?.value || '';
@@ -3024,12 +3346,12 @@
       }
     });
 
-    screen6BackBtn?.addEventListener('click', () => {
-      if (window.CareWellRegistration?.setState) {
-        window.CareWellRegistration.setState({ registrationStep: 7 });
+    screen6BackBtn?.addEventListener('click', (event) => {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
       }
-      showScreen(7);
-      hydrateScreen7();
+      jumpToStep(7);
     });
 
     async function handlePreferencesContinue(event) {
@@ -3046,27 +3368,27 @@
         if (window.CareWellRegistration?.recordSection) {
           window.CareWellRegistration.recordSection('healthcarePreferences', data, { registrationStep: 6, autosave: false });
         }
-        await window.CareWellRegistration.saveRegistrationStep({
-          registrationStep: 6,
-          sectionName: 'healthcarePreferences',
-          sectionData: data,
-        });
+        if (window.CareWellRegistration?.saveRegistrationStep) {
+          await window.CareWellRegistration.saveRegistrationStep({
+            registrationStep: 6,
+            sectionName: 'healthcarePreferences',
+            sectionData: data,
+          });
+        }
         if (window.CareWellRegistration?.setState) {
           window.CareWellRegistration.setState({ registrationStep: 7 });
         }
-        showScreen(7);
-        hydrateScreen7();
       } catch (error) {
         console.error(error);
-        showToast('Unable to save your information. Please try again.');
       } finally {
         preferencesContinueBtn.disabled = false;
         preferencesContinueBtn.textContent = 'Continue';
+        showScreen(7);
+        hydrateScreen7();
       }
     }
 
     preferencesForm.addEventListener('submit', handlePreferencesContinue);
-    preferencesContinueBtn?.addEventListener('click', handlePreferencesContinue);
 
     screen7BackBtn?.addEventListener('click', () => {
       openStep(6);
@@ -3334,6 +3656,44 @@
       }
     }
 
+    async function switchCamera() {
+      if (!cameraStream) return;
+      currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+      cameraSwitchBtn.disabled = true;
+      try {
+        await stopCamera();
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: currentFacingMode } },
+          audio: false,
+        });
+        cameraVideo.srcObject = cameraStream;
+        cameraVideo.muted = true;
+        cameraVideo.playsInline = true;
+        cameraVideo.autoplay = true;
+        await cameraVideo.play();
+      } catch (err) {
+        try {
+          const fallback = currentFacingMode === 'environment' ? 'user' : 'environment';
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: fallback },
+            audio: false,
+          });
+          cameraVideo.srcObject = cameraStream;
+          cameraVideo.muted = true;
+          cameraVideo.playsInline = true;
+          cameraVideo.autoplay = true;
+          await cameraVideo.play();
+          currentFacingMode = fallback;
+        } catch (fallbackErr) {
+          showToast('Unable to switch camera.');
+        }
+      } finally {
+        cameraSwitchBtn.disabled = false;
+      }
+    }
+
+    cameraSwitchBtn.addEventListener('click', switchCamera);
+
     function closeCamera() {
       stopCamera();
       cameraModal.classList.remove('is-open');
@@ -3382,6 +3742,7 @@
       cameraCaptureBtn.hidden = true;
       cameraRetakeBtn.hidden = false;
       cameraSelectBtn.hidden = false;
+      cameraSwitchBtn.disabled = true;
       await stopCamera();
     });
 
@@ -3394,6 +3755,7 @@
       cameraCaptureBtn.hidden = false;
       cameraRetakeBtn.hidden = true;
       cameraSelectBtn.hidden = true;
+      cameraSwitchBtn.disabled = false;
       await openCamera(activePhotoIndex);
     });
 
@@ -3428,7 +3790,6 @@
       fields.firstName.value = personal.firstName || profile.firstName || '';
       fields.middleName.value = personal.middleName || '';
       fields.lastName.value = personal.lastName || profile.lastName || '';
-      fields.preferredName.value = personal.preferredName || '';
       fields.dateOfBirth.value = personal.dateOfBirth || '';
       ageInput.value = personal.age ? String(personal.age) : calcAge(fields.dateOfBirth.value);
       if (personal.gender) {
@@ -3449,7 +3810,6 @@
         firstName: fields.firstName.value.trim(),
         middleName: fields.middleName.value.trim(),
         lastName: fields.lastName.value.trim(),
-        preferredName: fields.preferredName.value.trim(),
         dateOfBirth: fields.dateOfBirth.value,
         age: ageInput.value ? Number(ageInput.value) : null,
         gender: getGender(),

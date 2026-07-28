@@ -583,6 +583,7 @@ authRouter.post("/email/send-otp", async (req, res) => {
 
     await OtpVerification.deleteMany({ email }); // clear old OTPs for this email
     await OtpVerification.create({ email, otp, expiresAt });
+    console.log(`[AUTH] New OTP generated for ${email}: ${otp}`);
 
     const htmlMessage = `
       <div style="font-family: Arial, sans-serif; text-align: center;">
@@ -620,14 +621,24 @@ authRouter.post("/email/verify-otp", async (req, res) => {
     const email = String(req.body?.email || "").trim().toLowerCase();
     const otp = String(req.body?.otp || "").trim();
 
+    console.log(`[AUTH] Verify OTP request for ${email} with entered OTP '${otp}'`);
+
     if (!isValidEmail(email) || !otp) {
       return res.status(400).json({ code: "VALIDATION_ERROR", message: "Invalid email or OTP." });
     }
 
-    const verificationRecord = await OtpVerification.findOne({ email, otp });
+    const verificationRecord = await OtpVerification.findOne({
+      email,
+      otp,
+      expiresAt: { $gt: new Date() },
+    });
+
     if (!verificationRecord) {
+      console.warn(`[AUTH] Verify OTP failed: OTP '${otp}' not found or expired for ${email}`);
       return res.status(400).json({ code: "VALIDATION_ERROR", message: "Invalid or expired OTP." });
     }
+
+    console.log(`[AUTH] OTP '${otp}' verified successfully for ${email}`);
 
     // OTP is valid. Delete it so it can't be used again
     await OtpVerification.deleteOne({ _id: verificationRecord._id });

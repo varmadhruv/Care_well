@@ -124,49 +124,72 @@ async function sendBrevoMail(formData) {
   }
 }
 
+const nodemailer = require("nodemailer");
+
 async function sendMail({ to, subject, title, heading, message, ctaLabel, ctaUrl, text }) {
   const html = buildHtmlEmail({ title, heading, message, ctaLabel, ctaUrl });
   const plainText = text || String(message || "").replace(/<[^>]+>/g, "");
+  const recipientEmail = Array.isArray(to) ? to.join(",") : to;
 
+  // 1. Try Brevo API first (Instant HTTP REST delivery directly to Inbox)
   const apiKey = getEnv("BREVO_API_KEY");
-  const fromEmail = getEnv("MAIL_FROM");
-  const fromName = getEnv("MAIL_FROM_NAME");
-  
-  if (!apiKey || !fromEmail) {
-    console.warn("BREVO_API_KEY or MAIL_FROM is missing. Saving to fallback file.");
-    persistFallbackEmail({ to, subject, text: plainText, htmlPreview: String(message || "").slice(0, 240) });
-    throw new Error("Mail delivery failed: Brevo API key or FROM email missing.");
+  const fromEmail = getEnv("MAIL_FROM") || getEnv("EMAIL_USER") || "dhruvvarma47@gmail.com";
+  const fromName = getEnv("MAIL_FROM_NAME") || "CareWell Nursing Care";
+
+  if (apiKey && fromEmail) {
+    try {
+      const payload = {
+        sender: { name: fromName, email: fromEmail },
+        to: Array.isArray(to) ? to.map((e) => ({ email: e.trim() })) : [{ email: recipientEmail.trim() }],
+        subject: subject || "Your CareWell Verification Code",
+        htmlContent: html,
+        textContent: plainText,
+      };
+
+      console.log(`Sending email to ${recipientEmail} via Brevo API...`);
+      const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
+        headers: {
+          "api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        timeout: 10000,
+      });
+
+      console.log(`Email sent successfully via Brevo API to ${recipientEmail}. Message ID: ${response.data.messageId}`);
+      return { ok: true, messageId: response.data.messageId, provider: "brevo" };
+    } catch (brevoErr) {
+      const errDetail = brevoErr.response ? JSON.stringify(brevoErr.response.data) : brevoErr.message;
+      console.warn("Brevo API delivery failed, falling back to Gmail SMTP:", errDetail);
+    }
   }
 
-  const payload = {
-    sender: { name: fromName, email: fromEmail },
-    to: Array.isArray(to) ? to.map(e => ({ email: e })) : [{ email: to }],
-    subject,
-    htmlContent: html,
-    textContent: plainText,
-  };
+  // 2. Fallback to Nodemailer Gmail SMTP if Brevo fails
+  const user = getEnv("EMAIL_USER") || "carewellofficiall@gmail.com";
+  const pass = getEnv("EMAIL_PASS") || "vaphhywqoqitxmyo";
 
-  try {
-    console.log("=== Brevo API Payload (sendMail) ===");
-    console.log(JSON.stringify(payload, null, 2));
-
-    const response = await axios.post("https://api.brevo.com/v3/smtp/email", payload, {
-      headers: {
-        "api-key": apiKey,
-        "Content-Type": "application/json",
-      },
-    });
-    
-    console.log("=== Brevo API Response (sendMail) ===");
-    console.log(JSON.stringify(response.data, null, 2));
-    console.log(`Email sent successfully via Brevo. Message ID: ${response.data.messageId}`);
-    return response.data;
-  } catch (error) {
-    const errorResponse = error.response ? JSON.stringify(error.response.data) : error.message;
-    console.warn("SMTP delivery failed:", errorResponse);
-    persistFallbackEmail({ to, subject, errors: [errorResponse] });
-    throw new Error(`Mail delivery failed via all methods: ${errorResponse}`);
+  if (user && pass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: { user, pass },
+      });
+      const info = await transporter.sendMail({
+        from: `"CareWell Nursing Care" <${user}>`,
+        to: recipientEmail,
+        subject: subject || "Your CareWell Verification Code",
+        html: html,
+        text: plainText,
+      });
+      console.log(`Email sent successfully via Gmail SMTP to ${recipientEmail}: ${info.response}`);
+      return { ok: true, messageId: info.messageId, response: info.response, provider: "gmail" };
+    } catch (gmailErr) {
+      console.warn("Gmail SMTP delivery failed:", gmailErr.message);
+    }
   }
+
+  // 3. Persist fallback file if all fail
+  persistFallbackEmail({ to, subject, text: plainText, htmlPreview: String(message || "").slice(0, 240) });
+  throw new Error("Mail delivery failed via all available methods.");
 }
 
 /* ─── Verification email helper ──────────────────────────────────── */

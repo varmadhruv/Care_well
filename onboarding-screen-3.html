@@ -6,7 +6,7 @@
   <title>CareWell - Onboarding 3</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --blue: #0b4f8c;
@@ -53,20 +53,20 @@
       min-height: 48px;
     }
     .brand-mark {
-      width: 48px; height: 48px; border-radius: 14px; overflow: hidden;
-      border: 1px solid rgba(229, 231, 235, 0.9);
-      box-shadow: 0 6px 16px rgba(11, 79, 140, 0.08);
-      flex: 0 0 auto; display: grid; place-items: center; background: #fff;
+      width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
+      border: none;
+      box-shadow: none;
+      flex: 0 0 auto; display: grid; place-items: center; background: transparent;
     }
+    .brand-mark img { width: 100%; height: 100%; object-fit: contain; display: block; background: transparent; }
     .brand-mark svg { width: 28px; height: 28px; color: var(--blue); display: block; }
     .brand-text strong, .brand-text small { display: block; letter-spacing: 0; }
     .brand-text strong { font-size: 1rem; line-height: 1.1; color: var(--blue); font-weight: 700; }
     .brand-text small { margin-top: 2px; color: var(--green); font-size: 0.78rem; line-height: 1.1; font-weight: 600; letter-spacing: 0.08em; }
     .skip-btn { border: 0; background: transparent; color: var(--soft); font-size: 16px; font-weight: 600; min-height: 48px; padding: 0 8px; transition: transform 300ms ease; }
     .hero { display: grid; gap: 24px; padding: 18px 18px 0; align-items: start; }
-    .copy { max-width: 640px; animation: riseIn 0.6s ease 0.05s both; }
-    .copy h1 { margin: 0; color: var(--blue); font-size: clamp(2.6rem, 6vw, 4rem); line-height: 1.1; letter-spacing: -0.05em; font-weight: 700; max-width: 8ch; }
-    .copy p { margin: 18px 0 0; max-width: 36rem; color: var(--soft); font-size: clamp(1rem, 2vw, 1.125rem); line-height: 1.7; }
+    .copy { max-width: 640px; }
+    .copy p { margin: 18px auto 0; text-align: center; max-width: 36rem; color: var(--soft); font-size: clamp(1rem, 2vw, 1.125rem); line-height: 1.7; animation: riseIn 0.6s ease 0.8s both; }
     .showcase {
       display: flex;
       justify-content: center;
@@ -127,6 +127,128 @@
     .next-btn { border: 0; min-height: 56px; padding: 0 28px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 700; box-shadow: 0 10px 25px rgba(11, 79, 140, 0.2); transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease; }
     .next-btn:hover, .next-btn:focus-visible { background: #084476; box-shadow: 0 14px 28px rgba(11, 79, 140, 0.26); transform: translateY(-2px) scale(1.01); outline: none; }
     .skip-btn:active, .next-btn:active { transform: scale(0.98); }
+
+    /* Premium Hero Title Styles */
+    .premium-hero-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+      cursor: default;
+      margin: 0 0 18px 0;
+    }
+    .pht-line1, .pht-line2 {
+      font-weight: 400;
+      color: #111111;
+      line-height: 1.15;
+    }
+    .pht-line1 {
+      font-size: 42px;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+      opacity: 0;
+      animation: phtPhase1 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .pht-line2 {
+      font-size: 42px;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: phtPhase1 450ms cubic-bezier(0.22, 1, 0.36, 1) 100ms forwards;
+    }
+    .pht-line3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 44px;
+      transition: transform 250ms ease;
+      white-space: nowrap;
+    }
+    @media (hover: hover) {
+      .pht-line3:hover {
+        transform: scale(1.03);
+      }
+    }
+    .pht-lightning {
+      width: 44px;
+      height: 44px;
+      opacity: 0;
+      margin-right: 8px;
+      transform: scale(0) rotate(-20deg);
+      animation: phtLightning 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275) 150ms forwards;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pht-lightning svg {
+      width: 34px;
+      height: 34px;
+      display: block;
+    }
+    .pht-text-group {
+      display: flex;
+      align-items: center;
+      opacity: 0;
+      transform: translateX(-35px);
+      animation: phtPhase4 550ms cubic-bezier(0.19, 1, 0.22, 1) 250ms forwards;
+      filter: blur(6px);
+    }
+    .pht-in {
+      color: #FF9800;
+      margin-right: 8px;
+    }
+    .pht-minutes {
+      background: linear-gradient(90deg, #FFC107, #FF9800, #FF6B00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+      animation: phtGlow 800ms ease-in-out 800ms forwards;
+    }
+    .pht-shine-rect {
+      transform: translateX(-24px) skewX(-20deg);
+      animation: phtShine 350ms ease-in-out 1250ms forwards;
+    }
+    @keyframes phtPhase1 {
+      0% { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes phtLightning {
+      0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+      60% { opacity: 1; transform: scale(1.25) rotate(-5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    @keyframes phtPhase4 {
+      0% { opacity: 0; transform: translateX(-35px); filter: blur(6px); }
+      100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+    }
+    @keyframes phtGlow {
+      0% { filter: drop-shadow(0 0 0px rgba(255, 152, 0, 0)); }
+      50% { filter: drop-shadow(0 0 10px rgba(255, 152, 0, 0.45)); }
+      100% { filter: drop-shadow(0 0 0px rgba(255, 152, 0, 0)); }
+    }
+    @keyframes phtShine {
+      0% { transform: translateX(-24px) skewX(-20deg); }
+      100% { transform: translateX(24px) skewX(-20deg); }
+    }
+    @media (max-width: 1024px) {
+      .pht-line1, .pht-line2 { font-size: 36px; }
+      .pht-line3 { font-size: 38px; }
+      .pht-lightning { width: 38px; height: 38px; }
+    }
+    @media (max-width: 767px) {
+      .pht-line1, .pht-line2 { font-size: 30px; }
+      .pht-line3 { font-size: 32px; }
+      .pht-lightning { width: 32px; height: 32px; }
+    }
+    @media (max-width: 320px) {
+      .pht-line3 { flex-wrap: wrap; text-align: center; justify-content: center; }
+      .pht-lightning { margin-right: 0; margin-bottom: 4px; }
+    }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
@@ -153,7 +275,6 @@
     @media (max-width: 420px) {
       .topbar, .hero, .services, .bottom-bar { padding-left: 14px; padding-right: 14px; }
       .hero { gap: 18px; }
-      .copy h1 { max-width: 7ch; }
       .services { grid-template-columns: 1fr 1fr; gap: 12px; }
       .service-card { min-height: 156px; padding: 18px 14px; }
       .icon-circle { width: 72px; height: 72px; margin-bottom: 12px; }
@@ -174,10 +295,7 @@
       <header class="topbar">
         <a class="brand" href="index.html" aria-label="CareWell home">
           <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 3.2 19 7v5.4c0 4.4-2.9 8.2-7 9.8-4.1-1.6-7-5.4-7-9.8V7l7-3.8Z" stroke="currentColor" stroke-width="1.7" />
-              <path d="M12 7.2v9.6M7.2 12h9.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-            </svg>
+            <img src="Main_logo_transparent_img_screen7.png" alt="CareWell logo" />
           </span>
           <span class="brand-text"><strong>CAREWELL</strong><small>NURSING CARE</small></span>
         </a>
@@ -185,7 +303,38 @@
       </header>
       <section class="hero">
         <div class="copy">
-          <h1>Healthcare Services<br />at Your Doorstep</h1>
+          <div class="premium-hero-title">
+            <div class="pht-line1">Healthcare Services</div>
+            <div class="pht-line2">at Your Doorstep</div>
+            <div class="pht-line3">
+              <div class="pht-lightning">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="pht-grad" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#FFC107"/>
+                      <stop offset="1" stop-color="#FFB000"/>
+                    </linearGradient>
+                    <linearGradient id="pht-shine-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="transparent"/>
+                      <stop offset="50%" stop-color="rgba(255,255,255,0.8)"/>
+                      <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                    <clipPath id="pht-clip">
+                      <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/>
+                    </clipPath>
+                  </defs>
+                  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#pht-grad)"/>
+                  <g clip-path="url(#pht-clip)">
+                    <rect class="pht-shine-rect" x="-24" y="-10" width="12" height="44" fill="url(#pht-shine-grad)"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="pht-text-group">
+                <span class="pht-in">in</span>
+                <span class="pht-minutes">Minutes</span>
+              </div>
+            </div>
+          </div>
           <p>From daily nursing support to post-surgery recovery, we bring professional healthcare services directly to your home.</p>
         </div>
         <div class="showcase" aria-label="Healthcare service showcase">
@@ -238,6 +387,7 @@
       </nav>
     </section>
   </main>
+  <script src="carewell-config.js"></script>
   <script src="registration-state.js" defer></script>
   <script>
     const nextBtn = document.getElementById('nextBtn');
