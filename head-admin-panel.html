@@ -192,56 +192,19 @@
     .sb-collapse-btn.is-collapsed span:nth-child(2) { opacity: 0; width: 0; }
     .sb-collapse-btn.is-collapsed span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-    /* Floating re-open button (visible when sidebar is collapsed on desktop) */
-    .sb-reopen-btn {
-      display: none;
-      position: fixed;
-      top: 20px;
-      left: 14px;
-      z-index: 300;
-      width: 40px;
-      height: 40px;
-      border-radius: 11px;
-      border: none;
-      background: linear-gradient(135deg, var(--sb-top), var(--sb-mid));
-      cursor: pointer;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4.5px;
-      box-shadow: 0 4px 14px rgba(92,26,46,0.55);
-      padding: 0;
-      transition: background var(--transition);
-      outline: none;
-    }
 
-    .sb-reopen-btn.visible {
-      display: flex;
-    }
-
-    .sb-reopen-btn:hover { background: linear-gradient(135deg, #6d1f36, #3a2d35); }
-
-    .sb-reopen-btn span {
-      display: block;
-      width: 18px;
-      height: 2px;
-      background: rgba(255,255,255,0.90);
-      border-radius: 2px;
-    }
-
-    /* =============================================
-       NAV WRAPPER
-    ============================================= */
     .sb-nav {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 0 14px;
+      padding: 0 14px 20px;
       overflow-y: auto;
       overflow-x: hidden;
-      /* hide scrollbar visually but keep functional */
+      /* Thin scrollbar, barely visible */
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,0.12) transparent;
+      /* Ensure content can actually overflow */
+      min-height: 0;
     }
 
     .sb-nav::-webkit-scrollbar {
@@ -257,8 +220,9 @@
       border-radius: 4px;
     }
 
+    /* DO NOT give flex:1 to sb-nav-top — it prevents overflow/scroll */
     .sb-nav-top {
-      flex: 1;
+      flex-shrink: 0;
     }
 
     /* =============================================
@@ -637,11 +601,6 @@
         display: flex;
       }
 
-      /* Hide desktop reopen button on mobile */
-      .sb-reopen-btn {
-        display: none !important;
-      }
-
       /* Show overlay */
       .sb-overlay {
         display: block;
@@ -737,12 +696,6 @@
     <span></span>
   </button>
 
-  <!-- ========== DESKTOP RE-OPEN BUTTON (shows when sidebar collapsed) ========== -->
-  <button class="sb-reopen-btn" id="sbReopenBtn" aria-label="Open sidebar" title="Open sidebar">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
 
   <!-- ========== LEFT SIDEBAR ========== -->
   <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Head Admin navigation">
@@ -848,6 +801,14 @@
             <i data-lucide="wallet"></i>
           </span>
           <span class="sb-label">Earnings</span>
+        </button>
+
+        <!-- 10. Advertisement -->
+        <button class="sb-item" role="menuitem" aria-label="Advertisement" data-section="advertisement" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="megaphone"></i>
+          </span>
+          <span class="sb-label">Advertisement</span>
         </button>
 
         <!-- 10. Notification (with badge) -->
@@ -977,14 +938,12 @@
     // 4. Desktop Collapse / Expand toggle
     // =============================================
     const collapseBtn  = document.getElementById('sbCollapseBtn');
-    const reopenBtn    = document.getElementById('sbReopenBtn');
     let isCollapsed    = false;
 
     function collapseSidebar() {
       isCollapsed = true;
       sidebar.classList.add('collapsed');
       collapseBtn.classList.add('is-collapsed');
-      reopenBtn.classList.add('visible');
       panelMain.style.marginLeft = '0';
       collapseBtn.setAttribute('aria-label', 'Expand sidebar');
     }
@@ -993,7 +952,6 @@
       isCollapsed = false;
       sidebar.classList.remove('collapsed');
       collapseBtn.classList.remove('is-collapsed');
-      reopenBtn.classList.remove('visible');
       panelMain.style.marginLeft = '';
       collapseBtn.setAttribute('aria-label', 'Collapse sidebar');
     }
@@ -1001,8 +959,6 @@
     collapseBtn.addEventListener('click', () => {
       isCollapsed ? expandSidebar() : collapseSidebar();
     });
-
-    reopenBtn.addEventListener('click', expandSidebar);
   </script>
 </body>
 </html>
