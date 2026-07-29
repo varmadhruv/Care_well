@@ -187,17 +187,15 @@
       transition: transform 300ms ease, opacity 300ms ease, width 300ms ease;
     }
 
-    /* X animation when sidebar is collapsed (button moves outside) */
-    .sb-collapse-btn.is-collapsed span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .sb-collapse-btn.is-collapsed span:nth-child(2) { opacity: 0; width: 0; }
-    .sb-collapse-btn.is-collapsed span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    /* Keep 3-dashes clean without transforming into X */
+    .sb-collapse-btn.is-collapsed span { opacity: 0.8; }
 
 
     .sb-nav {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 0 14px 20px;
+      padding: 0 14px 80px;
       overflow-y: auto;
       overflow-x: hidden;
       /* Thin scrollbar, barely visible */
@@ -368,7 +366,7 @@
        BOTTOM SECTION
     ============================================= */
     .sb-nav-bottom {
-      padding-bottom: 20px;
+      padding-bottom: 40px;
       flex-shrink: 0;
     }
 
@@ -405,9 +403,10 @@
       transition: transform 300ms ease, opacity 300ms ease;
     }
 
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    /* Hide fixed hamburger when sidebar is open so no cross icon overlaps the logo */
+    .hamburger.open {
+      display: none !important;
+    }
 
     /* =============================================
        OVERLAY (mobile)
