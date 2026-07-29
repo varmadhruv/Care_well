@@ -4,10 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CareWell - Head Admin Panel</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="Main_logo_transparent_img_screen7.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
+    /* =============================================
+       RESET & ROOT
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
       --blue: #0b4f8c;
       --green: #6cbf43;
@@ -15,55 +24,463 @@
       --muted: #64748b;
       --border: #e2e8f0;
       --shadow: 0 20px 40px rgba(11, 79, 140, 0.12);
+
+      /* Sidebar palette */
+      --sb-width: 320px;
+      --sb-collapsed-width: 0px;
+      --sb-min:   300px;
+      --sb-max:   340px;
+      --sb-top:    #5c1a2e;   /* deep wine */
+      --sb-mid:    #3a2d35;   /* ash */
+      --sb-bot:    #1e1e22;   /* dark charcoal */
+      --sb-active-from: #7a2040;
+      --sb-active-to:   #4a1228;
+      --sb-text:   rgba(255,255,255,0.85);
+      --sb-text-active: #ffffff;
+      --sb-hover-bg: rgba(255,255,255,0.07);
+      --sb-icon:   rgba(255,255,255,0.80);
+      --sb-logout-icon: #f87171;
+      --sb-divider: rgba(255,255,255,0.10);
+      --sb-badge-bg: #dc2626;
+      --sb-border-right: rgba(255,255,255,0.08);
+      --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: Inter, system-ui, -apple-system, sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #f8fafc 0%, #eef6fb 100%);
+      background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f8 100%);
       color: var(--text);
+      display: flex;
+    }
+
+    /* =============================================
+       SIDEBAR
+    ============================================= */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sb-width);
+      min-width: var(--sb-min);
+      max-width: var(--sb-max);
+      height: 100vh;
+      background: linear-gradient(180deg,
+        var(--sb-top)  0%,
+        var(--sb-mid)  50%,
+        var(--sb-bot)  100%
+      );
+      border-right: 1px solid var(--sb-border-right);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 200;
+      transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Collapsed state — desktop */
+    .sidebar.collapsed {
+      width: 0;
+      min-width: 0;
+      border-right: none;
+    }
+    .sidebar.collapsed ~ .panel-main {
+      margin-left: 0;
+    }
+
+    /* =============================================
+       LOGO & HEADER SECTION
+    ============================================= */
+    .sb-header {
+      padding: 20px 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sb-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .sb-brand-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .sb-brand-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .sb-brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .sb-brand-name {
+      font-family: Poppins, sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+    }
+
+    .sb-brand-sub {
+      font-family: Inter, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    /* =============================================
+       SIDEBAR COLLAPSE BUTTON (inside header)
+    ============================================= */
+    .sb-collapse-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      gap: 4.5px;
+      flex-shrink: 0;
+      transition: background var(--transition);
+      outline: none;
     }
-    .topbar {
+
+    .sb-collapse-btn:hover {
+      background: rgba(255,255,255,0.16);
+    }
+
+    .sb-collapse-btn:focus-visible {
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.45);
+    }
+
+    .sb-collapse-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,0.80);
+      border-radius: 2px;
+      transition: transform 300ms ease, opacity 300ms ease, width 300ms ease;
+    }
+
+    /* X animation when sidebar is collapsed (button moves outside) */
+    .sb-collapse-btn.is-collapsed span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .sb-collapse-btn.is-collapsed span:nth-child(2) { opacity: 0; width: 0; }
+    .sb-collapse-btn.is-collapsed span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Floating re-open button (visible when sidebar is collapsed on desktop) */
+    .sb-reopen-btn {
+      display: none;
       position: fixed;
-      top: 0; left: 0; right: 0;
-      display: flex;
+      top: 20px;
+      left: 14px;
+      z-index: 300;
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      border: none;
+      background: linear-gradient(135deg, var(--sb-top), var(--sb-mid));
+      cursor: pointer;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 20px 32px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
+      justify-content: center;
+      gap: 4.5px;
+      box-shadow: 0 4px 14px rgba(92,26,46,0.55);
+      padding: 0;
+      transition: background var(--transition);
+      outline: none;
     }
-    .brand {
+
+    .sb-reopen-btn.visible {
+      display: flex;
+    }
+
+    .sb-reopen-btn:hover { background: linear-gradient(135deg, #6d1f36, #3a2d35); }
+
+    .sb-reopen-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,0.90);
+      border-radius: 2px;
+    }
+
+    /* =============================================
+       NAV WRAPPER
+    ============================================= */
+    .sb-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      /* hide scrollbar visually but keep functional */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.12) transparent;
+    }
+
+    .sb-nav::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sb-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sb-nav::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.14);
+      border-radius: 4px;
+    }
+
+    .sb-nav-top {
+      flex: 1;
+    }
+
+    /* =============================================
+       NAV ITEM
+    ============================================= */
+    .sb-item {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
+      height: 56px;
+      padding: 0 8px;
+      border-radius: 16px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition:
+        background var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
       text-decoration: none;
+      position: relative;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
     }
-    .brand-mark {
-      width: 44px; height: 44px;
+
+    .sb-item:focus-visible {
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+    }
+
+    .sb-item:hover {
+      background: var(--sb-hover-bg);
+      transform: translateX(5px);
+    }
+
+    .sb-item:hover .sb-icon-wrap {
+      transform: scale(1.05);
+    }
+
+    .sb-item.active {
+      background: linear-gradient(135deg, var(--sb-active-from), var(--sb-active-to));
+      box-shadow: 0 4px 16px rgba(90, 10, 30, 0.35),
+                  0 1px 0 rgba(255,255,255,0.08) inset;
+      transform: none;
+    }
+
+    .sb-item.active:hover {
+      transform: translateX(5px);
+    }
+
+    /* pressed animation */
+    .sb-item:active {
+      transform: translateX(3px) scale(0.98);
+      transition-duration: 80ms;
+    }
+
+    /* icon container */
+    .sb-icon-wrap {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+
+    .sb-icon-wrap svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--sb-icon);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      transition: stroke var(--transition);
+      flex-shrink: 0;
+    }
+
+    .sb-item.active .sb-icon-wrap svg {
+      stroke: #ffffff;
+    }
+
+    /* logout icon red */
+    .sb-item.logout-item .sb-icon-wrap svg {
+      stroke: var(--sb-logout-icon);
+    }
+
+    .sb-item.logout-item:hover {
+      background: rgba(248, 113, 113, 0.10);
+    }
+
+    /* label */
+    .sb-label {
+      font-family: Inter, sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      color: var(--sb-text);
+      opacity: 0.85;
+      transition: opacity var(--transition), color var(--transition);
+      flex: 1;
+      white-space: nowrap;
+    }
+
+    .sb-item:hover .sb-label { opacity: 1; }
+    .sb-item.active .sb-label {
+      color: var(--sb-text-active);
+      opacity: 1;
+    }
+
+    /* =============================================
+       NOTIFICATION BADGE
+    ============================================= */
+    .sb-badge {
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      overflow: hidden;
-    }
-    .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
-    .brand-title {
-      font-family: Poppins, sans-serif;
+      background: var(--sb-badge-bg);
+      color: #ffffff;
+      font-size: 12px;
       font-weight: 700;
-      color: var(--blue);
-      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.45);
     }
-    .brand-subtitle {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--green);
-      letter-spacing: 0.08em;
+
+    /* =============================================
+       DIVIDER
+    ============================================= */
+    .sb-divider {
+      height: 1px;
+      background: var(--sb-divider);
+      margin: 18px 8px;
+      flex-shrink: 0;
     }
+
+    /* =============================================
+       BOTTOM SECTION
+    ============================================= */
+    .sb-nav-bottom {
+      padding-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    /* =============================================
+       HAMBURGER BUTTON (Mobile Only)
+    ============================================= */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 300;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--sb-top), var(--sb-mid));
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      box-shadow: 0 4px 14px rgba(92, 26, 46, 0.5);
+      padding: 0;
+      transition: background var(--transition);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #ffffff;
+      border-radius: 2px;
+      transition: transform 300ms ease, opacity 300ms ease;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* =============================================
+       OVERLAY (mobile)
+    ============================================= */
+    .sb-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 190;
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+
+    .sb-overlay.visible {
+      opacity: 1;
+    }
+
+    /* =============================================
+       MAIN CONTENT AREA
+    ============================================= */
+    .panel-main {
+      margin-left: var(--sb-width);
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px;
+      background: linear-gradient(135deg, #f8fafc 0%, #eef6fb 100%);
+      transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* =============================================
+       EXISTING PANEL CONTENT (PRESERVED)
+    ============================================= */
     .panel-container {
       width: 100%;
       max-width: 520px;
@@ -73,14 +490,15 @@
       box-shadow: var(--shadow);
       padding: 40px 32px;
       text-align: center;
-      margin-top: 80px;
       animation: rise 0.4s ease both;
     }
+
     @keyframes rise {
       from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .badge {
+
+    .badge-pill {
       display: inline-block;
       padding: 6px 18px;
       border-radius: 999px;
@@ -93,6 +511,7 @@
       text-transform: uppercase;
       margin-bottom: 16px;
     }
+
     h1 {
       font-family: Poppins, sans-serif;
       font-size: 2.2rem;
@@ -101,11 +520,13 @@
       margin-bottom: 8px;
       letter-spacing: -0.02em;
     }
+
     p.user-email {
       color: var(--muted);
       font-size: 0.95rem;
       margin-bottom: 28px;
     }
+
     .status-card {
       background: #f8fafc;
       border: 1px dashed #cbd5e1;
@@ -113,16 +534,19 @@
       padding: 24px;
       margin-bottom: 32px;
     }
+
     .status-card strong {
       display: block;
       color: var(--text);
       font-size: 1.1rem;
       margin-bottom: 6px;
     }
+
     .status-card span {
       color: var(--muted);
       font-size: 0.9rem;
     }
+
     .logout-btn {
       display: inline-flex;
       align-items: center;
@@ -140,36 +564,445 @@
       box-shadow: 0 10px 24px rgba(11, 79, 140, 0.22);
       transition: transform 0.2s ease, background 0.2s ease;
     }
+
     .logout-btn:hover {
       background: #084476;
       transform: translateY(-2px);
     }
+
+    /* =============================================
+       RESPONSIVE — TABLET (≤ 1024px)
+       Sidebar stays visible but slightly narrower
+    ============================================= */
+    @media (max-width: 1024px) and (min-width: 901px) {
+      :root {
+        --sb-width: 280px;
+        --sb-min:   260px;
+        --sb-max:   300px;
+      }
+
+      .sb-brand-name { font-size: 1.05rem; }
+      .sb-brand-sub  { font-size: 0.68rem; }
+
+      .sb-label {
+        font-size: 15px;
+      }
+
+      .sb-item {
+        height: 52px;
+        gap: 13px;
+      }
+
+      .sb-header {
+        padding: 16px 14px;
+      }
+
+      .sb-brand-img {
+        width: 38px;
+        height: 38px;
+      }
+    }
+
+    /* =============================================
+       RESPONSIVE — MOBILE (≤ 900px)
+       Sidebar becomes slide-over drawer
+    ============================================= */
+    @media (max-width: 900px) {
+      /* Sidebar slides off-screen by default */
+      .sidebar {
+        transform: translateX(-100%);
+        width: 300px !important;
+        min-width: 280px !important;
+        max-width: 320px !important;
+        box-shadow: none;
+        /* Restore width for slide-over mode */
+        transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+
+      /* Open state — slides in */
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 8px 0 40px rgba(0, 0, 0, 0.45);
+      }
+
+      /* Keep collapsed logic disabled on mobile */
+      .sidebar.collapsed {
+        transform: translateX(-100%) !important;
+        width: 300px !important;
+        min-width: 280px !important;
+      }
+
+      /* Show hamburger button */
+      .hamburger {
+        display: flex;
+      }
+
+      /* Hide desktop reopen button on mobile */
+      .sb-reopen-btn {
+        display: none !important;
+      }
+
+      /* Show overlay */
+      .sb-overlay {
+        display: block;
+      }
+
+      /* Main content: full width, with top padding for hamburger */
+      .panel-main {
+        margin-left: 0 !important;
+        padding-top: 80px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    /* =============================================
+       RESPONSIVE — SMALL MOBILE (≤ 480px)
+    ============================================= */
+    @media (max-width: 480px) {
+      .sidebar {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-width: unset !important;
+      }
+
+      .panel-container {
+        padding: 24px 16px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p.user-email {
+        font-size: 0.85rem;
+      }
+
+      .sb-header {
+        padding: 18px 16px;
+      }
+
+      .sb-label {
+        font-size: 16px;
+      }
+
+      .sb-item {
+        height: 54px;
+      }
+
+      .panel-main {
+        padding: 70px 14px 24px;
+      }
+
+      .hamburger {
+        top: 14px;
+        left: 14px;
+        width: 42px;
+        height: 42px;
+      }
+    }
+
+    /* =============================================
+       RESPONSIVE — EXTRA SMALL (≤ 360px)
+    ============================================= */
+    @media (max-width: 360px) {
+      h1 { font-size: 1.35rem; }
+
+      .badge-pill {
+        font-size: 0.75rem;
+        padding: 5px 14px;
+      }
+
+      .status-card {
+        padding: 18px;
+      }
+
+      .logout-btn {
+        height: 48px;
+        font-size: 0.92rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">
-        <img src="Main_logo_transparent_img_screen7.png" alt="CareWell Logo" />
-      </span>
-      <div>
-        <div class="brand-title">CareWell</div>
-        <div class="brand-subtitle">NURSING CARE</div>
+
+  <!-- ========== SIDEBAR OVERLAY (mobile) ========== -->
+  <div class="sb-overlay" id="sbOverlay" role="presentation" aria-hidden="true"></div>
+
+  <!-- ========== MOBILE HAMBURGER BUTTON ========== -->
+  <button class="hamburger" id="hamburgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="adminSidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- ========== DESKTOP RE-OPEN BUTTON (shows when sidebar collapsed) ========== -->
+  <button class="sb-reopen-btn" id="sbReopenBtn" aria-label="Open sidebar" title="Open sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- ========== LEFT SIDEBAR ========== -->
+  <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Head Admin navigation">
+
+    <!-- Header: Logo + Brand + Collapse Button -->
+    <div class="sb-header">
+      <div class="sb-brand">
+        <div class="sb-brand-img">
+          <img src="Main_logo_transparent_img_screen7.png" alt="CareWell Logo" />
+        </div>
+        <div class="sb-brand-text">
+          <span class="sb-brand-name">CareWell</span>
+          <span class="sb-brand-sub">Care in Minutes</span>
+        </div>
       </div>
-    </a>
-  </header>
-
-  <main class="panel-container">
-    <span class="badge">Head Admin Access</span>
-    <h1>head admin panel</h1>
-    <p class="user-email">Verified User: SeemaPrajapati@carewell (seemaprajapati1998@gmail.com)</p>
-
-    <div class="status-card">
-      <strong>Head Admin Dashboard Active</strong>
-      <span>You are successfully authenticated into the Head Admin Panel.</span>
+      <button class="sb-collapse-btn" id="sbCollapseBtn" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
 
-    <a href="index.html" class="logout-btn">Logout &amp; Return to Home</a>
+    <!-- Navigation -->
+    <nav class="sb-nav" role="menubar">
+      <!-- Top nav items -->
+      <div class="sb-nav-top">
+
+        <!-- 1. Dashboard (active) -->
+        <button class="sb-item active" role="menuitem" aria-label="Dashboard" data-section="dashboard" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="layout-dashboard"></i>
+          </span>
+          <span class="sb-label">Dashboard</span>
+        </button>
+
+        <!-- 2. Patient -->
+        <button class="sb-item" role="menuitem" aria-label="Patient" data-section="patient" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="users"></i>
+          </span>
+          <span class="sb-label">Patient</span>
+        </button>
+
+        <!-- 3. Nurse -->
+        <button class="sb-item" role="menuitem" aria-label="Nurse" data-section="nurse" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="briefcase-medical"></i>
+          </span>
+          <span class="sb-label">Nurse</span>
+        </button>
+
+        <!-- 4. Doctors -->
+        <button class="sb-item" role="menuitem" aria-label="Doctors" data-section="doctors" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="stethoscope"></i>
+          </span>
+          <span class="sb-label">Doctors</span>
+        </button>
+
+        <!-- 5. Deployment -->
+        <button class="sb-item" role="menuitem" aria-label="Deployment" data-section="deployment" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="send"></i>
+          </span>
+          <span class="sb-label">Deployment</span>
+        </button>
+
+        <!-- 6. Service -->
+        <button class="sb-item" role="menuitem" aria-label="Service" data-section="service" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="heart-pulse"></i>
+          </span>
+          <span class="sb-label">Service</span>
+        </button>
+
+        <!-- 7. CareUnit -->
+        <button class="sb-item" role="menuitem" aria-label="CareUnit" data-section="careunit" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="building-2"></i>
+          </span>
+          <span class="sb-label">CareUnit</span>
+        </button>
+
+        <!-- 8. Calendar -->
+        <button class="sb-item" role="menuitem" aria-label="Calendar" data-section="calendar" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="calendar-days"></i>
+          </span>
+          <span class="sb-label">Calendar</span>
+        </button>
+
+        <!-- 8. Report & Analytics -->
+        <button class="sb-item" role="menuitem" aria-label="Report and Analytics" data-section="reports" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="chart-column"></i>
+          </span>
+          <span class="sb-label">Report &amp; Analytics</span>
+        </button>
+
+        <!-- 9. Earnings -->
+        <button class="sb-item" role="menuitem" aria-label="Earnings" data-section="earnings" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="wallet"></i>
+          </span>
+          <span class="sb-label">Earnings</span>
+        </button>
+
+        <!-- 10. Notification (with badge) -->
+        <button class="sb-item" role="menuitem" aria-label="Notification, 8 unread" data-section="notification" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="bell"></i>
+          </span>
+          <span class="sb-label">Notification</span>
+          <span class="sb-badge" aria-hidden="true">8</span>
+        </button>
+
+        <!-- 11. Settings -->
+        <button class="sb-item" role="menuitem" aria-label="Settings" data-section="settings" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="settings"></i>
+          </span>
+          <span class="sb-label">Settings</span>
+        </button>
+
+      </div><!-- /sb-nav-top -->
+
+      <!-- Divider -->
+      <div class="sb-divider" role="separator" aria-hidden="true"></div>
+
+      <!-- Bottom nav items -->
+      <div class="sb-nav-bottom">
+
+        <!-- 12. My Account -->
+        <button class="sb-item" role="menuitem" aria-label="My Account" data-section="account" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="user-round"></i>
+          </span>
+          <span class="sb-label">My Account</span>
+        </button>
+
+        <!-- 13. Logout -->
+        <button class="sb-item logout-item" role="menuitem" aria-label="Logout" data-section="logout" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="log-out"></i>
+          </span>
+          <span class="sb-label">Logout</span>
+        </button>
+
+      </div><!-- /sb-nav-bottom -->
+
+    </nav>
+  </aside>
+
+  <!-- ========== MAIN CONTENT (Existing — PRESERVED EXACTLY) ========== -->
+  <main class="panel-main">
+    <div class="panel-container">
+      <span class="badge-pill">Head Admin Access</span>
+      <h1>head admin panel</h1>
+      <p class="user-email">Verified User: SeemaPrajapati@carewell (seemaprajapati1998@gmail.com)</p>
+
+      <div class="status-card">
+        <strong>Head Admin Dashboard Active</strong>
+        <span>You are successfully authenticated into the Head Admin Panel.</span>
+      </div>
+
+      <a href="index.html" class="logout-btn">Logout &amp; Return to Home</a>
+    </div>
   </main>
+
+  <script>
+    // =============================================
+    // 1. Render Lucide icons
+    // =============================================
+    lucide.createIcons();
+
+    // =============================================
+    // 2. Active tab management
+    // =============================================
+    const navItems = document.querySelectorAll('.sb-item:not(.logout-item)');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', function () {
+        navItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // =============================================
+    // 3. Mobile Hamburger toggle
+    // =============================================
+    const sidebar      = document.getElementById('adminSidebar');
+    const hamburger    = document.getElementById('hamburgerBtn');
+    const overlay      = document.getElementById('sbOverlay');
+    const panelMain    = document.querySelector('.panel-main');
+
+    function openMobileSidebar() {
+      sidebar.classList.add('open');
+      hamburger.classList.add('open');
+      overlay.classList.add('visible');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove('open');
+      hamburger.classList.remove('open');
+      overlay.classList.remove('visible');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeMobileSidebar() : openMobileSidebar();
+    });
+
+    overlay.addEventListener('click', closeMobileSidebar);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        closeMobileSidebar();
+        hamburger.focus();
+      }
+    });
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth <= 900) closeMobileSidebar();
+      });
+    });
+
+    // =============================================
+    // 4. Desktop Collapse / Expand toggle
+    // =============================================
+    const collapseBtn  = document.getElementById('sbCollapseBtn');
+    const reopenBtn    = document.getElementById('sbReopenBtn');
+    let isCollapsed    = false;
+
+    function collapseSidebar() {
+      isCollapsed = true;
+      sidebar.classList.add('collapsed');
+      collapseBtn.classList.add('is-collapsed');
+      reopenBtn.classList.add('visible');
+      panelMain.style.marginLeft = '0';
+      collapseBtn.setAttribute('aria-label', 'Expand sidebar');
+    }
+
+    function expandSidebar() {
+      isCollapsed = false;
+      sidebar.classList.remove('collapsed');
+      collapseBtn.classList.remove('is-collapsed');
+      reopenBtn.classList.remove('visible');
+      panelMain.style.marginLeft = '';
+      collapseBtn.setAttribute('aria-label', 'Collapse sidebar');
+    }
+
+    collapseBtn.addEventListener('click', () => {
+      isCollapsed ? expandSidebar() : collapseSidebar();
+    });
+
+    reopenBtn.addEventListener('click', expandSidebar);
+  </script>
 </body>
 </html>

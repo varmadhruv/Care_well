@@ -681,6 +681,7 @@ authRouter.post("/email/verify-otp", async (req, res) => {
 
     res.setHeader("Set-Cookie", buildCookie(sessionToken));
     return res.json({
+      ok: true,
       profile: sanitizeProfile(user),
       nextRoute: "registration",
     });

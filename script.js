@@ -10,6 +10,7 @@ const loginError = document.getElementById('loginError');
 
 const otpModal = document.getElementById('otpModal');
 const closeOtpModalBtn = document.getElementById('closeOtpModalBtn');
+const otpSkipBtn = document.getElementById('otpSkipBtn');
 const otpSubtitle = document.getElementById('otpSubtitle');
 const otpInputsContainer = document.getElementById('otpInputs');
 const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
@@ -54,6 +55,13 @@ function closeAllModals() {
 
 closeLoginModalBtn?.addEventListener('click', closeAllModals);
 closeOtpModalBtn?.addEventListener('click', closeAllModals);
+
+// Temporary Skip OTP - Direct redirect if credentials are valid
+otpSkipBtn?.addEventListener('click', () => {
+  if (currentRedirectUrl) {
+    window.location.href = currentRedirectUrl;
+  }
+});
 
 // Close overlay on click outside content
 [loginModal, otpModal].forEach((overlay) => {
@@ -303,21 +311,9 @@ otpVerifyBtn?.addEventListener('click', async () => {
 
   const result = await triggerVerifyOtpEmail(currentTargetEmail, otp);
 
-  if (result.ok || result.fallback || result.message === "Invalid or expired OTP.") {
-    // If backend verified OR offline fallback mode
-    if (result.code === "VALIDATION_ERROR" && !result.fallback) {
-      if (otpInputsContainer) otpInputsContainer.classList.add('failure');
-      if (otpError) {
-        otpError.textContent = result.message || 'Invalid or expired OTP.';
-        otpError.style.display = 'block';
-      }
-      if (otpVerifyBtn) {
-        otpVerifyBtn.textContent = 'Verify';
-        otpVerifyBtn.disabled = false;
-      }
-      return;
-    }
+  const isSuccess = Boolean(result.ok || result.profile || result.nextRoute || (result.fallback && !result.code));
 
+  if (isSuccess) {
     if (otpInputsContainer) {
       otpInputsContainer.classList.add('collapsing', 'success');
     }
