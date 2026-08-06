@@ -195,13 +195,14 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 0 14px 80px;
+      padding: 0 14px 40px;
       overflow-y: auto;
       overflow-x: hidden;
-      /* Thin scrollbar, barely visible */
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      /* Thin sleek scrollbar */
       scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.12) transparent;
-      /* Ensure content can actually overflow */
+      scrollbar-color: rgba(255,255,255,0.22) transparent;
       min-height: 0;
     }
 
@@ -376,36 +377,57 @@
     .hamburger {
       display: none;
       position: fixed;
-      top: 18px;
-      left: 18px;
+      top: 15px;
+      left: 24px;
       z-index: 300;
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--sb-top), var(--sb-mid));
-      border: none;
+      width: 42px;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
       border-radius: 12px;
       cursor: pointer;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      box-shadow: 0 4px 14px rgba(92, 26, 46, 0.5);
+      gap: 4.5px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
       padding: 0;
-      transition: background var(--transition);
+      transition: all 200ms ease;
+    }
+
+    .hamburger:hover {
+      background: #f8fafc;
+      border-color: var(--blue);
+      box-shadow: 0 6px 16px rgba(11, 79, 140, 0.14);
+      transform: translateY(-1px);
     }
 
     .hamburger span {
       display: block;
-      width: 20px;
+      width: 18px;
       height: 2px;
-      background: #ffffff;
+      background: var(--blue);
       border-radius: 2px;
-      transition: transform 300ms ease, opacity 300ms ease;
+      transition: transform 300ms ease, opacity 300ms ease, background 200ms ease;
+    }
+
+    .hamburger:hover span {
+      background: #084476;
     }
 
     /* Hide fixed hamburger when sidebar is open so no cross icon overlaps the logo */
     .hamburger.open {
       display: none !important;
+    }
+
+    /* Show fixed hamburger button on desktop when sidebar is collapsed */
+    .sidebar.collapsed ~ .hamburger {
+      display: flex !important;
+    }
+
+    /* Shift header right when sidebar is collapsed so hamburger never overlaps Dashboard title */
+    .sidebar.collapsed ~ .panel-main .dash-header {
+      padding-left: 82px;
     }
 
     /* =============================================
@@ -434,11 +456,9 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 32px;
-      background: linear-gradient(135deg, #f8fafc 0%, #eef6fb 100%);
+      background: linear-gradient(135deg, #12080f 0%, #1a0f15 40%, #0f0a14 100%);
       transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-x: hidden;
     }
 
     /* =============================================
@@ -605,12 +625,10 @@
         display: block;
       }
 
-      /* Main content: full width, with top padding for hamburger */
+      /* Main content: full width on mobile */
       .panel-main {
         margin-left: 0 !important;
-        padding-top: 80px;
-        padding-left: 20px;
-        padding-right: 20px;
+        padding: 0 !important;
       }
     }
 
@@ -650,14 +668,14 @@
       }
 
       .panel-main {
-        padding: 70px 14px 24px;
+        padding: 0 !important;
       }
 
       .hamburger {
-        top: 14px;
-        left: 14px;
-        width: 42px;
-        height: 42px;
+        top: 12px;
+        left: 12px;
+        width: 40px;
+        height: 40px;
       }
     }
 
@@ -681,6 +699,681 @@
         font-size: 0.92rem;
       }
     }
+    /* =========================================
+       DASHBOARD - TOP HEADER
+    ========================================= */
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      gap: 16px;
+      flex-wrap: wrap;
+      transition: padding-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dash-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .dash-header-title {
+      font-family: Poppins, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+    .dash-header-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      font-weight: 400;
+    }
+    .dash-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dash-glass-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.80);
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+      transition: background 200ms ease;
+    }
+    .dash-glass-chip:hover { background: rgba(255,255,255,0.10); }
+    .dash-glass-chip i { width: 15px; height: 15px; flex-shrink: 0; color: rgba(255,255,255,0.60); }
+    #dashTime { font-variant-numeric: tabular-nums; font-weight: 600; color: #fff; }
+    .dash-notif-btn {
+      position: relative;
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: rgba(255,255,255,0.75);
+      transition: background 200ms;
+    }
+    .dash-notif-btn:hover { background: rgba(255,255,255,0.12); }
+    .dash-notif-btn i { width: 17px; height: 17px; }
+    .dash-notif-dot {
+      position: absolute; top: 8px; right: 8px;
+      width: 7px; height: 7px;
+      background: #dc2626; border-radius: 50%;
+      border: 1.5px solid #12080f;
+    }
+    .dash-profile-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 12px 6px 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 200ms;
+    }
+    .dash-profile-chip:hover { background: rgba(255,255,255,0.12); }
+    .dash-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7a2040, #4a1228);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .dash-profile-name {
+      font-size: 0.78rem; font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+    .dash-profile-role {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* =========================================
+       DASHBOARD - SCROLL AREA
+    ========================================= */
+    .dash-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.12) transparent;
+    }
+    .dash-body::-webkit-scrollbar { width: 5px; }
+    .dash-body::-webkit-scrollbar-track { background: transparent; }
+    .dash-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+    /* =========================================
+       DASHBOARD - HERO SECTION
+    ========================================= */
+    .dash-hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      background: linear-gradient(135deg, rgba(122,32,64,0.35) 0%, rgba(74,18,40,0.25) 50%, rgba(30,15,30,0.40) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      animation: dashFadeUp 0.5s ease both;
+    }
+    .dash-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(122,32,64,0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .dash-hero-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-width: 0;
+    }
+    .dash-hero-avatar {
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      border: 5px solid rgba(122,32,64,0.85);
+      outline: 3px solid rgba(255,255,255,0.20);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #5c1a2e, #3a2d35);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 35px rgba(122,32,64,0.55), 0 0 25px rgba(122,32,64,0.35);
+      transition: transform 300ms ease, box-shadow 300ms ease;
+    }
+    .dash-hero-avatar:hover {
+      transform: scale(1.04);
+      box-shadow: 0 16px 42px rgba(122,32,64,0.70), 0 0 30px rgba(122,32,64,0.50);
+    }
+    .dash-hero-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .dash-hero-avatar-placeholder {
+      font-family: Poppins, sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.90);
+    }
+    .dash-hero-text { min-width: 0; }
+    .dash-hero-greeting {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.50);
+      font-weight: 500;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .dash-hero-name {
+      font-family: Poppins, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .dash-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      background: rgba(122,32,64,0.45);
+      border: 1px solid rgba(122,32,64,0.6);
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,200,200,0.90);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+    .dash-hero-welcome {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      max-width: 340px;
+      line-height: 1.55;
+    }
+    .dash-hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .dash-hero-logo {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    .dash-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .dash-hero-quote {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.40);
+      font-style: italic;
+      text-align: right;
+      max-width: 180px;
+      line-height: 1.5;
+    }
+
+    /* =========================================
+       DASHBOARD - SECTION LABEL
+    ========================================= */
+    .dash-section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .dash-section-label h2 {
+      font-family: Poppins, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: -0.01em;
+    }
+    .dash-section-badge {
+      padding: 3px 10px;
+      border-radius: 50px;
+      background: rgba(122,32,64,0.40);
+      border: 1px solid rgba(122,32,64,0.55);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: rgba(255,180,180,0.85);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .dash-section-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+    }
+
+    /* =========================================
+       DASHBOARD - LIVE OPS GRID
+    ========================================= */
+    .dash-ops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .dash-ops-card {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      backdrop-filter: blur(10px);
+      transition: transform 250ms ease, background 250ms ease, box-shadow 250ms ease;
+      animation: dashFadeUp 0.5s ease both;
+      cursor: default;
+    }
+    .dash-ops-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 16px 40px rgba(122,32,64,0.25);
+      border-color: rgba(122,32,64,0.35);
+    }
+    .dash-ops-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dash-ops-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .dash-ops-icon i { width: 20px; height: 20px; }
+    .dash-ops-icon.wine   { background: rgba(122,32,64,0.30); color: #f9a8b8; border: 1px solid rgba(122,32,64,0.45); }
+    .dash-ops-icon.blue   { background: rgba(11,79,140,0.25); color: #93c5fd; border: 1px solid rgba(11,79,140,0.35); }
+    .dash-ops-icon.green  { background: rgba(108,191,67,0.20); color: #86efac; border: 1px solid rgba(108,191,67,0.30); }
+    .dash-ops-icon.amber  { background: rgba(245,158,11,0.20); color: #fcd34d; border: 1px solid rgba(245,158,11,0.30); }
+    .dash-ops-icon.red    { background: rgba(220,38,38,0.20); color: #fca5a5; border: 1px solid rgba(220,38,38,0.30); }
+    .dash-ops-icon.purple { background: rgba(124,58,237,0.20); color: #c4b5fd; border: 1px solid rgba(124,58,237,0.30); }
+    .dash-ops-icon.cyan   { background: rgba(6,182,212,0.20); color: #67e8f9; border: 1px solid rgba(6,182,212,0.30); }
+    .dash-ops-status {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 50px;
+      background: rgba(108,191,67,0.15);
+      color: #86efac;
+      border: 1px solid rgba(108,191,67,0.25);
+    }
+    .dash-ops-count {
+      font-family: Poppins, sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .dash-ops-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.50);
+      font-weight: 500;
+    }
+
+    /* =========================================
+       DASHBOARD - INSIGHTS ROW
+    ========================================= */
+    .dash-insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .dash-insight-card {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: transform 250ms ease, box-shadow 250ms ease;
+      animation: dashFadeUp 0.55s ease both;
+    }
+    .dash-insight-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 35px rgba(122,32,64,0.22);
+    }
+    .dash-insight-icon-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .dash-insight-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .dash-insight-icon i { width: 18px; height: 18px; }
+    .dash-insight-value {
+      font-family: Poppins, sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+    .dash-insight-unit {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+    }
+    .dash-insight-label {
+      font-size: 0.80rem;
+      color: rgba(255,255,255,0.50);
+      font-weight: 500;
+    }
+    .dash-insight-trend {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.30);
+    }
+
+    /* =========================================
+       DASHBOARD - LIVE OVERVIEW + SNAPSHOT ROW
+    ========================================= */
+    .dash-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .dash-block {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      animation: dashFadeUp 0.6s ease both;
+    }
+    .dash-block-title {
+      font-family: Poppins, sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-block-title i { width: 16px; height: 16px; color: rgba(255,180,180,0.70); }
+    .dash-ov-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dash-ov-row:last-child { border-bottom: none; }
+    .dash-ov-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.60);
+    }
+    .dash-ov-left i { width: 15px; height: 15px; flex-shrink: 0; }
+    .dash-ov-val {
+      font-family: Poppins, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .dash-snap-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dash-snap-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      transition: background 200ms;
+    }
+    .dash-snap-card:hover { background: rgba(255,255,255,0.07); }
+    .dash-snap-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dash-snap-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dash-snap-icon i { width: 17px; height: 17px; }
+    .dash-snap-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.80);
+    }
+    .dash-snap-count {
+      font-family: Poppins, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    /* =========================================
+       DASHBOARD - QUICK ACTIONS
+    ========================================= */
+    .dash-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+    }
+    .dash-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 22px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 18px;
+      cursor: pointer;
+      opacity: 1 !important;
+      transition: transform 250ms ease, background 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+      animation: dashFadeUp 0.65s ease both;
+      text-align: center;
+    }
+    .dash-action-btn:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.20);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+    }
+    .dash-action-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform 250ms ease;
+    }
+    .dash-action-btn:hover .dash-action-icon {
+      transform: scale(1.08);
+    }
+    .dash-action-icon i,
+    .dash-action-icon svg {
+      width: 22px; height: 22px;
+      stroke-width: 2;
+    }
+    .dash-action-icon.blue {
+      background: rgba(11,79,140,0.30);
+      border: 1px solid rgba(11,79,140,0.45);
+      color: #93c5fd;
+    }
+    .dash-action-icon.green {
+      background: rgba(108,191,67,0.22);
+      border: 1px solid rgba(108,191,67,0.35);
+      color: #86efac;
+    }
+    .dash-action-icon.purple {
+      background: rgba(124,58,237,0.25);
+      border: 1px solid rgba(124,58,237,0.40);
+      color: #c4b5fd;
+    }
+    .dash-action-icon.amber {
+      background: rgba(245,158,11,0.22);
+      border: 1px solid rgba(245,158,11,0.35);
+      color: #fcd34d;
+    }
+    .dash-action-icon.cyan {
+      background: rgba(6,182,212,0.22);
+      border: 1px solid rgba(6,182,212,0.35);
+      color: #67e8f9;
+    }
+    .dash-action-icon.red {
+      background: rgba(220,38,38,0.25);
+      border: 1px solid rgba(220,38,38,0.40);
+      color: #fca5a5;
+    }
+    .dash-action-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+    .dash-action-btn.emergency:hover {
+      background: rgba(220,38,38,0.18);
+      border-color: rgba(220,38,38,0.45);
+      box-shadow: 0 12px 28px rgba(220,38,38,0.25);
+    }
+
+    /* =========================================
+       DASHBOARD - FOOTER
+    ========================================= */
+    .dash-footer {
+      background: rgba(122,32,64,0.18);
+      border: 1px solid rgba(122,32,64,0.28);
+      border-radius: 20px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .dash-footer-left { display: flex; align-items: center; gap: 14px; }
+    .dash-footer-logo { width: 40px; height: 40px; border-radius: 10px; overflow: hidden; }
+    .dash-footer-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .dash-footer-text h3 {
+      font-family: Poppins, sans-serif;
+      font-size: 0.90rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 2px;
+    }
+    .dash-footer-text p {
+      font-size: 0.74rem;
+      color: rgba(255,255,255,0.40);
+      font-style: italic;
+    }
+    .dash-footer-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .dash-footer-version {
+      font-size: 0.70rem;
+      font-weight: 600;
+      color: rgba(255,180,180,0.60);
+      letter-spacing: 0.05em;
+    }
+    .dash-footer-copy {
+      font-size: 0.70rem;
+      color: rgba(255,255,255,0.30);
+    }
+
+    /* =========================================
+       DASHBOARD - ANIMATIONS
+    ========================================= */
+    @keyframes dashFadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================
+       RESPONSIVE OVERRIDES FOR DASHBOARD
+    ========================================= */
+    /* =========================================
+       RESPONSIVE OVERRIDES FOR DASHBOARD
+    ========================================= */
+    @media (max-width: 900px) {
+      .panel-main { margin-left: 0 !important; padding: 0 !important; }
+      .hamburger { top: 12px; left: 14px; width: 40px; height: 40px; z-index: 300; }
+      .dash-header { padding: 12px 14px 12px 64px; flex-wrap: wrap; gap: 10px; }
+      .dash-header-title { font-size: 1.05rem; }
+      .dash-header-sub { font-size: 0.72rem; }
+      .dash-body { padding: 16px 14px 32px; gap: 18px; }
+      .dash-hero { grid-template-columns: 1fr; padding: 20px; gap: 16px; }
+      .dash-hero-left { flex-direction: row; gap: 14px; align-items: center; }
+      .dash-hero-avatar { width: 110px; height: 110px; }
+      .dash-hero-name { font-size: 1.35rem; }
+      .dash-hero-welcome { font-size: 0.80rem; }
+      .dash-hero-right { align-items: flex-start; flex-direction: row; justify-content: space-between; width: 100%; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
+      .dash-hero-quote { text-align: left; max-width: 100%; }
+      .dash-2col { grid-template-columns: 1fr; gap: 16px; }
+      .dash-ops-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+      .dash-insights-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+      .dash-actions-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+      .dash-header-right { flex-wrap: wrap; gap: 6px; }
+    }
+    @media (max-width: 600px) {
+      .dash-header { padding: 10px 12px 10px 60px; }
+      .dash-hero-left { flex-direction: column; align-items: flex-start; }
+      .dash-hero-avatar { width: 90px; height: 90px; }
+      .dash-ops-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .dash-insights-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .dash-actions-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .dash-hero-name { font-size: 1.2rem; }
+      .dash-ops-count { font-size: 1.5rem; }
+      .dash-footer { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .dash-footer-right { align-items: flex-start; }
+      .dash-glass-chip { padding: 6px 10px; font-size: 0.75rem; }
+      .dash-glass-chip span:not(#dashTime) { display: none; }
+    }
+    @media (max-width: 380px) {
+      .dash-ops-grid { grid-template-columns: 1fr; }
+      .dash-insights-grid { grid-template-columns: 1fr; }
+      .dash-actions-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -688,12 +1381,7 @@
   <!-- ========== SIDEBAR OVERLAY (mobile) ========== -->
   <div class="sb-overlay" id="sbOverlay" role="presentation" aria-hidden="true"></div>
 
-  <!-- ========== MOBILE HAMBURGER BUTTON ========== -->
-  <button class="hamburger" id="hamburgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="adminSidebar">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+
 
 
   <!-- ========== LEFT SIDEBAR ========== -->
@@ -730,7 +1418,31 @@
           <span class="sb-label">Dashboard</span>
         </button>
 
-        <!-- 2. Patient -->
+        <!-- 2. Track User -->
+        <button class="sb-item" role="menuitem" aria-label="Track User" data-section="track-user" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="locate-fixed"></i>
+          </span>
+          <span class="sb-label">Track User</span>
+        </button>
+
+        <!-- 3. Take Action -->
+        <button class="sb-item" role="menuitem" aria-label="Take Action" data-section="take-action" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="zap"></i>
+          </span>
+          <span class="sb-label">Take Action</span>
+        </button>
+
+        <!-- 4. Book Service -->
+        <button class="sb-item" role="menuitem" aria-label="Book Service" data-section="book-service" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="calendar-plus"></i>
+          </span>
+          <span class="sb-label">Book Service</span>
+        </button>
+
+        <!-- 5. Patient -->
         <button class="sb-item" role="menuitem" aria-label="Patient" data-section="patient" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="users"></i>
@@ -738,7 +1450,7 @@
           <span class="sb-label">Patient</span>
         </button>
 
-        <!-- 3. Nurse -->
+        <!-- 6. Nurse -->
         <button class="sb-item" role="menuitem" aria-label="Nurse" data-section="nurse" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="briefcase-medical"></i>
@@ -746,7 +1458,7 @@
           <span class="sb-label">Nurse</span>
         </button>
 
-        <!-- 4. Doctors -->
+        <!-- 7. Doctors -->
         <button class="sb-item" role="menuitem" aria-label="Doctors" data-section="doctors" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="stethoscope"></i>
@@ -754,7 +1466,55 @@
           <span class="sb-label">Doctors</span>
         </button>
 
-        <!-- 5. Deployment -->
+        <!-- 8. Message Doctor -->
+        <button class="sb-item" role="menuitem" aria-label="Message Doctor" data-section="message-doctor" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="message-square-plus"></i>
+          </span>
+          <span class="sb-label">Message Doctor</span>
+        </button>
+
+        <!-- 9. Message Nurse -->
+        <button class="sb-item" role="menuitem" aria-label="Message Nurse" data-section="message-nurse" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="message-circle"></i>
+          </span>
+          <span class="sb-label">Message Nurse</span>
+        </button>
+
+        <!-- 10. Message Staff -->
+        <button class="sb-item" role="menuitem" aria-label="Message Staff" data-section="message-staff" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="messages-square"></i>
+          </span>
+          <span class="sb-label">Message Staff</span>
+        </button>
+
+        <!-- 11. Contact Developer -->
+        <button class="sb-item" role="menuitem" aria-label="Contact Developer" data-section="contact-developer" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="code-2"></i>
+          </span>
+          <span class="sb-label">Contact Developer</span>
+        </button>
+
+        <!-- 12. Alert Mode -->
+        <button class="sb-item" role="menuitem" aria-label="Alert Mode" data-section="alert-mode" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="siren"></i>
+          </span>
+          <span class="sb-label">Alert Mode</span>
+        </button>
+
+        <!-- 13. Emergency -->
+        <button class="sb-item" role="menuitem" aria-label="Emergency" data-section="emergency" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="shield-alert"></i>
+          </span>
+          <span class="sb-label">Emergency</span>
+        </button>
+
+        <!-- 13. Deployment -->
         <button class="sb-item" role="menuitem" aria-label="Deployment" data-section="deployment" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="send"></i>
@@ -762,7 +1522,7 @@
           <span class="sb-label">Deployment</span>
         </button>
 
-        <!-- 6. Service -->
+        <!-- 14. Service -->
         <button class="sb-item" role="menuitem" aria-label="Service" data-section="service" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="heart-pulse"></i>
@@ -770,7 +1530,7 @@
           <span class="sb-label">Service</span>
         </button>
 
-        <!-- 7. CareUnit -->
+        <!-- 15. CareUnit -->
         <button class="sb-item" role="menuitem" aria-label="CareUnit" data-section="careunit" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="building-2"></i>
@@ -778,7 +1538,7 @@
           <span class="sb-label">CareUnit</span>
         </button>
 
-        <!-- 8. Calendar -->
+        <!-- 16. Calendar -->
         <button class="sb-item" role="menuitem" aria-label="Calendar" data-section="calendar" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="calendar-days"></i>
@@ -786,7 +1546,7 @@
           <span class="sb-label">Calendar</span>
         </button>
 
-        <!-- 8. Report & Analytics -->
+        <!-- 17. Report & Analytics -->
         <button class="sb-item" role="menuitem" aria-label="Report and Analytics" data-section="reports" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="chart-column"></i>
@@ -794,7 +1554,7 @@
           <span class="sb-label">Report &amp; Analytics</span>
         </button>
 
-        <!-- 9. Earnings -->
+        <!-- 18. Earnings -->
         <button class="sb-item" role="menuitem" aria-label="Earnings" data-section="earnings" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="wallet"></i>
@@ -802,7 +1562,7 @@
           <span class="sb-label">Earnings</span>
         </button>
 
-        <!-- 10. Advertisement -->
+        <!-- 19. Advertisement -->
         <button class="sb-item" role="menuitem" aria-label="Advertisement" data-section="advertisement" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="megaphone"></i>
@@ -810,7 +1570,31 @@
           <span class="sb-label">Advertisement</span>
         </button>
 
-        <!-- 10. Notification (with badge) -->
+        <!-- 20. Advisory -->
+        <button class="sb-item" role="menuitem" aria-label="Advisory" data-section="advisory" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="info"></i>
+          </span>
+          <span class="sb-label">Advisory</span>
+        </button>
+
+        <!-- 21. Disclaimer -->
+        <button class="sb-item" role="menuitem" aria-label="Disclaimer" data-section="disclaimer" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="alert-circle"></i>
+          </span>
+          <span class="sb-label">Disclaimer</span>
+        </button>
+
+        <!-- 22. User-Manual -->
+        <button class="sb-item" role="menuitem" aria-label="User Manual" data-section="user-manual" tabindex="0">
+          <span class="sb-icon-wrap">
+            <i data-lucide="book-open"></i>
+          </span>
+          <span class="sb-label">User-Manual</span>
+        </button>
+
+        <!-- 23. Notification (with badge) -->
         <button class="sb-item" role="menuitem" aria-label="Notification, 8 unread" data-section="notification" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="bell"></i>
@@ -819,7 +1603,7 @@
           <span class="sb-badge" aria-hidden="true">8</span>
         </button>
 
-        <!-- 11. Settings -->
+        <!-- 24. Settings -->
         <button class="sb-item" role="menuitem" aria-label="Settings" data-section="settings" tabindex="0">
           <span class="sb-icon-wrap">
             <i data-lucide="settings"></i>
@@ -856,20 +1640,312 @@
     </nav>
   </aside>
 
-  <!-- ========== MAIN CONTENT (Existing — PRESERVED EXACTLY) ========== -->
+  <!-- ========== HAMBURGER / REOPEN BUTTON ========== -->
+  <button class="hamburger" id="hamburgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="adminSidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- ========== MAIN CONTENT — DASHBOARD ========== -->
   <main class="panel-main">
-    <div class="panel-container">
-      <span class="badge-pill">Head Admin Access</span>
-      <h1>head admin panel</h1>
-      <p class="user-email">Verified User: SeemaPrajapati@carewell (seemaprajapati1998@gmail.com)</p>
 
-      <div class="status-card">
-        <strong>Head Admin Dashboard Active</strong>
-        <span>You are successfully authenticated into the Head Admin Panel.</span>
+    <!-- TOP HEADER -->
+    <header class="dash-header">
+      <div class="dash-header-left">
+        <span class="dash-header-title">Dashboard</span>
+        <span class="dash-header-sub">Head Admin Panel &nbsp;·&nbsp; CareWell Nursing Care</span>
       </div>
+      <div class="dash-header-right">
+        <!-- Date -->
+        <div class="dash-glass-chip" aria-label="Today's date">
+          <i data-lucide="calendar"></i>
+          <span id="dashDate">—</span>
+        </div>
+        <!-- Time -->
+        <div class="dash-glass-chip" aria-label="Current time">
+          <i data-lucide="clock"></i>
+          <span id="dashTime">--:--:-- --</span>
+        </div>
+        <!-- Notification -->
+        <button class="dash-notif-btn" aria-label="Notifications">
+          <i data-lucide="bell"></i>
+          <span class="dash-notif-dot"></span>
+        </button>
+        <!-- Profile -->
+        <div class="dash-profile-chip">
+          <div class="dash-avatar">SP</div>
+          <div>
+            <div class="dash-profile-name">Seema Prajapati</div>
+            <div class="dash-profile-role">Head Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
 
-      <a href="index.html" class="logout-btn">Logout &amp; Return to Home</a>
-    </div>
+    <!-- SCROLL BODY -->
+    <div class="dash-body">
+
+      <!-- ── HERO ── -->
+      <section class="dash-hero" aria-label="Welcome hero">
+        <div class="dash-hero-left">
+          <div class="dash-hero-avatar">
+            <img src="herosectionprofilepicture.jpeg" alt="Seema Prajapati - Head Admin" onerror="this.style.display='none';this.parentElement.querySelector('.dash-hero-avatar-placeholder').style.display='flex'">
+            <span class="dash-hero-avatar-placeholder" style="display:none">SP</span>
+          </div>
+          <div class="dash-hero-text">
+            <div class="dash-hero-greeting">Good Day &nbsp;👋</div>
+            <div class="dash-hero-name">Seema Prajapati</div>
+            <div class="dash-hero-badge">
+              <i data-lucide="shield-check" style="width:11px;height:11px"></i>
+              Head Administrator · CareWell
+            </div>
+            <div class="dash-hero-welcome">Welcome to your command centre. Monitor operations, manage care teams, and drive patient outcomes — all in one place.</div>
+          </div>
+        </div>
+        <div class="dash-hero-right">
+          <div class="dash-hero-logo">
+            <img src="Main_logo_transparent_img_screen7.png" alt="CareWell Logo">
+          </div>
+          <div class="dash-hero-quote">"Care delivered with precision, compassion at scale."</div>
+        </div>
+      </section>
+
+      <!-- ── CAREWELL LIVE OPERATIONS ── -->
+      <section aria-label="CareWell Live Operations">
+        <div class="dash-section-label">
+          <h2>CareWell Live Operations</h2>
+          <span class="dash-section-badge">Live</span>
+        </div>
+        <div class="dash-section-sub">Real-time operational metrics — all counters will sync from backend</div>
+        <div class="dash-ops-grid">
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon wine"><i data-lucide="users"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Total Staff Online</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon blue"><i data-lucide="stethoscope"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Doctors Online</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon green"><i data-lucide="heart-pulse"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Nurses Online</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon purple"><i data-lucide="user-round"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Total Patient Accounts</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon amber"><i data-lucide="briefcase-medical"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Today's Deployments</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon cyan"><i data-lucide="calendar-check"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Today's Appointments</div>
+          </div>
+          <div class="dash-ops-card">
+            <div class="dash-ops-card-top">
+              <div class="dash-ops-icon red"><i data-lucide="siren"></i></div>
+              <span class="dash-ops-status">Live</span>
+            </div>
+            <div class="dash-ops-count">0</div>
+            <div class="dash-ops-label">Emergency Requests</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── OPERATIONAL INSIGHTS ── -->
+      <section aria-label="Operational Insights">
+        <div class="dash-section-label">
+          <h2>Operational Insights</h2>
+          <span class="dash-section-badge">Today</span>
+        </div>
+        <div class="dash-section-sub">Key performance indicators — will be populated via API</div>
+        <div class="dash-insights-grid">
+          <div class="dash-insight-card">
+            <div class="dash-insight-icon-row">
+              <div class="dash-insight-icon" style="background:rgba(122,32,64,0.25);border-color:rgba(122,32,64,0.40);"><i data-lucide="timer" style="color:#f9a8b8"></i></div>
+            </div>
+            <div><span class="dash-insight-value">0</span><span class="dash-insight-unit"> min</span></div>
+            <div class="dash-insight-label">Avg Response Time</div>
+            <div class="dash-insight-trend">Backend sync pending</div>
+          </div>
+          <div class="dash-insight-card">
+            <div class="dash-insight-icon-row">
+              <div class="dash-insight-icon" style="background:rgba(108,191,67,0.18);border-color:rgba(108,191,67,0.28);"><i data-lucide="heart-handshake" style="color:#86efac"></i></div>
+            </div>
+            <div><span class="dash-insight-value">0</span><span class="dash-insight-unit">%</span></div>
+            <div class="dash-insight-label">Patient Satisfaction</div>
+            <div class="dash-insight-trend">Backend sync pending</div>
+          </div>
+          <div class="dash-insight-card">
+            <div class="dash-insight-icon-row">
+              <div class="dash-insight-icon" style="background:rgba(11,79,140,0.22);border-color:rgba(11,79,140,0.32);"><i data-lucide="house-plus" style="color:#93c5fd"></i></div>
+            </div>
+            <div><span class="dash-insight-value">0</span></div>
+            <div class="dash-insight-label">Home Visits Completed</div>
+            <div class="dash-insight-trend">Backend sync pending</div>
+          </div>
+          <div class="dash-insight-card">
+            <div class="dash-insight-icon-row">
+              <div class="dash-insight-icon" style="background:rgba(245,158,11,0.18);border-color:rgba(245,158,11,0.28);"><i data-lucide="indian-rupee" style="color:#fcd34d"></i></div>
+            </div>
+            <div><span class="dash-insight-value">0</span></div>
+            <div class="dash-insight-label">Today's Revenue</div>
+            <div class="dash-insight-trend">Backend sync pending</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── LIVE OVERVIEW + TODAY'S SNAPSHOT ── -->
+      <div class="dash-2col">
+
+        <!-- Live Overview -->
+        <section class="dash-block" aria-label="Live Overview">
+          <div class="dash-block-title"><i data-lucide="activity"></i> Live Overview</div>
+          <div class="dash-ov-row">
+            <div class="dash-ov-left"><i data-lucide="users"></i> Active Sessions</div>
+            <div class="dash-ov-val">0</div>
+          </div>
+          <div class="dash-ov-row">
+            <div class="dash-ov-left"><i data-lucide="stethoscope"></i> Doctors on Duty</div>
+            <div class="dash-ov-val">0</div>
+          </div>
+          <div class="dash-ov-row">
+            <div class="dash-ov-left"><i data-lucide="heart-pulse"></i> Nurses on Duty</div>
+            <div class="dash-ov-val">0</div>
+          </div>
+          <div class="dash-ov-row">
+            <div class="dash-ov-left"><i data-lucide="calendar-check"></i> Pending Appointments</div>
+            <div class="dash-ov-val">0</div>
+          </div>
+          <div class="dash-ov-row">
+            <div class="dash-ov-left"><i data-lucide="siren"></i> Open Emergencies</div>
+            <div class="dash-ov-val">0</div>
+          </div>
+        </section>
+
+        <!-- Today's Active Snapshot -->
+        <section class="dash-block" aria-label="Today's Active Snapshot">
+          <div class="dash-block-title"><i data-lucide="sparkles"></i> Today's Active Snapshot</div>
+          <div class="dash-snap-grid">
+            <div class="dash-snap-card">
+              <div class="dash-snap-left">
+                <div class="dash-snap-icon" style="background:rgba(108,191,67,0.18);border:1px solid rgba(108,191,67,0.28)">
+                  <i data-lucide="user-plus" style="color:#86efac;width:17px;height:17px"></i>
+                </div>
+                <div class="dash-snap-name">New Nurse Added</div>
+              </div>
+              <div class="dash-snap-count">0</div>
+            </div>
+            <div class="dash-snap-card">
+              <div class="dash-snap-left">
+                <div class="dash-snap-icon" style="background:rgba(11,79,140,0.22);border:1px solid rgba(11,79,140,0.32)">
+                  <i data-lucide="stethoscope" style="color:#93c5fd;width:17px;height:17px"></i>
+                </div>
+                <div class="dash-snap-name">New Doctor Added</div>
+              </div>
+              <div class="dash-snap-count">0</div>
+            </div>
+            <div class="dash-snap-card">
+              <div class="dash-snap-left">
+                <div class="dash-snap-icon" style="background:rgba(122,32,64,0.25);border:1px solid rgba(122,32,64,0.40)">
+                  <i data-lucide="user-round-plus" style="color:#f9a8b8;width:17px;height:17px"></i>
+                </div>
+                <div class="dash-snap-name">New Patient Added</div>
+              </div>
+              <div class="dash-snap-count">0</div>
+            </div>
+            <div class="dash-snap-card">
+              <div class="dash-snap-left">
+                <div class="dash-snap-icon" style="background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.28)">
+                  <i data-lucide="building-2" style="color:#fcd34d;width:17px;height:17px"></i>
+                </div>
+                <div class="dash-snap-name">Active CareUnits</div>
+              </div>
+              <div class="dash-snap-count">0</div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /dash-2col -->
+
+      <!-- ── QUICK ACTIONS ── -->
+      <section aria-label="Quick Actions">
+        <div class="dash-section-label">
+          <h2>Quick Actions</h2>
+        </div>
+        <div class="dash-section-sub">Frequently used admin operations — actions will be wired in future phases</div>
+        <div class="dash-actions-grid">
+          <button class="dash-action-btn" type="button">
+            <div class="dash-action-icon blue"><i data-lucide="user-plus"></i></div>
+            <span class="dash-action-label">Register Patient</span>
+          </button>
+          <button class="dash-action-btn" type="button">
+            <div class="dash-action-icon green"><i data-lucide="heart-pulse"></i></div>
+            <span class="dash-action-label">Add Nurse</span>
+          </button>
+          <button class="dash-action-btn" type="button">
+            <div class="dash-action-icon purple"><i data-lucide="stethoscope"></i></div>
+            <span class="dash-action-label">Add Doctor</span>
+          </button>
+          <button class="dash-action-btn" type="button">
+            <div class="dash-action-icon amber"><i data-lucide="clipboard-plus"></i></div>
+            <span class="dash-action-label">Create Service</span>
+          </button>
+          <button class="dash-action-btn" type="button">
+            <div class="dash-action-icon cyan"><i data-lucide="calendar-days"></i></div>
+            <span class="dash-action-label">Today's Schedule</span>
+          </button>
+          <button class="dash-action-btn emergency" type="button">
+            <div class="dash-action-icon red"><i data-lucide="siren"></i></div>
+            <span class="dash-action-label">Emergency Request</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ── FOOTER ── -->
+      <footer class="dash-footer">
+        <div class="dash-footer-left">
+          <div class="dash-footer-logo">
+            <img src="Main_logo_transparent_img_screen7.png" alt="CareWell">
+          </div>
+          <div class="dash-footer-text">
+            <h3>CareWell Nursing Care</h3>
+            <p>"Compassionate Care, Right at Home — every second counts."</p>
+          </div>
+        </div>
+        <div class="dash-footer-right">
+          <span class="dash-footer-version">v1.0.0 · Dashboard</span>
+          <span class="dash-footer-copy">&copy; 2025 CareWell. All rights reserved.</span>
+        </div>
+      </footer>
+
+    </div><!-- /dash-body -->
   </main>
 
   <script>
@@ -915,7 +1991,13 @@
     }
 
     hamburger.addEventListener('click', () => {
-      sidebar.classList.contains('open') ? closeMobileSidebar() : openMobileSidebar();
+      if (sidebar.classList.contains('collapsed')) {
+        expandSidebar();
+      } else if (window.innerWidth <= 900) {
+        sidebar.classList.contains('open') ? closeMobileSidebar() : openMobileSidebar();
+      } else {
+        expandSidebar();
+      }
     });
 
     overlay.addEventListener('click', closeMobileSidebar);
@@ -956,8 +2038,59 @@
     }
 
     collapseBtn.addEventListener('click', () => {
-      isCollapsed ? expandSidebar() : collapseSidebar();
+      if (window.innerWidth <= 900) {
+        closeMobileSidebar();
+      } else {
+        isCollapsed ? expandSidebar() : collapseSidebar();
+      }
     });
+
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
+
+    // =============================================
+    // 5. Dashboard — Live Clock & Date
+    // =============================================
+    const dashDateEl = document.getElementById('dashDate');
+    const dashTimeEl = document.getElementById('dashTime');
+    const dashGreetingEl = document.querySelector('.dash-hero-greeting');
+
+    function padZ(n) { return String(n).padStart(2, '0'); }
+
+    function updateClock() {
+      const now = new Date();
+
+      // Date: dd-mm-yyyy
+      if (dashDateEl) {
+        dashDateEl.textContent =
+          padZ(now.getDate()) + '-' + padZ(now.getMonth() + 1) + '-' + now.getFullYear();
+      }
+
+      // Time: hh:mm:ss AM/PM
+      if (dashTimeEl) {
+        let h = now.getHours();
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        dashTimeEl.textContent =
+          padZ(h) + ':' + padZ(now.getMinutes()) + ':' + padZ(now.getSeconds()) + ' ' + ampm;
+      }
+
+      // Dynamic greeting
+      if (dashGreetingEl) {
+        const hr = now.getHours();
+        let greet = 'Good Day 👋';
+        if (hr < 12)      greet = 'Good Morning 🌅';
+        else if (hr < 17) greet = 'Good Afternoon ☀️';
+        else if (hr < 21) greet = 'Good Evening 🌆';
+        else               greet = 'Good Night 🌙';
+        dashGreetingEl.textContent = greet;
+      }
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
   </script>
 </body>
 </html>

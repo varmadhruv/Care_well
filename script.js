@@ -19,7 +19,7 @@ const otpResendWrap = document.getElementById('otpResendWrap');
 const otpError = document.getElementById('otpError');
 
 const USERNAME_ADMIN = "SeemaPrajapati@carewell";
-const PASSWORD_ADMIN = "Seema@ytmq";
+const PASSWORD_ADMIN = "Semaa@admin@ytr8456";
 const EMAIL_ADMIN = "seemaprajapati1998@gmail.com";
 const REDIRECT_ADMIN = "head-admin-panel.html";
 
