@@ -24,7 +24,13 @@
             <small>NURSING CARE</small>
           </span>
         </a>
-        <button class="skip-btn" type="button" id="loginBtn">Login</button>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="skip-btn" type="button" id="contributeBtn" style="background:transparent; border:1px solid #cbd5e1; color:#475569; font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:999px; cursor:pointer; transition:all 0.2s ease;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            <span>Contribute</span>
+          </button>
+          <button class="next-btn" type="button" id="loginBtn" style="min-height:38px; padding:0 22px; font-size:14px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(11, 79, 140, 0.28);">Login</button>
+        </div>
       </header>
 
       <section class="hero-grid">
@@ -99,14 +105,299 @@
         </div>
         <button class="next-btn" type="button" id="nextBtn">Next <span aria-hidden="true">&rarr;</span></button>
       </nav>
+  <!-- ========== CONTRIBUTE SNACKBAR / MODAL ========== -->
+  <div class="snackbar-overlay" id="contributeModal" aria-hidden="true" style="display: none;">
+    <div class="snackbar-card" role="dialog" aria-modal="true" aria-labelledby="contributeTitle" style="max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 26px 24px;">
+      
+      <!-- STEP 1: Discipline / Role Selection (Shown First) -->
+      <div id="contributeRoleSelection">
+        <div class="snackbar-header" style="margin-bottom: 20px; text-align: left;">
+          <!-- Top Left Real CareWell Logo -->
+          <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 14px;">
+            <img src="main_logo.jpg" alt="CareWell Logo" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 6px rgba(0,0,0,0.06);" />
+            <div>
+              <div style="font-size: 0.92rem; font-weight: 800; color: #0b4f8c; line-height: 1.1; letter-spacing: -0.01em;">CareWell</div>
+              <div style="font-size: 0.65rem; font-weight: 700; color: #64748b; letter-spacing: 0.06em;">NURSING CARE</div>
+            </div>
+          </div>
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 6px;">Contribute &amp; Join Staff</h2>
+          <p style="font-size: 0.86rem; color: #64748b; margin: 0; line-height: 1.5;">Select your professional discipline to begin your application:</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px;">
+          <!-- Option 1: Doctor -->
+          <button type="button" id="selectRoleDoctor" style="display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; text-align: left; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(2,132,199,0.1); border: 1px solid rgba(2,132,199,0.22); display: flex; align-items: center; justify-content: center; color: #0284c7; flex-shrink: 0;">
+              <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"></path>
+                <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"></path>
+                <circle cx="20" cy="10" r="2"></circle>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 3px;">Medical Doctor</div>
+              <div style="font-size: 0.8rem; color: #64748b; line-height: 1.4;">Private Clinic Practitioners, Consultants &amp; Hospital Physicians</div>
+            </div>
+            <div style="color: #94a3b8; display: flex; align-items: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </button>
+
+          <!-- Option 2: Nurse -->
+          <button type="button" id="selectRoleNurse" style="display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; text-align: left; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.22); display: flex; align-items: center; justify-content: center; color: #10b981; flex-shrink: 0;">
+              <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v20M2 12h20"></path>
+                <circle cx="12" cy="12" r="9"></circle>
+              </svg>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 3px;">Clinical Nurse</div>
+              <div style="font-size: 0.8rem; color: #64748b; line-height: 1.4;">Registered Nurses, ICU Caregivers &amp; Home Healthcare Specialists</div>
+            </div>
+            <div style="color: #94a3b8; display: flex; align-items: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+          </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 8px;">
+          <button type="button" id="closeContributeBtn" style="background: none; border: none; color: #94a3b8; font-size: 0.82rem; font-weight: 600; cursor: pointer; padding: 5px 12px; border-radius: 6px; transition: color 0.2s;">Cancel &amp; Close</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Application Form (Shown after role selection) -->
+      <div id="contributeFormContainer" style="display: none;">
+        <!-- Top Navigation Bar inside form: LOGO ON LEFT, CHANGE ROLE ON RIGHT -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
+          <!-- Top Left Real CareWell Logo -->
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <img src="main_logo.jpg" alt="CareWell Logo" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 6px rgba(0,0,0,0.06);" />
+            <div>
+              <div style="font-size: 0.92rem; font-weight: 800; color: #0b4f8c; line-height: 1.1; letter-spacing: -0.01em;">CareWell</div>
+              <div style="font-size: 0.65rem; font-weight: 700; color: #64748b; letter-spacing: 0.06em;">NURSING CARE</div>
+            </div>
+          </div>
+
+          <!-- Change Discipline Button on the right -->
+          <button type="button" id="contrBackBtn" style="background: rgba(11,79,140,0.06); border: 1px solid rgba(11,79,140,0.18); color: #0b4f8c; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <span>Change Discipline</span>
+          </button>
+        </div>
+
+        <div class="snackbar-header" style="margin-bottom: 16px; text-align: left;">
+          <h2 id="contributeTitle" style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0 0 4px;">Staff Application</h2>
+          <p id="contributeSubtitle" style="font-size: 0.83rem; color: #64748b; margin: 0;">Fill in your details below for Head Administrator verification.</p>
+        </div>
+
+        <form id="contributeForm" novalidate>
+          <input type="hidden" id="contributeSelectedRole" value="nurse" />
+
+          <!-- ================= NURSE FIELDS ================= -->
+          <div id="nurseFieldsGroup">
+            <div class="snackbar-field">
+              <label for="contrNurseName">Full Name *</label>
+              <input type="text" id="contrNurseName" placeholder="e.g. Priya Sharma" required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label for="contrNursePlace">Place Where You Live *</label>
+                <input type="text" id="contrNursePlace" placeholder="City / Area" required />
+              </div>
+              <div class="snackbar-field">
+                <label for="contrNurseAge">Age *</label>
+                <input type="number" id="contrNurseAge" placeholder="e.g. 27" min="18" max="75" required />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label for="contrNurseEmail">Email Address *</label>
+                <input type="email" id="contrNurseEmail" placeholder="your@email.com" required />
+              </div>
+              <div class="snackbar-field">
+                <label for="contrNursePhone">Phone Number *</label>
+                <input type="tel" id="contrNursePhone" placeholder="+91 98765 43210" required />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label for="contrNurseExp">Experience (Years) *</label>
+                <input type="text" id="contrNurseExp" placeholder="e.g. 4 Years" required />
+              </div>
+              <div class="snackbar-field">
+                <label>Nurse Photo *</label>
+                <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; font-size: 0.82rem; color: #0284c7; font-weight: 600;">
+                  <span id="contrNursePhotoLabel" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <span>Upload Photo</span>
+                  </span>
+                  <input type="file" id="contrNursePhotoInput" accept="image/*" style="display: none;" />
+                </label>
+              </div>
+            </div>
+
+            <div class="snackbar-field">
+              <label for="contrNurseDesc">Short Description</label>
+              <textarea id="contrNurseDesc" rows="2" placeholder="Briefly describe your nursing background, ICU/homecare certifications, etc." style="width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 12px; font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
+            </div>
+          </div>
+
+          <!-- ================= DOCTOR FIELDS ================= -->
+          <div id="doctorFieldsGroup" style="display: none;">
+            <div class="snackbar-field" style="margin-bottom: 16px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 8px; display: block;">Workplace Type *</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <!-- Workplace Option 1: Private Clinic -->
+                <label id="contrDocWorkplaceClinicCard" class="wp-card-choice" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f0f9ff; border: 1.5px solid #0284c7; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1);">
+                  <input type="radio" name="contrDocWorkplace" value="Clinic" checked style="position: absolute; opacity: 0; pointer-events: none;" />
+                  <div class="wp-icon-box" style="width: 40px; height: 40px; border-radius: 10px; background: rgba(2,132,199,0.12); border: 1px solid rgba(2,132,199,0.25); display: flex; align-items: center; justify-content: center; color: #0284c7; flex-shrink: 0;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"></path>
+                      <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"></path>
+                      <circle cx="20" cy="10" r="2"></circle>
+                    </svg>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; line-height: 1.2;">Private Clinic</div>
+                    <div style="font-size: 0.74rem; color: #64748b; line-height: 1.3;">OPD &amp; Personal Clinic</div>
+                  </div>
+                  <div class="wp-check" id="wpCheckClinic" style="width: 18px; height: 18px; border-radius: 50%; background: #0284c7; color: #fff; display: flex; align-items: center; justify-content: center;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                </label>
+
+                <!-- Workplace Option 2: Hospital -->
+                <label id="contrDocWorkplaceHospCard" class="wp-card-choice" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+                  <input type="radio" name="contrDocWorkplace" value="Hospital" style="position: absolute; opacity: 0; pointer-events: none;" />
+                  <div class="wp-icon-box" style="width: 40px; height: 40px; border-radius: 10px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.22); display: flex; align-items: center; justify-content: center; color: #10b981; flex-shrink: 0;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                      <line x1="9" y1="22" x2="9" y2="22.01"></line>
+                      <line x1="15" y1="22" x2="15" y2="22.01"></line>
+                      <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                      <line x1="12" y1="14" x2="12" y2="14.01"></line>
+                      <line x1="12" y1="10" x2="12" y2="10.01"></line>
+                      <line x1="12" y1="6" x2="12" y2="6.01"></line>
+                      <line x1="16" y1="18" x2="16" y2="18.01"></line>
+                      <line x1="16" y1="14" x2="16" y2="14.01"></line>
+                      <line x1="8" y1="18" x2="8" y2="18.01"></line>
+                      <line x1="8" y1="14" x2="8" y2="14.01"></line>
+                    </svg>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; line-height: 1.2;">Hospital</div>
+                    <div style="font-size: 0.74rem; color: #64748b; line-height: 1.3;">Consultant / Doctor</div>
+                  </div>
+                  <div class="wp-check" id="wpCheckHosp" style="width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #cbd5e1; background: transparent; display: flex; align-items: center; justify-content: center;">
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="snackbar-field">
+              <label for="contrDocName">Doctor Full Name *</label>
+              <input type="text" id="contrDocName" placeholder="e.g. Dr. Aakash Singhal" />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label for="contrDocClinicName">Clinic / Hospital Name *</label>
+                <input type="text" id="contrDocClinicName" placeholder="e.g. CareWell Heart Clinic" />
+              </div>
+              <div class="snackbar-field">
+                <label for="contrDocHours">Working Hours *</label>
+                <input type="text" id="contrDocHours" placeholder="e.g. 10:00 AM - 07:00 PM" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label for="contrDocEmail">Email Address *</label>
+                <input type="email" id="contrDocEmail" placeholder="doctor@clinic.com" />
+              </div>
+              <div class="snackbar-field">
+                <label for="contrDocPhone">Phone Number *</label>
+                <input type="tel" id="contrDocPhone" placeholder="+91 98765 43210" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="snackbar-field">
+                <label>Doctor Photo *</label>
+                <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; font-size: 0.82rem; color: #0284c7; font-weight: 600;">
+                  <span id="contrDocPhotoLabel" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Doctor Photo</span>
+                  </span>
+                  <input type="file" id="contrDocPhotoInput" accept="image/*" style="display: none;" />
+                </label>
+              </div>
+              <div class="snackbar-field">
+                <label>Clinic / Hospital Photo *</label>
+                <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; font-size: 0.82rem; color: #0284c7; font-weight: 600;">
+                  <span id="contrDocClinicPhotoLabel" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="22.01"/><line x1="15" y1="22" x2="15" y2="22.01"/><line x1="12" y1="18" x2="12" y2="18.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="12" y1="6" x2="12" y2="6.01"/></svg>
+                    <span>Clinic Photo</span>
+                  </span>
+                  <input type="file" id="contrDocClinicPhotoInput" accept="image/*" style="display: none;" />
+                </label>
+              </div>
+            </div>
+
+            <div class="snackbar-field">
+              <label for="contrDocDesc">Short Description</label>
+              <textarea id="contrDocDesc" rows="2" placeholder="Clinical specialties, medical council registration, medical degrees..." style="width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 10px; padding: 9px 12px; font-family: inherit; font-size: 0.88rem; resize: vertical;"></textarea>
+            </div>
+          </div>
+
+          <div class="snackbar-error" id="contributeError" style="display: none; color: #ef4444; font-size: 0.82rem; margin-bottom: 12px; font-weight: 600;"></div>
+
+          <!-- Submit Button with Animation -->
+          <button type="submit" class="snackbar-submit-btn" id="contributeSubmitBtn" style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span id="contrBtnText">Submit Contribution Application</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Submit Success Card with Animation -->
+      <div id="contributeSuccessCard" style="display: none; text-align: center; padding: 20px 10px;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 18px;">
+          <img src="main_logo.jpg" alt="CareWell Logo" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(0,0,0,0.08);" />
+          <div style="text-align: left;">
+            <div style="font-size: 0.92rem; font-weight: 800; color: #0b4f8c; line-height: 1.1;">CareWell</div>
+            <div style="font-size: 0.65rem; font-weight: 700; color: #64748b; letter-spacing: 0.05em;">STAFF AUDIT REGISTRY</div>
+          </div>
+        </div>
+
+        <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(16,185,129,0.12); border: 2px solid #10b981; color: #10b981; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; animation: scaleIn 0.3s ease;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h3 style="margin: 0 0 8px; font-size: 1.35rem; color: #0f172a; font-weight: 700;">Application Dispatched!</h3>
+        <p style="margin: 0 0 20px; font-size: 0.88rem; color: #475569; line-height: 1.6;">
+          Thank you! Your staff application has been submitted to the <strong>Head Administrator's Verification Registry</strong>.<br />
+          Once reviewed and verified, your official <strong>User ID &amp; Password</strong> will be dispatched directly to your registered email.
+        </p>
+        <button type="button" class="snackbar-submit-btn" id="contrDoneBtn">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Center Login Snackbar / Modal -->
   <div class="snackbar-overlay" id="loginModal" aria-hidden="true" style="display: none;">
     <div class="snackbar-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
       <button type="button" class="snackbar-close" id="closeLoginModalBtn" aria-label="Close login modal">&times;</button>
       <div class="snackbar-header">
-        <h2 id="loginTitle">Portal Login</h2>
+        <h2 id="loginTitle">CareWell Login</h2>
         <p>Enter your credentials to access system panels</p>
       </div>
+
       <form id="loginForm" novalidate>
         <div class="snackbar-field">
           <label for="loginUsername">UserName</label>
@@ -114,7 +405,19 @@
         </div>
         <div class="snackbar-field">
           <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Enter Password" required autocomplete="current-password" />
+          <div class="password-wrapper">
+            <input type="password" id="loginPassword" placeholder="Enter Password" required autocomplete="current-password" />
+            <button type="button" class="toggle-password-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+              <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="snackbar-error" id="loginError" style="display: none;"></div>
         <button type="submit" class="snackbar-submit-btn" id="loginSubmitBtn">Login</button>

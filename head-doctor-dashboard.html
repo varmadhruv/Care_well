@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell — Head Doctor Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="Main_logo_transparent_img_screen7.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================================
+       CSS VARIABLES & THEME TOKENS — LIGHT BLUE MEDICAL THEME
+       ========================================================= */
+    :root {
+      --bg-main: #F2F8FF;
+      --bg-sidebar: #FFFFFF;
+      --bg-card: #FFFFFF;
+      --primary-blue: #07529A;
+      --primary-hover: #06437E;
+      --navy-dark: #102A56;
+      --navy-sub: #1E3A6B;
+      --slate-text: #627895;
+      --slate-light: #8CA0B8;
+      --border-color: #D8E8FA;
+      --border-light: #E4EFFB;
+      --surface-blue: #E5F1FF;
+      --surface-blue-soft: #F0F6FE;
+      --hero-gradient: linear-gradient(135deg, #DEEDFD 0%, #D4E8FC 45%, #E9F4FF 100%);
+      --emergency-red: #EF3154;
+      --emergency-hover: #D92344;
+      --emergency-shadow: rgba(239, 49, 84, 0.35);
+      --success-green: #12B981;
+      --success-bg: #ECFDF5;
+      --purple-accent: #7C3AED;
+      --purple-bg: #F3E8FF;
+      --teal-accent: #0D9488;
+      --teal-bg: #CCFBF1;
+      --amber-accent: #F59E0B;
+      --amber-bg: #FEF3C7;
+      --card-shadow: 0 4px 18px rgba(7, 82, 154, 0.05);
+      --card-shadow-hover: 0 8px 26px rgba(7, 82, 154, 0.09);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-pill: 9999px;
+      --sidebar-width: 236px;
+      --header-height: 72px;
+      --font-main: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Dark mode toggle support */
+    body.dark-mode {
+      --bg-main: #0B192C;
+      --bg-sidebar: #0F223D;
+      --bg-card: #152B4D;
+      --navy-dark: #F0F6FC;
+      --navy-sub: #CBD5E1;
+      --slate-text: #94A3B8;
+      --slate-light: #64748B;
+      --border-color: #1E3A63;
+      --border-light: #1E3A63;
+      --surface-blue: #1C355E;
+      --surface-blue-soft: #182E52;
+      --hero-gradient: linear-gradient(135deg, #16325B 0%, #112749 100%);
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-main);
+      background-color: var(--bg-main);
+      color: var(--navy-dark);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Subtle background medical curve waves */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -120px;
+      right: -80px;
+      width: 720px;
+      height: 720px;
+      background: radial-gradient(circle, rgba(206, 230, 255, 0.5) 0%, rgba(242, 248, 255, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 500px;
+      height: 240px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 240' fill='none'%3E%3Cpath d='M0,0 C150,90 320,50 500,120 L500,0 Z' fill='%23E1EFFF' fill-opacity='0.4'/%3E%3C/svg%3E") no-repeat top right;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* =========================================================
+       LAYOUT ARCHITECTURE: SIDEBAR + MAIN CONTENT
+       ========================================================= */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* =========================================================
+       3. LEFT SIDEBAR — BRAND & PRECISE NAVIGATION
+       ========================================================= */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 14px 18px;
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
+      scrollbar-width: thin;
+      scrollbar-color: #D8E8FA transparent;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #D8E8FA;
+      border-radius: 4px;
+    }
+
+    /* Brand Logo Container */
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 18px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(216, 232, 250, 0.4);
+      margin-bottom: 14px;
+    }
+
+    .sidebar-brand-emblem {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .sidebar-brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-brand-tagline {
+      font-size: 8.5px;
+      font-weight: 600;
+      color: var(--slate-light);
+      letter-spacing: 0.04em;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    /* Navigation List */
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--navy-sub);
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--primary-blue);
+      flex-shrink: 0;
+      transition: transform 0.18s ease;
+    }
+
+    .nav-item:hover {
+      background-color: var(--surface-blue-soft);
+      color: var(--primary-blue);
+    }
+
+    .nav-item:hover svg {
+      transform: scale(1.08);
+    }
+
+    /* 5. SIDEBAR: 1. HOME (ACTIVE BLUE TREATMENT) */
+    .nav-item.active {
+      background-color: var(--primary-blue);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(7, 82, 154, 0.22);
+    }
+
+    .nav-item.active svg {
+      stroke: #FFFFFF;
+      fill: none;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background-color: var(--border-light);
+      margin: 8px 10px;
+    }
+
+    /* 5. SIDEBAR: 13. EMERGENCY BUTTON */
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 12px;
+    }
+
+    .emergency-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 11px 16px;
+      background-color: var(--emergency-red);
+      color: #FFFFFF;
+      font-family: var(--font-main);
+      font-size: 13.5px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--emergency-shadow);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .emergency-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: #FFFFFF;
+      fill: none;
+    }
+
+    .emergency-btn:hover {
+      background-color: var(--emergency-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(239, 49, 84, 0.45);
+    }
+
+    .emergency-btn:active {
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       MAIN DASHBOARD AREA (TOP HEADER + CONTENT)
+       ========================================================= */
+    .main-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* =========================================================
+       4. TOP HEADER — DOCTOR IDENTITY & CONTROLS
+       ========================================================= */
+    .top-header {
+      height: var(--header-height);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(242, 248, 255, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    /* Left: Doctor Profile Identity */
+    .header-identity {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .header-avatar-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      padding: 2px;
+      background: linear-gradient(135deg, #CCE4FC 0%, #FFFFFF 100%);
+      box-shadow: 0 2px 8px rgba(7, 82, 154, 0.12);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .header-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .header-details {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+      text-align: left;
+    }
+
+    .header-doctor-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      letter-spacing: -0.01em;
+    }
+
+    .header-location-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12.5px;
+      color: var(--slate-text);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .header-location-row svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--slate-text);
+      flex-shrink: 0;
+    }
+
+    /* Right: Controls & Dropdowns */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-control-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      background: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--navy-dark);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .icon-control-btn:hover {
+      background: var(--surface-blue);
+      border-color: #CCE3F9;
+      color: var(--primary-blue);
+    }
+
+    .icon-control-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* Notification Badge */
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--emergency-red);
+      color: #FFFFFF;
+      font-size: 9.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #FFFFFF;
+    }
+
+    .header-separator {
+      width: 1px;
+      height: 22px;
+      background-color: var(--border-color);
+      margin: 0 4px;
+    }
+
+    /* Role Pill Dropdown */
+    .role-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px 6px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-blue);
+      border: 1px solid #CCE3F9;
+      color: var(--primary-blue);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .role-dropdown-btn:hover {
+      background: #D9EBFC;
+      box-shadow: 0 2px 8px rgba(7, 82, 154, 0.1);
+    }
+
+    .role-dropdown-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--primary-blue);
+      transition: transform 0.2s ease;
+    }
+
+    /* Mobile hamburger menu toggle */
+    .mobile-menu-toggle {
+      display: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--primary-blue);
+    }
+
+    .mobile-menu-toggle svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+    }
+
+    /* =========================================================
+       DASHBOARD CONTENT GRID & CARDS
+       ========================================================= */
+    .dashboard-content {
+      padding: 24px 28px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      max-width: 1400px;
+    }
+
+    /* =========================================================
+       6 & 7. HERO SECTION + TODAY'S OVERVIEW CARD
+       ========================================================= */
+    .hero-container {
+      background: var(--hero-gradient);
+      border-radius: 22px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-height: 168px;
+    }
+
+    /* Soft curved accent in the hero background */
+    .hero-container::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      left: 35%;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 65%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Left: Welcome Copy */
+    .hero-welcome-block {
+      max-width: 330px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-heading {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      line-height: 1.2;
+      letter-spacing: -0.015em;
+    }
+
+    .hero-heading span {
+      display: block;
+      font-weight: 600;
+      font-size: 19px;
+      color: var(--navy-sub);
+    }
+
+    .hero-description {
+      font-size: 13px;
+      color: var(--slate-text);
+      line-height: 1.45;
+      margin: 8px 0 16px;
+      font-weight: 400;
+    }
+
+    .hero-view-profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: var(--radius-pill);
+      background-color: #07386E;
+      color: #FFFFFF;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(7, 56, 110, 0.25);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .hero-view-profile-btn:hover {
+      background-color: var(--primary-blue);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(7, 56, 110, 0.35);
+    }
+
+    .hero-view-profile-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      transition: transform 0.2s ease;
+    }
+
+    .hero-view-profile-btn:hover svg {
+      transform: translateX(3px);
+    }
+
+    /* Center: Doctor Visual with tablet */
+    .hero-doctor-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 168px;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      margin: -20px 0;
+    }
+
+    .hero-doctor-img {
+      max-height: 180px;
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom;
+      filter: drop-shadow(0 6px 14px rgba(7, 82, 154, 0.12));
+    }
+
+    /* Right: Today's Overview Card */
+    .today-overview-card {
+      width: 290px;
+      min-width: 280px;
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 6px 20px rgba(7, 82, 154, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    .overview-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .overview-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--surface-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-blue);
+      flex-shrink: 0;
+    }
+
+    .overview-icon-badge svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+    }
+
+    .overview-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .overview-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .overview-stat-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .overview-stat-col:first-child {
+      border-right: 1px solid var(--border-light);
+      padding-right: 10px;
+    }
+
+    .overview-stat-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .overview-stat-lbl {
+      font-size: 11.5px;
+      color: var(--slate-text);
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    .overview-trend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 2px;
+    }
+
+    .overview-trend-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .overview-trend-pct {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--success-green);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .overview-trend-sub {
+      font-size: 10.5px;
+      color: var(--slate-light);
+      margin-top: 2px;
+    }
+
+    .overview-sparkline {
+      width: 95px;
+      height: 32px;
+    }
+
+    /* =========================================================
+       8. DASHBOARD STATISTICS CARDS (4 IN A ROW)
+       ========================================================= */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    /* Decorative bottom wave graphic inside each stat card */
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 22px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 24' preserveAspectRatio='none'%3E%3Cpath d='M0,18 C40,6 80,24 130,12 C170,2 190,16 200,8 L200,24 L0,24 Z' fill='%23F2F8FF'/%3E%3C/svg%3E") no-repeat bottom center;
+      background-size: 100% 100%;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .stat-card-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 2;
+    }
+
+    .stat-icon-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon-circle svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+    }
+
+    /* Specific icon background tints */
+    .stat-icon-circle.patients {
+      background: #E1EFFF;
+      color: #07529A;
+    }
+    .stat-icon-circle.appointments {
+      background: #F1E8FD;
+      color: #7C3AED;
+    }
+    .stat-icon-circle.services {
+      background: #DEF7F3;
+      color: #0D9488;
+    }
+    .stat-icon-circle.rating {
+      background: #FEF3C7;
+      color: #F59E0B;
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--slate-text);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-trend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    .stat-trend-pill.green {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+    .stat-trend-pill.purple {
+      background: #F3E8FF;
+      color: #7E22CE;
+    }
+    .stat-trend-pill.teal {
+      background: #CCFBF1;
+      color: #0F766E;
+    }
+    .stat-trend-pill.amber {
+      background: #FEF3C7;
+      color: #B45309;
+    }
+
+    /* =========================================================
+       9. LOWER DASHBOARD SECTIONS (RECENT ACTIVITY & UPCOMING)
+       ========================================================= */
+    .lower-panels-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .dashboard-panel {
+      background: var(--bg-card);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 12px;
+    }
+
+    .panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .panel-header-title svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--primary-blue);
+    }
+
+    .panel-view-all-link {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--primary-blue);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.2s ease;
+    }
+
+    .panel-view-all-link:hover {
+      gap: 7px;
+      text-decoration: underline;
+    }
+
+    /* Left Panel: Recent Activity Timeline */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .activity-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .activity-dot.blue { background-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+    .activity-dot.green { background-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+    .activity-dot.purple { background-color: #8B5CF6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15); }
+
+    .activity-text-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .activity-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--navy-dark);
+    }
+
+    .activity-time {
+      font-size: 11.5px;
+      color: var(--slate-light);
+      margin-top: 2px;
+    }
+
+    .activity-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .activity-badge.blue {
+      background: #EBF3FE;
+      color: #2563EB;
+    }
+    .activity-badge.green {
+      background: #ECFDF5;
+      color: #10B981;
+    }
+    .activity-badge.purple {
+      background: #F3E8FF;
+      color: #8B5CF6;
+    }
+
+    /* Right Panel: Upcoming Appointments Row */
+    .appointment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .appointment-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--surface-blue-soft);
+      border: 1px solid var(--border-light);
+      transition: background 0.18s ease;
+    }
+
+    .appointment-card-row:hover {
+      background: #E8F2FC;
+    }
+
+    .appointment-patient-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .appointment-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(7, 82, 154, 0.12);
+      flex-shrink: 0;
+    }
+
+    .appointment-patient-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .appointment-patient-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .appointment-service-type {
+      font-size: 11.5px;
+      color: var(--slate-text);
+      margin-top: 2px;
+    }
+
+    .appointment-time-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .appointment-time {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--navy-sub);
+    }
+
+    .appointment-time svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--slate-text);
+    }
+
+    .appointment-status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      background: #EBF3FE;
+      color: #2563EB;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid rgba(37, 99, 235, 0.15);
+    }
+
+    /* =========================================================
+       MODAL & DROPDOWN MENUS (HEAD DOCTOR PROFILE & EMERGENCY)
+       ========================================================= */
+    .profile-dropdown-menu {
+      position: absolute;
+      top: 64px;
+      right: 28px;
+      width: 220px;
+      background: #FFFFFF;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(7, 82, 154, 0.15);
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 100;
+      animation: dropFade 0.2s ease both;
+    }
+
+    .profile-dropdown-menu.show {
+      display: flex;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--navy-dark);
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s ease;
+    }
+
+    .dropdown-item:hover {
+      background: var(--surface-blue);
+      color: var(--primary-blue);
+    }
+
+    .dropdown-item.danger {
+      color: var(--emergency-red);
+    }
+
+    .dropdown-item.danger:hover {
+      background: #FEE2E2;
+    }
+
+    .dropdown-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+
+    /* Emergency Alert Modal */
+    .emergency-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 42, 86, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 16px;
+    }
+
+    .emergency-modal-overlay.show {
+      display: flex;
+    }
+
+    .emergency-modal-box {
+      width: 100%;
+      max-width: 440px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      border: 2px solid var(--emergency-red);
+      text-align: center;
+      animation: scalePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .emergency-modal-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #FEE2E2;
+      color: var(--emergency-red);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .emergency-modal-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: currentColor;
+    }
+
+    .emergency-modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 8px;
+    }
+
+    .emergency-modal-desc {
+      font-size: 13.5px;
+      color: var(--slate-text);
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .emergency-modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .emergency-action-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease;
+    }
+
+    .emergency-action-btn.cancel {
+      background: #F1F5F9;
+      color: #475569;
+    }
+
+    .emergency-action-btn.dispatch {
+      background: var(--emergency-red);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px var(--emergency-shadow);
+    }
+
+    @keyframes dropFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scalePop {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* =========================================================
+       11. RESPONSIVE DESIGN (DESKTOP, LAPTOP, TABLET, MOBILE)
+       ========================================================= */
+    @media (max-width: 1200px) {
+      .hero-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        min-height: auto;
+      }
+      .hero-doctor-wrap {
+        height: 150px;
+        margin: 0;
+      }
+      .today-overview-card {
+        width: 100%;
+      }
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .mobile-menu-toggle {
+        display: inline-flex;
+      }
+      .lower-panels-row {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-content {
+        padding: 18px 16px 28px;
+      }
+      .top-header {
+        padding: 0 16px;
+      }
+      .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(16, 42, 86, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 45;
+        display: none;
+      }
+      .sidebar-backdrop.show {
+        display: block;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+      .hero-welcome-block {
+        max-width: 100%;
+      }
+      .hero-heading {
+        font-size: 21px;
+      }
+      .hero-heading span {
+        font-size: 17px;
+      }
+      .appointment-card-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .appointment-time-badge-wrap {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Drawer Backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="app-layout">
+
+    <!-- =========================================================
+         3. LEFT SIDEBAR — OFFICIAL LOGO & 13 PRECISE NAV ITEMS
+         ========================================================= -->
+    <aside class="sidebar" id="appSidebar" role="navigation" aria-label="Head Doctor Navigation">
+      
+      <!-- Brand Logo at Top Left -->
+      <a href="head-doctor-dashboard.html" class="sidebar-brand" aria-label="CareWell Dashboard">
+        <img src="new_logo_Screen5.png" alt="CareWell Heart Emblem" class="sidebar-brand-emblem" />
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">CareWell</span>
+          <span class="sidebar-brand-tagline">Health | Care | Compassion</span>
+        </div>
+      </a>
+
+      <!-- 5. SIDEBAR NAVIGATION — EXACT ORDER (1 to 12) -->
+      <nav class="sidebar-nav">
+        
+        <!-- 1. Home (ACTIVE BLUE TREATMENT) -->
+        <button type="button" class="nav-item active" data-page="home" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Home</span>
+        </button>
+
+        <!-- 2. Service -->
+        <button type="button" class="nav-item" data-page="service">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/>
+            <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/>
+            <circle cx="20" cy="10" r="2"/>
+          </svg>
+          <span>Service</span>
+        </button>
+
+        <!-- 3. Settings -->
+        <button type="button" class="nav-item" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Settings</span>
+        </button>
+
+        <!-- 4. My Account -->
+        <button type="button" class="nav-item" data-page="account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>My Account</span>
+        </button>
+
+        <!-- 5. Notification -->
+        <button type="button" class="nav-item" data-page="notification">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span>Notification</span>
+        </button>
+
+        <!-- Subtle Divider -->
+        <div class="nav-divider" role="separator"></div>
+
+        <!-- 6. Contact CareWell -->
+        <button type="button" class="nav-item" data-page="contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          <span>Contact CareWell</span>
+        </button>
+
+        <!-- 7. Report Bug / Spam -->
+        <button type="button" class="nav-item" data-page="report">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="8" height="14" x="8" y="6" rx="4"/>
+            <path d="m19 7-3 2M5 7l3 2M19 19l-3-2M5 19l3-2M20 13h-4M4 13h4M10 4l1 2M14 4l-1 2"/>
+          </svg>
+          <span>Report Bug / Spam</span>
+        </button>
+
+        <!-- 8. Preview Card -->
+        <button type="button" class="nav-item" data-page="preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="2"/>
+            <line x1="2" x2="22" y1="10" y2="10"/>
+          </svg>
+          <span>Preview Card</span>
+        </button>
+
+        <!-- 9. Book Nurse -->
+        <button type="button" class="nav-item" data-page="book-nurse">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="4" rx="2"/>
+            <line x1="16" x2="16" y1="2" y2="6"/>
+            <line x1="8" x2="8" y1="2" y2="6"/>
+            <line x1="3" x2="21" y1="10" y2="10"/>
+            <path d="M12 14v4M10 16h4"/>
+          </svg>
+          <span>Book Nurse</span>
+        </button>
+
+        <!-- Subtle Divider -->
+        <div class="nav-divider" role="separator"></div>
+
+        <!-- 10. Medi-Support -->
+        <button type="button" class="nav-item" data-page="medi-support">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="M8 4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            <line x1="12" x2="12" y1="9" y2="15"/>
+            <line x1="9" x2="15" y1="12" y2="12"/>
+          </svg>
+          <span>Medi- Support</span>
+        </button>
+
+        <!-- 11. Ambulance -->
+        <button type="button" class="nav-item" data-page="ambulance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="11" x="2" y="7" rx="1"/>
+            <path d="M16 11h4l3 3v4h-7z"/>
+            <circle cx="6" cy="18" r="2"/>
+            <circle cx="18" cy="18" r="2"/>
+            <path d="M8 10v4M6 12h4"/>
+          </svg>
+          <span>Ambulance</span>
+        </button>
+
+        <!-- 12. Careunit -->
+        <button type="button" class="nav-item" data-page="careunit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/>
+            <line x1="12" x2="12" y1="8" y2="12"/>
+            <line x1="10" x2="14" y1="10" y2="10"/>
+          </svg>
+          <span>Careunit</span>
+        </button>
+
+      </nav>
+
+      <!-- 13. Emergency... (Bottom Red Action Button) -->
+      <div class="sidebar-footer">
+        <button type="button" class="emergency-btn" id="emergencyActionBtn" aria-label="Trigger Emergency Protocol">
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>Emergency...</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- =========================================================
+         MAIN VIEWPORT (HEADER + DASHBOARD BODY)
+         ========================================================= -->
+    <main class="main-viewport" role="main">
+
+      <!-- 4. TOP HEADER — DOCTOR IDENTITY & RIGHT CONTROLS -->
+      <header class="top-header">
+        
+        <!-- Left: Doctor Identity with Avatar, Name, Location -->
+        <div class="header-identity">
+          <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+
+          <div class="header-avatar-wrap">
+            <img src="head_doctor_avatar_2x.png" alt="Dr. Rahul Sharma" class="header-avatar" id="headerDoctorAvatar" />
+          </div>
+
+          <div class="header-details">
+            <div class="header-doctor-name" id="headerDoctorName">Dr. Rahul Sharma</div>
+            <div class="header-location-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span id="headerDoctorLocation">Nallasopara East</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Theme, Notification Bell with '2' badge, Role Dropdown -->
+        <div class="header-controls">
+          
+          <!-- Theme Control (Moon Icon) -->
+          <button type="button" class="icon-control-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle dark/light theme">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+
+          <div class="header-separator" role="separator" aria-hidden="true"></div>
+
+          <!-- Notification Bell with Count '2' -->
+          <div style="position: relative;">
+            <button type="button" class="icon-control-btn" id="headerNotifBtn" title="Notifications" aria-label="Notifications, 2 unread">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <span class="notif-badge">2</span>
+            </button>
+
+            <!-- Notifications Dropdown Box -->
+            <div class="profile-dropdown-menu" id="notifDropdownMenu" style="width: 280px; right: 0;">
+              <div style="padding: 6px 10px; font-weight: 700; font-size: 13.5px; color: var(--navy-dark); border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                <span>Notifications</span>
+                <span style="font-size: 11px; background: #EBF3FE; color: #2563EB; padding: 2px 8px; border-radius: 999px;">2 New</span>
+              </div>
+              <div style="padding: 8px 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span style="width: 7px; height: 7px; border-radius: 50%; background: #2563EB; margin-top: 5px; flex-shrink: 0;"></span>
+                  <div style="font-size: 12px; line-height: 1.35; color: var(--navy-dark);">
+                    <strong>New Consultation</strong> booked by Sneha Patel (10:30 AM).
+                    <div style="font-size: 10.5px; color: var(--slate-light); margin-top: 2px;">2 mins ago</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: flex-start;">
+                  <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; margin-top: 5px; flex-shrink: 0;"></span>
+                  <div style="font-size: 12px; line-height: 1.35; color: var(--navy-dark);">
+                    <strong>Patient Checked In</strong> for OPD Room 3.
+                    <div style="font-size: 10.5px; color: var(--slate-light); margin-top: 2px;">5 mins ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Head Doctor Role Dropdown Pill -->
+          <div style="position: relative;">
+            <button type="button" class="role-dropdown-btn" id="roleDropdownBtn" aria-haspopup="true" aria-expanded="false">
+              <span>Head Doctor</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="profile-dropdown-menu" id="profileDropdownMenu" role="menu">
+              <button type="button" class="dropdown-item" id="menuViewProfile">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Doctor Profile</span>
+              </button>
+              <button type="button" class="dropdown-item" id="menuSettings">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Account Settings</span>
+              </button>
+              <div class="nav-divider"></div>
+              <button type="button" class="dropdown-item danger" id="menuLogout">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Logout Session</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- =========================================================
+           DASHBOARD CONTENT GRID
+           ========================================================= -->
+      <div class="dashboard-content">
+
+        <!-- =========================================================
+             6 & 7. HERO SECTION + TODAY'S OVERVIEW CARD
+             ========================================================= -->
+        <section class="hero-container" aria-label="Head Doctor Overview Banner">
+          
+          <!-- Left: Welcome Back Copy -->
+          <div class="hero-welcome-block">
+            <h1 class="hero-heading">
+              <span>Welcome Back,</span>
+              <div id="heroDoctorName">Dr. Rahul Sharma!</div>
+            </h1>
+            <p class="hero-description">
+              Manage your medical services and patient care with CareWell.
+            </p>
+            <button type="button" class="hero-view-profile-btn" id="heroViewProfileBtn">
+              <span>View Profile</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Center: Doctor Visual with digital tablet -->
+          <div class="hero-doctor-wrap" aria-hidden="true">
+            <img src="hero_doctor_blended_2x.png" alt="Doctor in clinic corridor holding digital tablet" class="hero-doctor-img" />
+          </div>
+
+          <!-- 7. Right: Today's Overview Card -->
+          <aside class="today-overview-card" aria-label="Today's Overview Summary">
+            
+            <div class="overview-header">
+              <div class="overview-icon-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="4" rx="2"/>
+                  <line x1="16" x2="16" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="2" y2="6"/>
+                  <line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+              </div>
+              <h2 class="overview-title">Today's Overview</h2>
+            </div>
+
+            <div class="overview-stats-grid">
+              <div class="overview-stat-col">
+                <div class="overview-stat-num" id="todayPatientsVal">24</div>
+                <div class="overview-stat-lbl">Total Patients</div>
+              </div>
+              <div class="overview-stat-col">
+                <div class="overview-stat-num" id="todayAppointmentsVal">12</div>
+                <div class="overview-stat-lbl">Appointments</div>
+              </div>
+            </div>
+
+            <div class="overview-trend-row">
+              <div class="overview-trend-text">
+                <div class="overview-trend-pct">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="19" x2="12" y2="5"/>
+                    <polyline points="5 12 12 5 19 12"/>
+                  </svg>
+                  <span id="todayWeeklyTrend">12%</span>
+                </div>
+                <span class="overview-trend-sub">vs last week</span>
+              </div>
+
+              <!-- Blue Sparkline Trend SVG with dots -->
+              <div class="overview-sparkline">
+                <svg viewBox="0 0 95 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 24 C 18 20, 28 26, 42 16 C 54 8, 64 22, 78 12 C 86 6, 90 8, 93 4" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="42" cy="16" r="2.5" fill="#2563EB"/>
+                  <circle cx="78" cy="12" r="2.5" fill="#2563EB"/>
+                  <circle cx="93" cy="4" r="2.8" fill="#2563EB"/>
+                </svg>
+              </div>
+            </div>
+
+          </aside>
+
+        </section>
+
+        <!-- =========================================================
+             8. DASHBOARD STATISTICS CARDS (4 IN A HORIZONTAL ROW)
+             ========================================================= -->
+        <section class="stats-row" aria-label="Key Medical Statistics">
+          
+          <!-- Card 1: Total Patients -->
+          <article class="stat-card">
+            <div class="stat-card-left">
+              <div class="stat-icon-circle patients" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Patients</span>
+                <span class="stat-value" id="statTotalPatients">2,480</span>
+              </div>
+            </div>
+            <div class="stat-trend-pill green">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+              <span>8%</span>
+            </div>
+          </article>
+
+          <!-- Card 2: Total Appointments -->
+          <article class="stat-card">
+            <div class="stat-card-left">
+              <div class="stat-icon-circle appointments" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/>
+                  <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/>
+                  <circle cx="20" cy="10" r="2"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total Appointments</span>
+                <span class="stat-value" id="statTotalAppointments">1,240</span>
+              </div>
+            </div>
+            <div class="stat-trend-pill purple">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+              <span>10%</span>
+            </div>
+          </article>
+
+          <!-- Card 3: Active Services -->
+          <article class="stat-card">
+            <div class="stat-card-left">
+              <div class="stat-icon-circle services" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="M8 4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  <line x1="12" x2="12" y1="9" y2="15"/>
+                  <line x1="9" x2="15" y1="12" y2="12"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Active Services</span>
+                <span class="stat-value" id="statActiveServices">12</span>
+              </div>
+            </div>
+            <div class="stat-trend-pill teal">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+              <span>2%</span>
+            </div>
+          </article>
+
+          <!-- Card 4: Your Rating -->
+          <article class="stat-card">
+            <div class="stat-card-left">
+              <div class="stat-icon-circle rating" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Your Rating</span>
+                <span class="stat-value" id="statDoctorRating">4.8</span>
+              </div>
+            </div>
+            <div class="stat-trend-pill amber">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+              <span>0.2</span>
+            </div>
+          </article>
+
+        </section>
+
+        <!-- =========================================================
+             9. LOWER DASHBOARD SECTIONS (RECENT ACTIVITY & UPCOMING)
+             ========================================================= -->
+        <section class="lower-panels-row">
+          
+          <!-- LEFT PANEL — RECENT ACTIVITY -->
+          <div class="dashboard-panel" aria-label="Recent Medical Activity">
+            
+            <div class="panel-header">
+              <div class="panel-header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
+                <span>Recent Activity</span>
+              </div>
+              <a href="#view-activity" class="panel-view-all-link">
+                <span>View All</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+
+            <div class="activity-list">
+              
+              <!-- Item 1: New appointment booked -->
+              <div class="activity-item">
+                <div class="activity-main">
+                  <span class="activity-dot blue" aria-hidden="true"></span>
+                  <div class="activity-text-wrap">
+                    <span class="activity-title">New appointment booked</span>
+                    <span class="activity-time">2 mins ago</span>
+                  </div>
+                </div>
+                <span class="activity-badge blue">Appointment</span>
+              </div>
+
+              <!-- Item 2: Patient checked in -->
+              <div class="activity-item">
+                <div class="activity-main">
+                  <span class="activity-dot green" aria-hidden="true"></span>
+                  <div class="activity-text-wrap">
+                    <span class="activity-title">Patient checked in</span>
+                    <span class="activity-time">5 mins ago</span>
+                  </div>
+                </div>
+                <span class="activity-badge green">Checked In</span>
+              </div>
+
+              <!-- Item 3: Service updated -->
+              <div class="activity-item">
+                <div class="activity-main">
+                  <span class="activity-dot purple" aria-hidden="true"></span>
+                  <div class="activity-text-wrap">
+                    <span class="activity-title">Service updated</span>
+                    <span class="activity-time">10 mins ago</span>
+                  </div>
+                </div>
+                <span class="activity-badge purple">Service</span>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT PANEL — UPCOMING APPOINTMENTS -->
+          <div class="dashboard-panel" aria-label="Upcoming Consultations">
+            
+            <div class="panel-header">
+              <div class="panel-header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="4" rx="2"/>
+                  <line x1="16" x2="16" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="2" y2="6"/>
+                  <line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+                <span>Upcoming Appointments</span>
+              </div>
+              <a href="#view-appointments" class="panel-view-all-link">
+                <span>View All</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+
+            <div class="appointment-list">
+              
+              <!-- Patient Row: Sneha Patel -->
+              <div class="appointment-card-row">
+                <div class="appointment-patient-info">
+                  <img src="patient_sneha_avatar_2x.png" alt="Sneha Patel profile picture" class="appointment-avatar" />
+                  <div class="appointment-patient-text">
+                    <span class="appointment-patient-name">Sneha Patel</span>
+                    <span class="appointment-service-type">General Checkup</span>
+                  </div>
+                </div>
+
+                <div class="appointment-time-badge-wrap">
+                  <div class="appointment-time">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>10:30 AM - 11:00 AM</span>
+                  </div>
+                  <span class="appointment-status-pill">Upcoming</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- =========================================================
+       EMERGENCY CONFIRMATION MODAL
+       ========================================================= -->
+  <div class="emergency-modal-overlay" id="emergencyModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="emergModalTitle">
+    <div class="emergency-modal-box">
+      <div class="emergency-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <h3 class="emergency-modal-title" id="emergModalTitle">Emergency Rapid Response</h3>
+      <p class="emergency-modal-desc">
+        Are you sure you want to trigger the high-priority Emergency Protocol? This alerts the CareWell on-call ambulance and emergency rapid response medical team immediately.
+      </p>
+      <div class="emergency-modal-actions">
+        <button type="button" class="emergency-action-btn cancel" id="cancelEmergencyBtn">Cancel</button>
+        <button type="button" class="emergency-action-btn dispatch" id="confirmEmergencyBtn">Dispatch Alert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       DASHBOARD SCRIPT & DYNAMIC PROFILE HYDRATION
+       ========================================================= -->
+  <script>
+    (function () {
+      // 1. Dynamic Authenticated Doctor Profile Data Binding
+      const headerDoctorName = document.getElementById('headerDoctorName');
+      const headerDoctorLocation = document.getElementById('headerDoctorLocation');
+      const headerDoctorAvatar = document.getElementById('headerDoctorAvatar');
+      const heroDoctorName = document.getElementById('heroDoctorName');
+
+      // Check session storage profile or fallback to authenticated defaults
+      function hydrateDoctorProfile(data) {
+        if (!data) return;
+        const name = data.name || data.fullName || 'Dr. Rahul Sharma';
+        const location = data.location || data.clinicAddress || 'Nallasopara East';
+        const avatar = data.avatar || data.profilePicture || 'head_doctor_avatar_2x.png';
+
+        if (headerDoctorName) headerDoctorName.textContent = name;
+        if (heroDoctorName) heroDoctorName.textContent = `${name}!`;
+        if (headerDoctorLocation) headerDoctorLocation.textContent = location;
+        if (headerDoctorAvatar && avatar) headerDoctorAvatar.src = avatar;
+
+        if (data.stats) {
+          if (data.stats.totalPatients) {
+            const el = document.getElementById('statTotalPatients');
+            if (el) el.textContent = data.stats.totalPatients;
+          }
+          if (data.stats.totalAppointments) {
+            const el = document.getElementById('statTotalAppointments');
+            if (el) el.textContent = data.stats.totalAppointments;
+          }
+          if (data.stats.activeServices) {
+            const el = document.getElementById('statActiveServices');
+            if (el) el.textContent = data.stats.activeServices;
+          }
+          if (data.stats.rating) {
+            const el = document.getElementById('statDoctorRating');
+            if (el) el.textContent = data.stats.rating;
+          }
+          if (data.stats.todayPatients) {
+            const el = document.getElementById('todayPatientsVal');
+            if (el) el.textContent = data.stats.todayPatients;
+          }
+          if (data.stats.todayAppointments) {
+            const el = document.getElementById('todayAppointmentsVal');
+            if (el) el.textContent = data.stats.todayAppointments;
+          }
+          if (data.stats.weeklyTrend) {
+            const el = document.getElementById('todayWeeklyTrend');
+            if (el) el.textContent = data.stats.weeklyTrend;
+          }
+        }
+      }
+
+      // Initial read from sessionStorage if available
+      try {
+        const stored = sessionStorage.getItem('carewell_doctor_profile');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          hydrateDoctorProfile(parsed);
+        }
+      } catch (e) {
+        console.warn('Profile parse error:', e);
+      }
+
+      // Async fetch from live API to ensure fresh data
+      async function fetchFreshProfile() {
+        try {
+          const res = await fetch('/api/auth/head-doctor/profile');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.ok && data.doctor) {
+              hydrateDoctorProfile(data.doctor);
+            }
+          }
+        } catch (err) {
+          // Fallback gracefully to existing visual data
+        }
+      }
+      fetchFreshProfile();
+
+      // 2. Mobile Sidebar Drawer Toggle
+      const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+      const appSidebar = document.getElementById('appSidebar');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+      function toggleSidebar() {
+        appSidebar?.classList.toggle('open');
+        sidebarBackdrop?.classList.toggle('show');
+      }
+
+      mobileMenuToggle?.addEventListener('click', toggleSidebar);
+      sidebarBackdrop?.addEventListener('click', toggleSidebar);
+
+      // 3. Theme Toggle (Light / Dark Medical Mode)
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      themeToggleBtn?.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('carewell_head_doctor_theme', isDark ? 'dark' : 'light');
+      });
+
+      // Restore theme preference
+      if (localStorage.getItem('carewell_head_doctor_theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+
+      // 4. Role & Notification Dropdown Controllers
+      const roleDropdownBtn = document.getElementById('roleDropdownBtn');
+      const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+      const headerNotifBtn = document.getElementById('headerNotifBtn');
+      const notifDropdownMenu = document.getElementById('notifDropdownMenu');
+
+      roleDropdownBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (notifDropdownMenu) notifDropdownMenu.classList.remove('show');
+        profileDropdownMenu?.classList.toggle('show');
+      });
+
+      headerNotifBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (profileDropdownMenu) profileDropdownMenu.classList.remove('show');
+        notifDropdownMenu?.classList.toggle('show');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!profileDropdownMenu?.contains(e.target) && e.target !== roleDropdownBtn) {
+          profileDropdownMenu?.classList.remove('show');
+        }
+        if (!notifDropdownMenu?.contains(e.target) && e.target !== headerNotifBtn) {
+          notifDropdownMenu?.classList.remove('show');
+        }
+      });
+
+      // Logout handler
+      const menuLogout = document.getElementById('menuLogout');
+      menuLogout?.addEventListener('click', async () => {
+        try {
+          await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (e) {}
+        sessionStorage.removeItem('carewell_session');
+        sessionStorage.removeItem('carewell_doctor_profile');
+        window.location.href = 'index.html';
+      });
+
+      // 5. Sidebar Navigation Visual Control Shell
+      const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+      navItems.forEach(btn => {
+        btn.addEventListener('click', () => {
+          navItems.forEach(i => i.classList.remove('active'));
+          btn.classList.add('active');
+          if (window.innerWidth <= 900) {
+            toggleSidebar();
+          }
+        });
+      });
+
+      // 6. Emergency Modal Controller
+      const emergencyActionBtn = document.getElementById('emergencyActionBtn');
+      const emergencyModal = document.getElementById('emergencyModal');
+      const cancelEmergencyBtn = document.getElementById('cancelEmergencyBtn');
+      const confirmEmergencyBtn = document.getElementById('confirmEmergencyBtn');
+
+      emergencyActionBtn?.addEventListener('click', () => {
+        emergencyModal?.classList.add('show');
+      });
+
+      cancelEmergencyBtn?.addEventListener('click', () => {
+        emergencyModal?.classList.remove('show');
+      });
+
+      confirmEmergencyBtn?.addEventListener('click', () => {
+        confirmEmergencyBtn.textContent = 'Alert Dispatched!';
+        confirmEmergencyBtn.style.background = '#10B981';
+        setTimeout(() => {
+          emergencyModal?.classList.remove('show');
+          confirmEmergencyBtn.textContent = 'Dispatch Alert';
+          confirmEmergencyBtn.style.background = '';
+        }, 1200);
+      });
+
+      emergencyModal?.addEventListener('click', (e) => {
+        if (e.target === emergencyModal) {
+          emergencyModal.classList.remove('show');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareWell — Clinical Nurse Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="Main_logo_transparent_img_screen7.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* =========================================================
+       CSS VARIABLES & THEME TOKENS — CLINICAL NURSE DASHBOARD
+       ========================================================= */
+    :root {
+      --bg-dark: #0e0914;
+      --bg-sidebar: #140d1e;
+      --bg-card: #1b1227;
+      --bg-card-hover: #231733;
+      --bg-elevated: #261938;
+      
+      --pink-primary: #db2777;
+      --pink-hover: #be185d;
+      --pink-soft: #f472b6;
+      --pink-light: #fce7f3;
+      --pink-glow: rgba(219, 39, 119, 0.35);
+      --pink-border: rgba(219, 39, 119, 0.28);
+      --pink-gradient: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+      
+      --text-white: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.72);
+      --text-dim: rgba(255, 255, 255, 0.45);
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(244, 114, 182, 0.4);
+      
+      --success-green: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.4);
+      --warning-amber: #f59e0b;
+      --danger-red: #ef4444;
+      
+      --sidebar-width: 256px;
+      --header-height: 76px;
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-heading: 'Poppins', sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-main);
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Glow Background Effect */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -100px;
+      left: 15%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(219, 39, 119, 0.12) 0%, rgba(14, 9, 20, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(40px);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -150px;
+      right: 5%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(190, 24, 93, 0.09) 0%, rgba(14, 9, 20, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(50px);
+    }
+
+    /* =========================================================
+       LAYOUT ARCHITECTURE: SIDEBAR + MAIN PANEL
+       ========================================================= */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* =========================================================
+       PAGE LOAD ANIMATIONS (Smoothest Entrance)
+       ========================================================= */
+    @keyframes sidebarSlideIn {
+      from {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes headerSlideDown {
+      from {
+        transform: translateY(-40px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes contentFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes navItemEntrance {
+      from {
+        opacity: 0;
+        transform: translateX(-16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+    }
+
+    /* =========================================================
+       LEFT NAVIGATION BAR (SIDEBAR)
+       ========================================================= */
+    .nurse-sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 20px 14px 22px;
+      z-index: 100;
+      animation: sidebarSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Top Brand Container */
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 10px 20px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+    }
+
+    .brand-logo-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(219, 39, 119, 0.3);
+      border: 1px solid rgba(244, 114, 182, 0.3);
+      background: #fff;
+    }
+
+    .brand-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #f472b6;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* Navigation Items List */
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      border: 1px solid transparent;
+      background: transparent;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      opacity: 0;
+      animation: navItemEntrance 0.4s ease forwards;
+    }
+
+    /* Staggered load animation delays for nav items */
+    .nav-link:nth-child(1) { animation-delay: 0.08s; }
+    .nav-link:nth-child(2) { animation-delay: 0.13s; }
+    .nav-link:nth-child(3) { animation-delay: 0.18s; }
+    .nav-link:nth-child(4) { animation-delay: 0.23s; }
+    .nav-link:nth-child(5) { animation-delay: 0.28s; }
+    .nav-link:nth-child(6) { animation-delay: 0.33s; }
+    .nav-link:nth-child(7) { animation-delay: 0.38s; }
+    .nav-link:nth-child(8) { animation-delay: 0.43s; }
+    .nav-link:nth-child(9) { animation-delay: 0.48s; }
+
+    .nav-link i, .nav-link svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke-width: 2.2;
+      color: rgba(255, 255, 255, 0.65);
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(219, 39, 119, 0.12);
+      color: #fff;
+      border-color: rgba(219, 39, 119, 0.25);
+      transform: translateX(3px);
+    }
+
+    .nav-link:hover i, .nav-link:hover svg {
+      color: var(--pink-soft);
+      transform: scale(1.12);
+    }
+
+    /* Active Nav Item */
+    .nav-link.active {
+      background: var(--pink-gradient);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 18px rgba(219, 39, 119, 0.42);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-link.active i, .nav-link.active svg {
+      color: #ffffff;
+      transform: scale(1.05);
+    }
+
+    /* Notification Counter Badge */
+    .nav-badge {
+      margin-left: auto;
+      background: #be185d;
+      color: #fff;
+      font-size: 0.70rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 8px 4px;
+    }
+
+    /* Logout Nav Item */
+    .nav-link.logout-item {
+      margin-top: auto;
+      color: #f87171;
+    }
+
+    .nav-link.logout-item i, .nav-link.logout-item svg {
+      color: #f87171;
+    }
+
+    .nav-link.logout-item:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff8b8b;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* =========================================================
+       MAIN PANEL & HEADER ARCHITECTURE
+       ========================================================= */
+    .main-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 100vh;
+    }
+
+    /* Top Page Header */
+    .nurse-header {
+      height: var(--header-height);
+      background: rgba(20, 13, 30, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      animation: headerSlideDown 0.5s ease forwards;
+    }
+
+    /* Header Left: Section Indicator & Live Welcome */
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-nurse-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .header-nurse-greeting {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-nurse-name {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .on-duty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #6ee7b7;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .duty-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success-green);
+      animation: pulseGlow 1.8s infinite;
+    }
+
+    /* Header Right: Time, Date, Din & Actions */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Date & Day Pill */
+    .header-meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      font-size: 0.80rem;
+      color: var(--text-muted);
+    }
+
+    .header-meta-pill i, .header-meta-pill svg {
+      width: 14px;
+      height: 14px;
+      color: var(--pink-soft);
+    }
+
+    .header-meta-pill strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Live Digital Clock */
+    .header-clock-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: rgba(219, 39, 119, 0.1);
+      border: 1px solid var(--pink-border);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-family: monospace;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fce7f3;
+    }
+
+    .header-clock-pill i, .header-clock-pill svg {
+      width: 14px;
+      height: 14px;
+      color: #f472b6;
+    }
+
+    /* Header Nurse Avatar */
+    .header-avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 12px;
+      transition: background 0.2s ease;
+    }
+
+    .header-avatar-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .header-avatar-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid var(--pink-soft);
+      position: relative;
+      box-shadow: 0 2px 10px rgba(219, 39, 119, 0.35);
+      background: #140d1e;
+    }
+
+    .header-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Header Logout Button */
+    .header-logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.28);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .header-logout-btn:hover {
+      background: rgba(239, 68, 68, 0.22);
+      color: #fff;
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       PAGE CONTENT AREA & SECTION WRAPPERS
+       ========================================================= */
+    .nurse-content {
+      flex: 1;
+      padding: 30px 32px;
+      display: flex;
+      flex-direction: column;
+      animation: contentFadeIn 0.6s ease forwards;
+    }
+
+    .dashboard-section {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .dashboard-section.active {
+      display: flex;
+    }
+
+    /* Clean Section Placeholder Container */
+    .section-placeholder-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 480px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .section-placeholder-box::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(219, 39, 119, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .placeholder-icon-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: rgba(219, 39, 119, 0.14);
+      border: 1.5px solid rgba(244, 114, 182, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pink-soft);
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(219, 39, 119, 0.25);
+    }
+
+    .placeholder-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-subtitle {
+      font-size: 0.90rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .placeholder-status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--pink-soft);
+    }
+
+    /* Home Overview Summary Cards (Clean Preview) */
+    .home-hero-card {
+      background: linear-gradient(135deg, rgba(219, 39, 119, 0.14) 0%, rgba(190, 24, 93, 0.06) 100%);
+      border: 1px solid var(--pink-border);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #f472b6;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-heading {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-sub {
+      font-size: 0.90rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.5;
+    }
+
+    .hero-action-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .hero-btn-primary {
+      background: var(--pink-gradient);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(219, 39, 119, 0.35);
+    }
+
+    .hero-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.5);
+    }
+
+    .hero-btn-outline {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .hero-btn-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* 4-Stat Overview Cards Grid */
+    .stats-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+    }
+
+    .stat-metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .stat-metric-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-metric-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-metric-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .stat-metric-label {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-metric-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-metric-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* =========================================================
+       CUSTOM TOAST NOTIFICATION
+       ========================================================= */
+    #nurseToast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1c1228;
+      border: 1px solid var(--pink-border);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(219, 39, 119, 0.25);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99999;
+    }
+
+    #nurseToast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .nurse-sidebar {
+        width: 74px;
+        min-width: 74px;
+        padding: 16px 8px;
+      }
+      .brand-info, .nav-link span, .nav-badge {
+        display: none;
+      }
+      .nav-link {
+        justify-content: center;
+        padding: 12px;
+      }
+      .header-meta-pill:not(.header-clock-pill) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    
+    <!-- =========================================================
+         1. LEFT NAVIGATION BAR (SIDEBAR)
+         ========================================================= -->
+    <aside class="nurse-sidebar">
+      
+      <!-- Top Brand: CareWell Logo + Name + Tagline -->
+      <a href="#home" class="sidebar-brand" onclick="switchSection('home')">
+        <img src="carewell_logo_clean.png" alt="CareWell Logo" class="brand-logo-img" onerror="this.onerror=null; this.src='Main_logo_transparent_img_screen7.png';" />
+        <div class="brand-info">
+          <span class="brand-title">CareWell</span>
+          <span class="brand-tagline">Care in minutes</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        
+        <button type="button" class="nav-link active" data-section="home" onclick="switchSection('home')">
+          <i data-lucide="home"></i>
+          <span>Home</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="allocation" onclick="switchSection('allocation')">
+          <i data-lucide="calendar-check"></i>
+          <span>Allocation</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="earnings" onclick="switchSection('earnings')">
+          <i data-lucide="wallet"></i>
+          <span>Earnings</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="card-preview" onclick="switchSection('card-preview')">
+          <i data-lucide="credit-card"></i>
+          <span>Card Preview</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="notification" onclick="switchSection('notification')">
+          <i data-lucide="bell"></i>
+          <span>Notification</span>
+          <span class="nav-badge" id="sidebarNotifBadge">3</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="account" onclick="switchSection('account')">
+          <i data-lucide="user"></i>
+          <span>My Account</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="settings" onclick="switchSection('settings')">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </button>
+
+        <button type="button" class="nav-link" data-section="contact" onclick="switchSection('contact')">
+          <i data-lucide="headphones"></i>
+          <span>Contact Carewell</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <button type="button" class="nav-link logout-item" onclick="confirmNurseLogout()">
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </button>
+
+      </nav>
+
+    </aside>
+
+    <!-- =========================================================
+         2. MAIN PANEL & HEADER
+         ========================================================= -->
+    <main class="main-panel">
+      
+      <!-- Top Page Header -->
+      <header class="nurse-header">
+        
+        <!-- Header Left: Nurse Name & On Duty Badge -->
+        <div class="header-left">
+          <div class="header-nurse-info">
+            <div class="header-nurse-greeting">
+              <span id="nurseGreetingText">Good Day 👋</span>
+              <span>&middot;</span>
+              <span class="on-duty-badge">
+                <span class="duty-dot"></span>
+                On Duty
+              </span>
+            </div>
+            <div class="header-nurse-name">
+              <span id="nurseHeaderName">Nurse Seema Praapati</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Header Right: Din (Day), Date, Live Time, Avatar & Logout -->
+        <div class="header-right">
+          
+          <!-- Din (Day) & Date -->
+          <div class="header-meta-pill" title="Current Day and Date">
+            <i data-lucide="calendar"></i>
+            <span><strong id="headerDayText">Thursday</strong>, <span id="headerDateText">12-11-2026</span></span>
+          </div>
+
+          <!-- Live Digital Clock (Time with Seconds) -->
+          <div class="header-clock-pill" title="Current Realtime Clock">
+            <i data-lucide="clock"></i>
+            <span id="headerLiveClock">00:00:00 AM</span>
+          </div>
+
+          <!-- Nurse Profile Avatar -->
+          <button type="button" class="header-avatar-btn" onclick="switchSection('account')" title="My Account">
+            <div class="header-avatar-wrap">
+              <img id="headerNurseAvatar" src="nurse_professional_avatar.jpg" alt="Nurse Avatar" class="header-avatar-img" onerror="this.onerror=null; this.src='nurse_professional_avatar.jpg';" />
+            </div>
+          </button>
+
+          <!-- Quick Header Logout -->
+          <button type="button" class="header-logout-btn" onclick="confirmNurseLogout()" title="Logout from Nurse Dashboard">
+            <i data-lucide="log-out" style="width:13px; height:13px;"></i>
+            <span>Logout</span>
+          </button>
+
+        </div>
+
+      </header>
+
+      <!-- =========================================================
+           3. MAIN SECTIONS CONTENT WRAPPER
+           ========================================================= -->
+      <div class="nurse-content">
+
+        <!-- ── SECTION 1: HOME ── -->
+        <section id="sec-home" class="dashboard-section active">
+          
+          <!-- Hero Overview Banner -->
+          <div class="home-hero-card">
+            <div class="hero-info-col">
+              <span class="hero-badge">
+                <i data-lucide="sparkles" style="width:12px; height:12px;"></i>
+                CareWell Clinical Staff Portal
+              </span>
+              <h1 class="hero-heading">Welcome Back, <span id="nurseHeroName">Nurse Seema</span> 👋</h1>
+              <p class="hero-sub">
+                Your daily patient duty allocations, verified medical card credentials, shift schedules, and earnings are centralized here.
+              </p>
+              <div class="hero-action-row">
+                <button type="button" class="hero-btn hero-btn-primary" onclick="switchSection('allocation')">
+                  <i data-lucide="calendar-check" style="width:15px; height:15px;"></i>
+                  <span>View Today's Allocations</span>
+                </button>
+                <button type="button" class="hero-btn hero-btn-outline" onclick="switchSection('card-preview')">
+                  <i data-lucide="credit-card" style="width:15px; height:15px;"></i>
+                  <span>View ID Card</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Stats Overview Cards -->
+          <div class="stats-overview-grid">
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon" style="background:rgba(219,39,119,0.15); color:#f472b6;">
+                <i data-lucide="calendar-check" style="width:22px; height:22px;"></i>
+              </div>
+              <div class="stat-metric-info">
+                <span class="stat-metric-label">Allocated Shifts</span>
+                <span class="stat-metric-value">4</span>
+                <span class="stat-metric-meta">Active assignments this week</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon" style="background:rgba(16,185,129,0.15); color:#10b981;">
+                <i data-lucide="wallet" style="width:22px; height:22px;"></i>
+              </div>
+              <div class="stat-metric-info">
+                <span class="stat-metric-label">Total Earnings</span>
+                <span class="stat-metric-value">₹18,500</span>
+                <span class="stat-metric-meta">Updated for current cycle</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon" style="background:rgba(56,189,248,0.15); color:#38bdf8;">
+                <i data-lucide="check-circle" style="width:22px; height:22px;"></i>
+              </div>
+              <div class="stat-metric-info">
+                <span class="stat-metric-label">Verification</span>
+                <span class="stat-metric-value" style="font-size:1.15rem; color:#6ee7b7;">✓ Verified</span>
+                <span class="stat-metric-meta">State Nursing Council</span>
+              </div>
+            </div>
+
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;">
+                <i data-lucide="bell" style="width:22px; height:22px;"></i>
+              </div>
+              <div class="stat-metric-info">
+                <span class="stat-metric-label">Notifications</span>
+                <span class="stat-metric-value">3 New</span>
+                <span class="stat-metric-meta">Shift updates & requests</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Ready Notice Card -->
+          <div class="section-placeholder-box" style="min-height:220px; padding:28px 24px;">
+            <div class="placeholder-icon-ring" style="width:54px; height:54px; margin-bottom:12px;">
+              <i data-lucide="activity" style="width:24px; height:24px;"></i>
+            </div>
+            <h2 class="placeholder-title" style="font-size:1.2rem;">Home Dashboard Overview Active</h2>
+            <p class="placeholder-subtitle" style="font-size:0.85rem; margin-bottom:14px;">
+              All navigation sections are configured on the left navigation bar. Click on any section in the sidebar to preview.
+            </p>
+            <div class="placeholder-status-tag">
+              <i data-lucide="check-circle" style="width:13px; height:13px;"></i>
+              <span>Navigation Bar & Header Configured Successfully</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ── SECTION 2: ALLOCATION ── -->
+        <section id="sec-allocation" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring">
+              <i data-lucide="calendar-check" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Duty Allocation & Shift Management</h2>
+            <p class="placeholder-subtitle">
+              View your assigned home visits, hospital duty rotations, patient addresses, shift timings, and real-time route instructions.
+            </p>
+            <div class="placeholder-status-tag">
+              <i data-lucide="clock" style="width:14px; height:14px;"></i>
+              <span>Allocation Section Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 3: EARNINGS ── -->
+        <section id="sec-earnings" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring" style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.35); color:#10b981;">
+              <i data-lucide="wallet" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Nurse Earnings & Duty Payouts</h2>
+            <p class="placeholder-subtitle">
+              Track completed shifts, hourly visit payouts, weekly settlement reports, bank transfer receipts, and incentives.
+            </p>
+            <div class="placeholder-status-tag" style="color:#6ee7b7;">
+              <i data-lucide="trending-up" style="width:14px; height:14px;"></i>
+              <span>Earnings Section Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 4: CARD PREVIEW ── -->
+        <section id="sec-card-preview" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring">
+              <i data-lucide="credit-card" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Clinical ID Card & Profile Preview</h2>
+            <p class="placeholder-subtitle">
+              Live preview of your verified CareWell Staff Nurse Badge, digital QR verification code, credentials, and nearest station coverage.
+            </p>
+            <div class="placeholder-status-tag">
+              <i data-lucide="shield-check" style="width:14px; height:14px;"></i>
+              <span>Card Preview Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 5: NOTIFICATION ── -->
+        <section id="sec-notification" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring" style="background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.35); color:#f59e0b;">
+              <i data-lucide="bell" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Notifications & System Alerts</h2>
+            <p class="placeholder-subtitle">
+              Realtime dispatch notifications, new home care patient bookings, schedule updates, and urgent messages from CareWell Head Admin.
+            </p>
+            <div class="placeholder-status-tag" style="color:#fcd34d;">
+              <i data-lucide="message-square" style="width:14px; height:14px;"></i>
+              <span>Notifications Section Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 6: MY ACCOUNT ── -->
+        <section id="sec-account" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring">
+              <i data-lucide="user" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">My Nurse Account & Profile</h2>
+            <p class="placeholder-subtitle">
+              Manage your personal credentials, contact numbers, residential area, nursing certifications, documents, and password.
+            </p>
+            <div class="placeholder-status-tag">
+              <i data-lucide="user-check" style="width:14px; height:14px;"></i>
+              <span>Account Section Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 7: SETTINGS ── -->
+        <section id="sec-settings" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring">
+              <i data-lucide="settings" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Dashboard & Preference Settings</h2>
+            <p class="placeholder-subtitle">
+              Configure shift notification sound alerts, emergency call preferences, language, availability toggles, and security settings.
+            </p>
+            <div class="placeholder-status-tag">
+              <i data-lucide="sliders" style="width:14px; height:14px;"></i>
+              <span>Settings Section Ready</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECTION 8: CONTACT CAREWELL ── -->
+        <section id="sec-contact" class="dashboard-section">
+          <div class="section-placeholder-box">
+            <div class="placeholder-icon-ring" style="background:rgba(56,189,248,0.15); border-color:rgba(56,189,248,0.35); color:#38bdf8;">
+              <i data-lucide="headphones" style="width:34px; height:34px;"></i>
+            </div>
+            <h2 class="placeholder-title">Contact CareWell Support Desk</h2>
+            <p class="placeholder-subtitle">
+              Need assistance with patient visits, billing, or emergency escalation? Directly connect with CareWell Operations & Head Admin.
+            </p>
+            <div class="placeholder-status-tag" style="color:#7dd3fc;">
+              <i data-lucide="phone-call" style="width:14px; height:14px;"></i>
+              <span>Help Desk Ready &middot; carewellofficiall@gmail.com</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="nurseToast">
+    <i data-lucide="info" style="width:18px; height:18px; color:#f472b6;"></i>
+    <span id="nurseToastMsg">Welcome to Nurse Portal</span>
+  </div>
+
+  <script>
+    /* =========================================================
+       NURSE DASHBOARD LOGIC: LIVE TIME, DIN, DATE & TABS
+       ========================================================= */
+
+    // 1. Live Digital Clock, Din (Day) and Date
+    function updateLiveDateTime() {
+      const now = new Date();
+
+      // Time (HH:MM:SS AM/PM)
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+      
+      const clockEl = document.getElementById('headerLiveClock');
+      if (clockEl) clockEl.textContent = timeStr;
+
+      // Din / Day of week
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayName = days[now.getDay()];
+      const dayEl = document.getElementById('headerDayText');
+      if (dayEl) dayEl.textContent = dayName;
+
+      // Date: DD-MM-YYYY
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      const dateStr = `${d}-${m}-${y}`;
+      const dateEl = document.getElementById('headerDateText');
+      if (dateEl) dateEl.textContent = dateStr;
+
+      // Dynamic Greeting
+      const hr = now.getHours();
+      let greet = 'Good Day 👋';
+      if (hr < 12) greet = 'Good Morning 🌅';
+      else if (hr < 17) greet = 'Good Afternoon ☀️';
+      else if (hr < 21) greet = 'Good Evening 🌆';
+      else greet = 'Good Night 🌙';
+
+      const greetEl = document.getElementById('nurseGreetingText');
+      if (greetEl) greetEl.textContent = greet;
+    }
+
+    setInterval(updateLiveDateTime, 1000);
+    updateLiveDateTime();
+
+    // 2. Load Nurse Profile from Session / LocalStorage / Fallback
+    function loadNurseProfile() {
+      try {
+        let nurse = null;
+        const raw = sessionStorage.getItem('carewell_nurse_profile') || localStorage.getItem('carewell_nurse_profile');
+        if (raw) {
+          nurse = JSON.parse(raw);
+        }
+
+        if (nurse) {
+          const nurseName = nurse.name || 'Nurse';
+          const headerNameEl = document.getElementById('nurseHeaderName');
+          const heroNameEl = document.getElementById('nurseHeroName');
+          const avatarEl = document.getElementById('headerNurseAvatar');
+
+          if (headerNameEl) headerNameEl.textContent = nurseName.toLowerCase().startsWith('nurse') ? nurseName : `Nurse ${nurseName}`;
+          if (heroNameEl) heroNameEl.textContent = nurseName;
+          if (avatarEl && nurse.avatar) avatarEl.src = nurse.avatar;
+        }
+      } catch (err) {
+        console.warn('Profile load note:', err);
+      }
+    }
+
+    loadNurseProfile();
+
+    // 3. Section Switcher Navigation
+    function switchSection(sectionId) {
+      if (!sectionId) return;
+
+      // Update Nav links active state
+      document.querySelectorAll('.sidebar-nav .nav-link').forEach(btn => {
+        if (btn.getAttribute('data-section') === sectionId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update Active Section Visibility
+      document.querySelectorAll('.dashboard-section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+
+      const targetSec = document.getElementById(`sec-${sectionId}`);
+      if (targetSec) {
+        targetSec.classList.add('active');
+      }
+
+      // Update URL hash without scroll jump
+      history.replaceState(null, null, `#${sectionId}`);
+
+      // Re-trigger icon rendering
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // 4. Toast Notification
+    function showNurseToast(msg) {
+      const toast = document.getElementById('nurseToast');
+      const msgEl = document.getElementById('nurseToastMsg');
+      if (!toast || !msgEl) return;
+
+      msgEl.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // 5. Logout Confirmation
+    function confirmNurseLogout() {
+      const confirmLogout = confirm('Are you sure you want to log out from the Nurse Dashboard?');
+      if (confirmLogout) {
+        sessionStorage.removeItem('carewell_session');
+        sessionStorage.removeItem('carewell_nurse_profile');
+        sessionStorage.removeItem('carewell_user_role');
+        try {
+          fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+        } catch (e) {}
+        window.location.href = 'login.html';
+      }
+    }
+
+    // 6. Initialize on Load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+
+      // Handle direct hash navigation
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash && document.getElementById(`sec-${hash}`)) {
+        switchSection(hash);
+      }
+    });
+  </script>
+</body>
+</html>
+

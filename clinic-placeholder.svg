@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1020"/>
+      <stop offset="50%" stop-color="#121b33"/>
+      <stop offset="100%" stop-color="#0a0e1c"/>
+    </linearGradient>
+    <linearGradient id="accentCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="glassCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="360" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Architectural Grid Pattern -->
+  <g stroke="rgba(56,189,248,0.07)" stroke-width="1">
+    <line x1="0" y1="90" x2="800" y2="90"/>
+    <line x1="0" y1="180" x2="800" y2="180"/>
+    <line x1="0" y1="270" x2="800" y2="270"/>
+    <line x1="200" y1="0" x2="200" y2="360"/>
+    <line x1="400" y1="0" x2="400" y2="360"/>
+    <line x1="600" y1="0" x2="600" y2="360"/>
+  </g>
+
+  <!-- Modern Clinic Building Silhouettes in Background -->
+  <path d="M 80 320 L 80 140 L 220 140 L 220 320 Z" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+  <path d="M 240 320 L 240 100 L 440 100 L 440 320 Z" fill="rgba(255,255,255,0.04)" stroke="rgba(56,189,248,0.2)" stroke-width="1.5"/>
+  <path d="M 460 320 L 460 160 L 600 160 L 600 320 Z" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+  <path d="M 620 320 L 620 120 L 740 120 L 740 320 Z" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+
+  <!-- Hospital Windows -->
+  <g fill="rgba(56,189,248,0.18)">
+    <rect x="270" y="130" width="30" height="20" rx="3"/>
+    <rect x="320" y="130" width="30" height="20" rx="3"/>
+    <rect x="370" y="130" width="30" height="20" rx="3"/>
+    <rect x="270" y="170" width="30" height="20" rx="3"/>
+    <rect x="320" y="170" width="30" height="20" rx="3"/>
+    <rect x="370" y="170" width="30" height="20" rx="3"/>
+    <rect x="270" y="210" width="30" height="20" rx="3"/>
+    <rect x="320" y="210" width="30" height="20" rx="3"/>
+    <rect x="370" y="210" width="30" height="20" rx="3"/>
+  </g>
+
+  <!-- Central Glass Badge Container -->
+  <rect x="210" y="65" width="380" height="230" rx="20" fill="url(#glassCard)" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+
+  <!-- Glowing Cross Symbol -->
+  <g transform="translate(400, 140)">
+    <circle cx="0" cy="0" r="42" fill="rgba(2,132,199,0.22)" stroke="rgba(56,189,248,0.4)" stroke-width="2"/>
+    <!-- Medical Cross -->
+    <path d="M -9 -22 L 9 -22 L 9 -9 L 22 -9 L 22 9 L 9 9 L 9 22 L -9 22 L -9 9 L -22 9 L -22 -9 L -9 -9 Z" fill="#38bdf8"/>
+  </g>
+
+  <!-- Badge Typography -->
+  <text x="400" y="218" text-anchor="middle" fill="#ffffff" font-family="'Poppins', sans-serif" font-size="20" font-weight="700" letter-spacing="0.5">CareWell Partner Clinic</text>
+  <text x="400" y="244" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="'Inter', sans-serif" font-size="13" font-weight="500">Verified Clinical Facility &amp; Practice</text>
+
+  <!-- Bottom Accent Strip -->
+  <rect x="280" y="270" width="240" height="3" rx="1.5" fill="url(#accentCyan)"/>
+</svg>

@@ -2,3 +2,12 @@ node_modules/
 .env
 .env.*
 data/
+
+Cred.txt
+*.bak*
+*.diff
+*_diff.txt
+scratch*
+b164041_head_admin.html
+build_nurse_section.py
+inject_nurse_system.py

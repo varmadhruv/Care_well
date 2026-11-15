@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Background Circle Gradient -->
+    <linearGradient id="avatarBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fce7f3"/>
+      <stop offset="50%" stop-color="#fbcfe8"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+
+    <!-- Scrub Gradient -->
+    <linearGradient id="scrubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <!-- Skin Gradient -->
+    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+
+    <!-- Hair Gradient -->
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Mask for circular avatar -->
+    <clipPath id="circleClip">
+      <circle cx="100" cy="100" r="96"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer Glow Ring -->
+  <circle cx="100" cy="100" r="99" fill="none" stroke="#db2777" stroke-width="2" opacity="0.4"/>
+  <circle cx="100" cy="100" r="96" fill="url(#avatarBg)"/>
+
+  <!-- Content clipped inside circular badge -->
+  <g clip-path="url(#circleClip)">
+    <!-- Subtle Background Radial Radiance -->
+    <circle cx="100" cy="80" r="70" fill="#ffffff" opacity="0.45"/>
+
+    <!-- Hair Back -->
+    <ellipse cx="100" cy="92" rx="46" ry="48" fill="url(#hairGrad)"/>
+    <!-- Hair Bun -->
+    <circle cx="100" cy="46" r="22" fill="url(#hairGrad)"/>
+
+    <!-- Shoulders / Scrubs Base -->
+    <path d="M 38 185 C 44 146 66 138 100 138 C 134 138 156 146 162 185 L 168 200 L 32 200 Z" fill="url(#scrubGrad)"/>
+
+    <!-- V-Neck Cutout -->
+    <path d="M 85 138 L 100 162 L 115 138 Z" fill="url(#skinGrad)"/>
+
+    <!-- Scrub Collar V-Neck Border -->
+    <path d="M 82 138 L 100 165 L 118 138" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Neck -->
+    <rect x="88" y="112" width="24" height="32" rx="6" fill="url(#skinGrad)"/>
+    <!-- Neck shadow under chin -->
+    <ellipse cx="100" cy="120" rx="14" ry="4" fill="#fb923c" opacity="0.4"/>
+
+    <!-- Face Oval -->
+    <ellipse cx="100" cy="88" rx="33" ry="37" fill="url(#skinGrad)"/>
+
+    <!-- Ears -->
+    <ellipse cx="67" cy="90" rx="5" ry="8" fill="url(#skinGrad)"/>
+    <ellipse cx="133" cy="90" rx="5" ry="8" fill="url(#skinGrad)"/>
+    <!-- Small Pearl Earrings -->
+    <circle cx="67" cy="93" r="2.2" fill="#ffffff"/>
+    <circle cx="133" cy="93" r="2.2" fill="#ffffff"/>
+
+    <!-- Hair Front / Bangs / Parting -->
+    <path d="M 68 84 C 70 60 84 52 100 52 C 116 52 130 60 132 84 C 122 68 112 64 100 66 C 88 64 78 68 68 84 Z" fill="url(#hairGrad)"/>
+
+    <!-- Nurse Cap on head -->
+    <g transform="translate(100, 48)">
+      <path d="M -22 6 Q 0 -10 22 6 L 18 14 Q 0 4 -18 14 Z" fill="#ffffff"/>
+      <!-- Pink cross on cap -->
+      <rect x="-1.5" y="-1" width="3" height="9" rx="1" fill="#db2777"/>
+      <rect x="-4.5" y="2" width="9" height="3" rx="1" fill="#db2777"/>
+    </g>
+
+    <!-- Eyebrows -->
+    <path d="M 78 76 Q 86 73 93 76" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M 107 76 Q 114 73 122 76" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round"/>
+
+    <!-- Eyes (Warm, Reassuring) -->
+    <ellipse cx="86" cy="84" rx="4.5" ry="5.5" fill="#0f172a"/>
+    <ellipse cx="114" cy="84" rx="4.5" ry="5.5" fill="#0f172a"/>
+    <!-- Eye Sparkles -->
+    <circle cx="84.5" cy="82.5" r="1.8" fill="#ffffff"/>
+    <circle cx="112.5" cy="82.5" r="1.8" fill="#ffffff"/>
+
+    <!-- Cute Eyelashes -->
+    <path d="M 82 80 L 80 78" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 118 80 L 120 78" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Small Bindi -->
+    <circle cx="100" cy="74" r="1.6" fill="#be185d"/>
+
+    <!-- Nose -->
+    <path d="M 99 86 Q 102 93 98 96" fill="none" stroke="#ea580c" stroke-width="1.8" stroke-linecap="round"/>
+
+    <!-- Cheerful, Friendly Nurse Smile -->
+    <path d="M 88 104 Q 100 114 112 104" fill="none" stroke="#be123c" stroke-width="2.8" stroke-linecap="round"/>
+    <!-- Rosy Cheeks -->
+    <circle cx="78" cy="94" r="7" fill="#f43f5e" opacity="0.25"/>
+    <circle cx="122" cy="94" r="7" fill="#f43f5e" opacity="0.25"/>
+
+    <!-- Stethoscope Around Neck -->
+    <!-- Left Tube -->
+    <path d="M 83 122 C 78 136 72 152 74 168 C 76 182 86 190 95 190" fill="none" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- Right Tube -->
+    <path d="M 117 122 C 122 136 128 152 126 168 C 124 178 116 186 105 188" fill="none" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- Chrome Ear Pieces -->
+    <path d="M 78 115 L 83 124" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 122 115 L 117 124" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Chest Piece (Stethoscope Bell) -->
+    <circle cx="95" cy="190" r="10" fill="#94a3b8" stroke="#f1f5f9" stroke-width="2.5"/>
+    <circle cx="95" cy="190" r="5" fill="#475569"/>
+
+    <!-- CareWell Staff ID Badge pinned to Scrub -->
+    <g transform="translate(132, 160)">
+      <rect x="0" y="0" width="22" height="28" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+      <rect x="0" y="0" width="22" height="7" rx="2" fill="#db2777"/>
+      <!-- ID photo & lines -->
+      <rect x="3" y="10" width="8" height="9" rx="1.5" fill="#f472b6"/>
+      <rect x="13" y="11" width="6" height="2" fill="#94a3b8"/>
+      <rect x="13" y="15" width="6" height="2" fill="#94a3b8"/>
+      <rect x="4" y="22" width="14" height="2.5" rx="1" fill="#10b981"/>
+    </g>
+  </g>
+</svg>
+

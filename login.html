@@ -243,7 +243,19 @@
         <!-- Password field -->
         <div class="form-group">
           <label for="password">Password</label>
-          <input class="input-field" id="password" type="password" placeholder="Enter your password" required />
+          <div class="password-wrapper">
+            <input class="input-field" id="password" type="password" placeholder="Enter your password" required />
+            <button type="button" class="toggle-password-btn" id="toggleMainPasswordBtn" aria-label="Toggle password visibility">
+              <svg class="eye-icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="eye-icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
           <span class="error-text" id="passwordError">Password must be at least 6 characters.</span>
         </div>
 
@@ -268,8 +280,22 @@
     const loginForm = document.getElementById('loginForm');
     const identifier = document.getElementById('identifier');
     const password = document.getElementById('password');
+    const toggleMainPasswordBtn = document.getElementById('toggleMainPasswordBtn');
     const identifierError = document.getElementById('identifierError');
     const passwordError = document.getElementById('passwordError');
+
+    toggleMainPasswordBtn?.addEventListener('click', () => {
+      if (!password) return;
+      const isPassword = password.type === 'password';
+      password.type = isPassword ? 'text' : 'password';
+
+      const eyeOpen = toggleMainPasswordBtn.querySelector('.eye-open');
+      const eyeClosed = toggleMainPasswordBtn.querySelector('.eye-closed');
+      if (eyeOpen && eyeClosed) {
+        eyeOpen.style.display = isPassword ? 'none' : 'block';
+        eyeClosed.style.display = isPassword ? 'block' : 'none';
+      }
+    });
 
     // Back to auth gateway screen
     backBtn.addEventListener('click', () => {
@@ -302,7 +328,7 @@
     }
 
     // Form submission validation
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       let isValid = true;
@@ -315,6 +341,43 @@
 
       const idVal = identifier.value.trim();
       const pwVal = password.value;
+
+      if (!pwVal) {
+        password.classList.add('error');
+        passwordError.style.display = 'block';
+        return;
+      }
+
+      // Role-based login via backend /api/auth/login (Doctor_1, samm_10, developer, etc.)
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: idVal, password: pwVal })
+        });
+        const data = await res.json();
+        if (data && data.ok) {
+          if (data.sessionToken) sessionStorage.setItem('carewell_session', data.sessionToken);
+          if (data.user) {
+            if (data.role === 'nurse') {
+              sessionStorage.setItem('carewell_nurse_profile', JSON.stringify(data.user));
+              localStorage.setItem('carewell_nurse_profile', JSON.stringify(data.user));
+            } else {
+              sessionStorage.setItem('carewell_doctor_profile', JSON.stringify(data.user));
+            }
+          }
+          if (data.role) sessionStorage.setItem('carewell_user_role', data.role);
+          window.location.href = data.redirectUrl || (data.role === 'nurse' ? 'nurse-dashboard.html' : 'head-doctor-dashboard.html');
+          return;
+        } else if (res.status === 401) {
+          password.classList.add('error');
+          passwordError.textContent = data.message || 'Invalid UserName or Password.';
+          passwordError.style.display = 'block';
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend login error:', err);
+      }
 
       // Validate Identifier (must be email or phone)
       if (!isValidEmail(idVal) && !isValidPhone(idVal)) {
